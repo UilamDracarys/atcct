@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_layout"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    android:id="@+id/farms_list_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="com.scbpfsdgis.atcct.MainActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/AppTheme"
+    tools:context="com.scbpfsdgis.atcct.FarmsList"
     android:background="#F5F5F5">
 
     <android.support.v7.widget.Toolbar
@@ -19,10 +20,12 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <ListView
-        android:id="@+id/menuList"
+        android:id="@+id/list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/my_toolbar"
         android:background="@android:color/white"
         android:elevation="2dp"/>
 
-</LinearLayout>
+</RelativeLayout>

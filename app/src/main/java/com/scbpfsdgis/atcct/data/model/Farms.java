@@ -6,50 +6,93 @@ package com.scbpfsdgis.atcct.data.model;
 
 public class Farms {
 
+    public static final String TABLE_FARMS = "T_FARMS";
+    public static final String TABLE_MASTERTBL = "T_MASTER";
+    public static final String TABLE_FARM_CHANGES = "T_FARM_CHGS";
 
-        public static final String TABLE_FARMS = "T_FARMS";
+    //Farms Table
+    public static final String COL_FARMCODE = "FARMCODE";
+    public static final String COL_FARMNAME = "FARM_NAME";
+    public static final String COL_BASE = "FARM_BASE";
+    public static final String COL_STATUS = "FARM_STATUS";
+    public static final String COL_OWNERID = "FARM_OWNERID";
+    public static final String COL_REMARKS = "FARM_REMARKS";
 
-        //Farms Table
-        public static final String COL_FARMCODE = "C_FARMCODE";
-        public static final String COL_FIELDGRP = "ATT_FARM_FieldGrp_CODE";
-        public static final String COL_BASE = "ATT_FARM_Base_CODE";
-        public static final String COL_OWNERID = "I_OWNER_ID";
+    private String farmCode;
+    private String farmName;
+    private String farmBase;
+    private String farmStatus;
+    private String farmOwnerID;
+    private String farmRemarks;
 
-        private String farmCode;
-        private String fieldGrp;
-        private String base;
-        private String ownerID;
-
-        public String getFarmCode() {
+    public String getFarmCode() {
             return farmCode;
         }
 
-        public void setFarmCode(String farmCode) {
-            this.farmCode = farmCode;
-        }
+    public void setFarmCode(String farmCode) {
+        this.farmCode = farmCode;
+    }
 
-        public String getFieldGrp() {
-            return fieldGrp;
-        }
+    public String getFarmName() {
+        return farmName;
+    }
 
-        public void setFieldGrp(String fieldGrp) {
-            this.fieldGrp = fieldGrp;
-        }
+    public void setFarmName(String farmName) {
+        this.farmName = farmName;
+    }
 
-        public String getBase() {
-            return base;
-        }
+    public String getFarmBase() {
+        return farmBase;
+    }
 
-        public void setBase(String base) {
-            this.base = base;
-        }
+    public void setFarmBase(String farmBase) {
+        this.farmBase = farmBase;
+    }
 
-        public String getOwnerID() {
-            return ownerID;
-        }
+    public String getFarmOwnerID() {
+        return farmOwnerID;
+    }
 
-        public void setOwnerID(String ownerID) {
-            this.ownerID = ownerID;
+    public void setFarmOwnerID(String farmOwnerID) {
+        this.farmOwnerID = farmOwnerID;
+    }
+
+    public String getFarmRemarks() {
+        return farmRemarks;
+    }
+
+    public void setFarmRemarks(String farmRemarks) {
+        this.farmRemarks = farmRemarks;
+    }
+
+    public String getFarmStatus() {
+        return farmStatus;
+    }
+
+    public void setFarmStatus(String farmStatus) {
+        this.farmStatus = farmStatus;
+    }
+
+    public int getIdxByItem(String[] array, String att) {
+        int idx = 0;
+        for (int i=0; i <array.length; i++) {
+            if(array[i].contains(att)) {
+                idx = i;
+                break;
+            }
         }
+        return idx;
+    }
+
+    public int getIdxByCode(String[] array, String att) {
+        int idx = 0;
+        for (int i=0; i <array.length; i++) {
+            if(array[i].contains("(" + att + ")")) {
+                idx = i;
+                break;
+            }
+        }
+        return idx;
+    }
 
 }

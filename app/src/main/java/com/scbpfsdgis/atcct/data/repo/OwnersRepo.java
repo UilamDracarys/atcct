@@ -1,47 +1,120 @@
 package com.scbpfsdgis.atcct.data.repo;
 
-import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
-import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
- * Created by William on 12/17/2018.
+ * Created by William on 4/15/2019.
  */
 
 public class OwnersRepo {
+
     private DBHelper dbHelper;
     private SQLiteDatabase db;
 
     public OwnersRepo() {
-       Owners owner = new Owners();
+        Owners owners = new Owners();
     }
 
-    public static String createTable() {
-        return "CREATE TABLE IF NOT EXISTS " + Owners.TABLE_OWNERS + " (" +
-                Owners.COL_OWNERID + " TEXT, " +
+    public static String createOwnersTbl() {
+        String query = "CREATE TABLE IF NOT EXISTS " + Owners.TABLE_OWNERS + " (" +
+                Owners.COL_OWNERID + " TEXT," +
                 Owners.COL_OWNERNAME + " TEXT, " +
-                Owners.COL_PHONEMOB + " TEXT, " +
-                Owners.COL_PHONEBUS + " TEXT, " +
-                Owners.COL_CONTACTPERSON + " TEXT)";
+                Owners.COL_OWNERMOB + " TEXT, " +
+                Owners.COL_OWNEREMAIL + " TEXT, " +
+                Owners.COL_OWNERADDRESS + " TEXT)";
+        return query;
     }
 
-    public void insert(Owners owner) {
+
+    public Owners getOwnerByID(String id) {
         dbHelper = new DBHelper();
-        db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = ?";
+        System.out.println(selectQuery);
 
-        values.put(Owners.COL_OWNERID, owner.getOwnerID());
-        values.put(Owners.COL_OWNERNAME, owner.getOwnerName());
-        values.put(Owners.COL_PHONEMOB, owner.getMobileNo());
-        values.put(Owners.COL_PHONEBUS, owner.getBusinessNo());
-        values.put(Owners.COL_CONTACTPERSON, owner.getContactPrsn());
+        Owners owners = new Owners();
 
-        // Inserting Row
-        db.insert(Owners.TABLE_OWNERS, null, values);
-        db.close();
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{id});
+
+        if (cursor.moveToFirst()) {
+            do {
+                owners.setOwnerID(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERID)));
+                owners.setOwnerName(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERNAME)));
+                owners.setOwnerMobile(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERMOB)));
+                owners.setOwnerEmail(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNEREMAIL)));
+                owners.setOwnerAddress(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERADDRESS)));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        return owners;
     }
 
+    //Get List of Farms
+    public ArrayList<HashMap<String, String>> getOwnersList() {
+
+        //Open connection to read only
+        //db = DatabaseManager.getInstance().openDatabase();
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " ORDER BY " + Owners.COL_OWNERNAME;
+
+        System.out.println("OwnersListQuery: " + selectQuery);
+
+        ArrayList<HashMap<String, String>> ownersList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        System.out.println("GetOwnersList: " + cursor.getCount());
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> owners = new HashMap<>();
+                owners.put("ownerID", cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERID)));
+                owners.put("ownerName", cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERNAME)));
+                owners.put("ownerMobile", cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERMOB)));
+                ownersList.add(owners);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        return ownersList;
+    }
+
+    public ArrayList<String> getOwnersForSpinner() {
+
+        //Open connection to read only
+        //db = DatabaseManager.getInstance().openDatabase();
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " ORDER BY " + Owners.COL_OWNERNAME;
+
+        System.out.println("OwnersListQuery: " + selectQuery);
+
+        ArrayList<String> ownersList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        System.out.println("GetOwnersList: " + cursor.getCount());
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                //HashMap<String, String> owners = new HashMap<>();
+                String item = cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERNAME)) + " [" +
+                        "" + cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERID)) + "]";
+                ownersList.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        return ownersList;
+    }
 }

@@ -1,0 +1,77 @@
+package com.scbpfsdgis.atcct;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
+
+import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class OwnersList extends AppCompatActivity {
+    TextView tvOwnerID;
+    private View mLayout;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_owners_list);
+        mLayout = findViewById(R.id.owners_list_layout);
+
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        //getSupportActionBar().setTitle("Owner Details");
+
+        loadOwners();
+    }
+
+    private void loadOwners() {
+        final OwnersRepo oRepo = new OwnersRepo();
+        ArrayList<HashMap<String, String>> ownersList = oRepo.getOwnersList();
+        ListView lv = findViewById(R.id.list);
+        lv.setFastScrollEnabled(true);
+        ListAdapter adapter;
+        if (ownersList.size() != 0) {
+            System.out.println("Owners: " + ownersList.size());
+            lv = findViewById(R.id.list);
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Intent intent = getIntent();
+                    Bundle b = intent.getExtras();
+
+                    if (b != null) {
+                        tvOwnerID = view.findViewById(R.id.ownerID);
+                        String ownerID = tvOwnerID.getText().toString();
+                        System.out.println("SelOwnerID: " + ownerID);
+                        Intent objIndent;
+                        objIndent = new Intent(getApplicationContext(), OwnerDetails.class);
+                        objIndent.putExtra("ownerID", ownerID);
+                        startActivity(objIndent);
+                    }
+                }
+            });
+            adapter = new SimpleAdapter(OwnersList.this,
+                    ownersList,
+                    R.layout.owners_list_item,
+                    new String[]{"ownerID", "ownerName", "ownerMobile"},
+                    new int[]{R.id.ownerID, R.id.ownerName, R.id.ownerMobile});
+            lv.setAdapter(adapter);
+        } else {
+            adapter = null;
+            lv.setAdapter(adapter);
+        }
+    }
+
+
+}

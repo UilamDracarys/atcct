@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
-import com.scbpfsdgis.atcct.data.model.Farms;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

@@ -8,17 +8,17 @@ public class Owners {
     public static final String TABLE_OWNERS = "T_OWNERS";
 
     //Owners Table
-    public static final String COL_OWNERID = "I_OWNER_ID";
-    public static final String COL_OWNERNAME = "C_OWNER_NAME";
-    public static final String COL_PHONEMOB = "C_PHONE_MOBILE";
-    public static final String COL_PHONEBUS = "C_PHONE_BUSINESS";
-    public static final String COL_CONTACTPERSON = "C_CONTACT_PERSON";
+    public static final String COL_OWNERID = "OWNER_ID";
+    public static final String COL_OWNERNAME = "OWNER_NAME";
+    public static final String COL_OWNERMOB = "OWNER_MOBILE";
+    public static final String COL_OWNEREMAIL = "OWNER_EMAIL";
+    public static final String COL_OWNERADDRESS = "OWNER_ADDRESS";
 
     private String ownerID;
     private String ownerName;
-    private String mobileNo;
-    private String businessNo;
-    private String contactPrsn;
+    private String ownerMobile;
+    private String ownerEmail;
+    private String ownerAddress;
 
     public String getOwnerID() {
         return ownerID;
@@ -36,27 +36,27 @@ public class Owners {
         this.ownerName = ownerName;
     }
 
-    public String getMobileNo() {
-        return mobileNo;
+    public String getOwnerMobile() {
+        return ownerMobile;
     }
 
-    public void setMobileNo(String mobileNo) {
-        this.mobileNo = mobileNo;
+    public void setOwnerMobile(String ownerMobile) {
+        this.ownerMobile = ownerMobile;
     }
 
-    public String getBusinessNo() {
-        return businessNo;
+    public String getOwnerEmail() {
+        return ownerEmail;
     }
 
-    public void setBusinessNo(String businessNo) {
-        this.businessNo = businessNo;
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 
-    public String getContactPrsn() {
-        return contactPrsn;
+    public String getOwnerAddress() {
+        return ownerAddress;
     }
 
-    public void setContactPrsn(String contactPrsn) {
-        this.contactPrsn = contactPrsn;
+    public void setOwnerAddress(String ownerAddress) {
+        this.ownerAddress = ownerAddress;
     }
 }

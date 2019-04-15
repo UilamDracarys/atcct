@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">ATCCT</string>
+    <string name="btnImportText">IMPORT CSV</string>
+    <string name="import_data">Import Data from CSV</string>
+    <string name="action_save">save</string>
+    <string name="action_cancel">cancel</string>
+    <string-array name="bases">
+        <item>SCBP</item>
+        <item>SNBP</item>
+        <item>NNBP</item>
+    </string-array>
+
+    <string-array name="availability">
+        <item>AVAILABLE (A)</item>
+        <item>DECLINED (D)</item>
+        <item>NOT SUITABLE (N)</item>
+        <item>TBD (T)</item>
+    </string-array>
 </resources>
