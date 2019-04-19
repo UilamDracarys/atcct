@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.scbpfsdgis.atcct.ATCCTDetails">
+
+    <android.support.v7.widget.Toolbar
+
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#69F0AE"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/my_toolbar"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/tvOwnerID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvOwnerName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="#b9f6ca"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="Planter Name"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvOwnerDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="8dp"
+            android:background="#f1f8e9"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="Payment Details"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/spnPmtMethod"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="3dp"
+                android:ems="10"
+                android:entries="@array/pmtMethod" />
+
+            <Spinner
+                android:id="@+id/spnPickupPt"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="3dp"
+                android:ems="10"
+                android:entries="@array/pickupPt"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etAccName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Account Name"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etAccNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Account No."
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etBankName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Bank Name"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etBankAdd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Bank Address"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/etRemarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Remarks" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#b9f6ca"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:text="Authorized Representatives"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnAddAR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add" />
+
+        <ListView
+            android:id="@+id/arList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</RelativeLayout>

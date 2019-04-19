@@ -19,9 +19,6 @@ public class ATCC {
     public static final String COL_ACCNO = "ACC_NO";
     public static final String COL_BANKNAME = "BANK_NAME";
     public static final String COL_BANKADD = "BANK_ADDRESS";
-    public static final String COL_ARNAME = "AR_NAME";
-    public static final String COL_ARRELATION = "AR_RELATION";
-    public static final String COL_ARID = "AR_ID";
     public static final String COL_REMARKS = "REMARKS";
     public static final String COL_DTECREATED = "DATE_CREATED";
     public static final String COL_DTESIGNED = "DATE_SIGNED";
@@ -34,9 +31,6 @@ public class ATCC {
     private String accNo;
     private String bankName;
     private String bankAdd;
-    private String ARName;
-    private String ARRelation;
-    private String ARID;
     private String Remarks;
     private Date dteCreated;
     private Date dteSigned;
@@ -96,30 +90,6 @@ public class ATCC {
 
     public void setBankAdd(String bankAdd) {
         this.bankAdd = bankAdd;
-    }
-
-    public String getARName() {
-        return ARName;
-    }
-
-    public void setARName(String ARName) {
-        this.ARName = ARName;
-    }
-
-    public String getARRelation() {
-        return ARRelation;
-    }
-
-    public void setARRelation(String ARRelation) {
-        this.ARRelation = ARRelation;
-    }
-
-    public String getARID() {
-        return ARID;
-    }
-
-    public void setARID(String ARID) {
-        this.ARID = ARID;
     }
 
     public String getRemarks() {

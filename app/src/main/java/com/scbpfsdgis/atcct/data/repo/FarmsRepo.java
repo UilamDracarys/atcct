@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.scbpfsdgis.atcct.FarmsList;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Farms;

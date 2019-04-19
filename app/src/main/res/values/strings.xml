@@ -16,4 +16,21 @@
         <item>NOT SUITABLE (N)</item>
         <item>TBD (T)</item>
     </string-array>
+
+    <string-array name="pmtMethod">
+        <item>-Payment Method-</item>
+        <item>Pick-up</item>
+        <item>Bank Deposit</item>
+    </string-array>
+
+    <string-array name="pickupPt">
+        <item>-Pickup Point-</item>
+        <item>Transloading</item>
+        <item>Plant Site</item>
+        <item>Bacolod Central Office (PNB)</item>
+    </string-array>
+    <string name="title_activity_atcctlist">ATCCTList</string>
+    <string name="action_add">Add</string>
+    <string name="action_new">New</string>
+    <string name="action_back">Back</string>
 </resources>

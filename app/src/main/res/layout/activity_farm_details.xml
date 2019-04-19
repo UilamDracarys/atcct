@@ -5,9 +5,7 @@
     android:id="@+id/farm_detail_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="8dp"
     tools:context="com.scbpfsdgis.atcct.FarmDetails">
-
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"

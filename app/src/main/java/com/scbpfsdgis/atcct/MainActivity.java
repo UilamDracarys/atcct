@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         showOwners();
                         return;
                     case 2:
-                        Toast.makeText(getApplicationContext(), "Show ATCCTs", Toast.LENGTH_SHORT).show();
+                        showATCCTs();
                         return;
                     default:
                 }
@@ -280,6 +280,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public void showOwners() {
         Intent intent = new Intent(this, OwnersList.class);
         intent.putExtra("action", "Owners List");
+        startActivity(intent);
+    }
+
+    public void showATCCTs() {
+        Intent intent = new Intent(this, ATCCTList.class);
+        intent.putExtra("action", "ATCCT List");
         startActivity(intent);
     }
 

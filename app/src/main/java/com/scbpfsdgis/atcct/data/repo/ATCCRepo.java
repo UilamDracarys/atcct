@@ -31,9 +31,6 @@ public class ATCCRepo {
                 ATCC.COL_ACCNO + " TEXT, " +
                 ATCC.COL_BANKNAME  + "TEXT, " +
                 ATCC.COL_BANKADD + "TEXT, " +
-                ATCC.COL_ARNAME  + "TEXT, " +
-                ATCC.COL_ARRELATION + "TEXT, " +
-                ATCC.COL_ARID + " TEXT, " +
                 ATCC.COL_REMARKS + " TEXT, " +
                 ATCC.COL_DTECREATED + " DATE, " +
                 ATCC.COL_DTESIGNED + " DATE)";
@@ -53,9 +50,6 @@ public class ATCCRepo {
         values.put(ATCC.COL_ACCNO, atcc.getAccNo());
         values.put(ATCC.COL_BANKNAME, atcc.getBankName());
         values.put(ATCC.COL_BANKADD, atcc.getBankAdd());
-        values.put(ATCC.COL_ARNAME, atcc.getARName());
-        values.put(ATCC.COL_ARRELATION, atcc.getARRelation());
-        values.put(ATCC.COL_ARID, atcc.getARID());
         values.put(ATCC.COL_REMARKS, atcc.getRemarks());
         values.put(ATCC.COL_DTECREATED, sdf.format(atcc.getDteCreated()));
         values.put(ATCC.COL_ACCNO, sdf.format(atcc.getAccNo()));

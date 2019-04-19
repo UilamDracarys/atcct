@@ -26,7 +26,6 @@ public class FarmsList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farms_list);
         mLayout = findViewById(R.id.farms_list_layout);
-
         Toolbar myToolbar =  findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
