@@ -173,7 +173,6 @@ public class FarmDetails extends AppCompatActivity {
 
     private String currentFarm(String farmCode) {
         String ownerName = tvPlanter.getText().toString();
-        //Javelosa, Mark [1637];
         FarmsRepo repo = new FarmsRepo();
         Farms farm = repo.getFarmByID(farmCode, "O");
         return "Farmcode: " + farm.getFarmCode() + "\n" +

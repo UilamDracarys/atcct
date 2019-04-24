@@ -49,4 +49,9 @@ dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
     implementation 'com.google.firebase:firebase-config:16.5.0'
     compile 'com.github.MdFarhanRaja:SearchableSpinner:1.2'
+    compile 'com.itextpdf:itextg:5.5.10'
+    implementation files('libs/io-7.0.0.jar')
+    implementation files('libs/slf4j-api-1.7.13.jar')
+    implementation files('libs/kernel-7.0.0.jar')
+    implementation files('libs/layout-7.0.0.jar')
 }

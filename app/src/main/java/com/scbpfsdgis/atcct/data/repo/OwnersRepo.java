@@ -117,4 +117,36 @@ public class OwnersRepo {
         DatabaseManager.getInstance().closeDatabase();
         return ownersList;
     }
+
+    public String consolFarms(String ownerID) {
+        String farms = "Available Farms: \n";
+        FarmsRepo repo = new FarmsRepo();
+        ArrayList<HashMap<String, String>> availFarms = repo.getFarmsListByOwner(ownerID, "A");
+        ArrayList<HashMap<String, String>> nAvailFarms = repo.getFarmsListByOwner(ownerID, "-");
+        int availFarmCount = availFarms.size();
+        int nAvailFarmCount = nAvailFarms.size();
+        String lineBreak = "\n";
+
+        for (int i = 0; i < availFarmCount; i++) {
+            if (i == availFarmCount - 1) {
+                lineBreak = "";
+            }
+            farms += (i + 1) + ". " + availFarms.get(i).get("farmName") + " [" + availFarms.get(i).get("farmCode") + "] - " + availFarms.get(i).get("company") + lineBreak;
+        }
+
+        if (nAvailFarmCount > 0) {
+            farms += "\nNot Available Farms: \n";
+            lineBreak = "\n";
+            for (int i = 0; i < nAvailFarmCount; i++) {
+                if (i == nAvailFarmCount - 1) {
+                    lineBreak = "";
+                }
+                farms += (i + 1) + ". " + nAvailFarms.get(i).get("farmName") + " [" + nAvailFarms.get(i).get("farmCode") + "] - " + nAvailFarms.get(i).get("company") + " " +
+                        "[" + nAvailFarms.get(i).get("status") + "] " + nAvailFarms.get(i).get("remarks") + lineBreak;
+            }
+        }
+
+        System.out.println(farms);
+        return farms;
+    }
 }

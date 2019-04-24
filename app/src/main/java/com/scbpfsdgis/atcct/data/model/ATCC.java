@@ -32,8 +32,8 @@ public class ATCC {
     private String bankName;
     private String bankAdd;
     private String Remarks;
-    private Date dteCreated;
-    private Date dteSigned;
+    private String dteCreated;
+    private String dteSigned;
 
 
     public String getPickupPt() {
@@ -100,19 +100,19 @@ public class ATCC {
         Remarks = remarks;
     }
 
-    public Date getDteCreated() {
+    public String getDteCreated() {
         return dteCreated;
     }
 
-    public void setDteCreated(Date dteCreated) {
+    public void setDteCreated(String dteCreated) {
         this.dteCreated = dteCreated;
     }
 
-    public Date getDteSigned() {
+    public String getDteSigned() {
         return dteSigned;
     }
 
-    public void setDteSigned(Date dteSigned) {
+    public void setDteSigned(String dteSigned) {
         this.dteSigned = dteSigned;
     }
 

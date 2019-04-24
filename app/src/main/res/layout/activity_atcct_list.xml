@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.scbpfsdgis.atcct.ATCCTList"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/atcct_list_layout">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -18,7 +19,7 @@
 
     <ListView
         android:id="@+id/lstATCCT"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:elevation="2dp"/>

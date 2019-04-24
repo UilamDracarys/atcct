@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scbpfsdgis.atcct.ATCCTDetails">
+    tools:context="com.scbpfsdgis.atcct.ATCCTDetails"
+    android:id="@+id/atcct_detail_layout">
 
     <android.support.v7.widget.Toolbar
-
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -16,47 +16,43 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <LinearLayout
-
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/my_toolbar"
-        android:orientation="vertical"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp">
-
-        <TextView
-            android:id="@+id/tvOwnerID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tvOwnerName"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="#b9f6ca"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="Planter Name"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvOwnerDetails"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"/>
+        android:layout_below="@id/my_toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="8dp"
-            android:background="#f1f8e9"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp">
+
+            <TextView
+                android:id="@+id/tvOwnerID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvOwnerName"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="Planter Name"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvOwnerDetails"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:textSize="12sp" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -113,35 +109,34 @@
                 android:hint="Bank Address"
                 android:visibility="gone" />
 
+            <EditText
+                android:id="@+id/etRemarks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:hint="Remarks" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="Authorized Representatives"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnAddAR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add" />
+
+            <ListView
+                android:id="@+id/arList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
-
-        <EditText
-            android:id="@+id/etRemarks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Remarks" />
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#b9f6ca"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:text="Authorized Representatives"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btnAddAR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add" />
-
-        <ListView
-            android:id="@+id/arList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

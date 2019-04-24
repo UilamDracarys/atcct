@@ -93,6 +93,67 @@ public class FarmsRepo {
         db.close(); // Closing database connection
     }
 
+    public ArrayList<HashMap<String, String>> getFarmsListByOwner(String ownerID, String avail) {
+        //Open connection to read only
+        //db = DatabaseManager.getInstance().openDatabase();
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+
+        String statusFilter = "";
+        if (avail.equalsIgnoreCase("A")) {
+            statusFilter = "STATUS = 'A'";
+        } else {
+            statusFilter = "STATUS <> 'A'";
+        }
+
+        String selectQuery = "SELECT M." + Farms.COL_FARMCODE + " AS FarmCode,\n" +
+                "CASE \n" +
+                "WHEN C." + Farms.COL_FARMNAME + " IS NULL OR C." + Farms.COL_FARMNAME + " = '' THEN M." + Farms.COL_FARMNAME + "\n" +
+                "ELSE C." + Farms.COL_FARMNAME + "\n" +
+                "END FarmName,\n" +
+                "CASE \n" +
+                "WHEN C." + Farms.COL_BASE + " IS NULL OR C." + Farms.COL_BASE + " = '' THEN M." + Farms.COL_BASE + "\n" +
+                "ELSE C." + Farms.COL_BASE + "\n" +
+                "END Base,\n" +
+                "CASE\n" +
+                "WHEN C." + Farms.COL_STATUS + " IS NULL OR C." + Farms.COL_STATUS + " = '' THEN M." + Farms.COL_STATUS + "\n" +
+                "ELSE C." + Farms.COL_STATUS + "\n" +
+                "END Status,\n" +
+                "CASE\n" +
+                "WHEN C." + Farms.COL_OWNERID + " IS NULL OR C." + Farms.COL_OWNERID + " = '' THEN M." + Farms.COL_OWNERID + "\n" +
+                "ELSE C." + Farms.COL_OWNERID + "\n" +
+                "END OwnerID,\n" +
+                "CASE \n" +
+                "WHEN C." + Farms.COL_OWNERID + " IS NULL OR C." + Farms.COL_OWNERID + " = '' THEN (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = M." + Farms.COL_OWNERID + ")\n" +
+                "ELSE (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = C." + Farms.COL_OWNERID + ")\n" +
+                "END OwnerName," +
+                "C." + Farms.COL_REMARKS + " As Remarks " +
+                "FROM " + Farms.TABLE_FARMS + " M LEFT JOIN " + Farms.TABLE_FARM_CHANGES + " C\n" +
+                "ON M." + Farms.COL_FARMCODE + " = C." + Farms.COL_FARMCODE + "\n" +
+                "WHERE OwnerID = '" + ownerID + "' \n" +
+                "AND " + statusFilter + "\n" +
+                "ORDER BY FarmName";
+
+        ArrayList<HashMap<String, String>> farmsList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> farms = new HashMap<>();
+                farms.put("farmCode", cursor.getString(cursor.getColumnIndex("FarmCode")));
+                farms.put("farmName", cursor.getString(cursor.getColumnIndex("FarmName")));
+                farms.put("company", cursor.getString(cursor.getColumnIndex("Base")));
+                farms.put("status", cursor.getString(cursor.getColumnIndex("Status")));
+                farms.put("remarks", cursor.getString(cursor.getColumnIndex("Remarks")));
+                farmsList.add(farms);
+
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        return farmsList;
+    }
 
     //Get List of Farms
     public ArrayList<HashMap<String, String>> getFarmsList() {
@@ -127,11 +188,8 @@ public class FarmsRepo {
                 "ON M." + Farms.COL_FARMCODE + " = C." + Farms.COL_FARMCODE + "\n" +
                 "ORDER BY FarmName";
 
-        System.out.println("FarmsListQuery: " + selectQuery);
-
         ArrayList<HashMap<String, String>> farmsList = new ArrayList<>();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        System.out.println("GetFarmsList: " + cursor.getCount());
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {

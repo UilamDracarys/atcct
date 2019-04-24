@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.scbpfsdgis.atcct.app.App;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
+import com.scbpfsdgis.atcct.data.repo.AuthRepRepo;
 import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
@@ -38,6 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(FarmsRepo.createFChgsTable());
         db.execSQL(OwnersRepo.createOwnersTbl());
         db.execSQL(ATCCRepo.createTable());
+        db.execSQL(AuthRepRepo.createARTable());
     }
 
     @Override
