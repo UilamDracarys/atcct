@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "975604902726",
+    "firebase_url": "https://atcctmobile.firebaseio.com",
+    "project_id": "atcctmobile",
+    "storage_bucket": "atcctmobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:975604902726:android:3190149562952311",
+        "android_client_info": {
+          "package_name": "com.scbpfsdgis.atcct"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "975604902726-9fdpngfv1f8u34qr4m2jejme9bjn3spd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.scbpfsdgis.atcct",
+            "certificate_hash": "03f22585ac423a6bfb4cfb4d9d99fc92cccd735d"
+          }
+        },
+        {
+          "client_id": "975604902726-785ml73g3r7u9nuk61t7afc5nm3hpful.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgktCxOq1iMCjlv2mMQk2asb7fQMWNo88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "975604902726-785ml73g3r7u9nuk61t7afc5nm3hpful.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

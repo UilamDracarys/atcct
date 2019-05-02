@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.scbpfsdgis.atcct.ATCCTPreview">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#69F0AE"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/my_toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="I. OWNER INFORMATION"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Owner Name" />
+
+                    <TextView
+                        android:id="@+id/tvOwnerName"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Mobile No." />
+
+                    <TextView
+                        android:id="@+id/tvOwnerMobile"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Email" />
+
+                    <TextView
+                        android:id="@+id/tvOwnerEmail"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Address" />
+
+                    <TextView
+                        android:id="@+id/tvAddress"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+            </TableLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="II. PAYMENT INFORMATION"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Payment Method" />
+
+                    <TextView
+                        android:id="@+id/tvPmtMethod"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rPickup">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="PickupPoint" />
+
+                    <TextView
+                        android:id="@+id/tvPickupPt"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rAccNo">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Account No." />
+
+                    <TextView
+                        android:id="@+id/tvAccNo"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rAccName">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Account Name" />
+
+                    <TextView
+                        android:id="@+id/tvAccName"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rBankDetails">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Bank Name &amp; Branch" />
+
+                    <TextView
+                        android:id="@+id/tvBankDetails"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rRemarks">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Remarks" />
+
+                    <TextView
+                        android:id="@+id/tvRemarks"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+            </TableLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="III. NOTES"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="IV. TERMS AND CONDITIONS"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTNC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="V. AUTHORIZED REPRESENTATIVES"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAuthRep"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="VI. PLANTER'S CONFORMITY"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/tvConform"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+
+            <ImageView
+                android:id="@+id/signature"
+                android:layout_width="250dp"
+                android:layout_height="100dp"
+                android:layout_gravity="left"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="[SIGNATURE ABOVE]"/>
+
+            <Button
+                android:id="@+id/sign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign ATCCT"/>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

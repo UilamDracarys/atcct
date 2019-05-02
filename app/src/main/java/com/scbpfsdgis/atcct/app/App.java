@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.repo.UpdateHelper;

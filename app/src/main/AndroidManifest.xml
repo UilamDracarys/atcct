@@ -37,7 +37,10 @@
         <activity
             android:name=".ATCCTList"
             android:label="ATCCT List" />
-        <activity android:name=".ATCCTDetails"/>
+        <activity android:name=".ATCCTDetails" />
+        <activity android:name=".data.SignatureActivity" />
+        <activity android:name=".ATCCTPreview"
+            android:label="ATCCT Preview"></activity>
     </application>
 
 </manifest>

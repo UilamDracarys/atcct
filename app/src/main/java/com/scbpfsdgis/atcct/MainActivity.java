@@ -9,12 +9,14 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,16 +30,21 @@ import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
     public static final int requestcode = 1;
+    String sigCacheDir = Environment.getExternalStorageDirectory().getPath() + "/ATCCTMobile/Signature/";
     SQLiteDatabase db;
     DBHelper dbHelper;
     private View mLayout;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +56,22 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        /*File cache = new File(this.getCacheDir(), "test.txt");
+        try {
+            FileOutputStream fos = new FileOutputStream(cache);
+            fos.write(1);
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(cache.toPath().toString());*/
+
+        delSigCache();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -78,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             db.beginTransaction();
 
                             while ((line = buffer.readLine()) != null) {
-
 
                                 String[] str = line.split(";", 9);  // defining 8 columns with null or blank field //values acceptance
                                 String farmCode = str[0].toString();
@@ -220,6 +242,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void delSigCache() {
+        File sigDir = new File(sigCacheDir, "");
+        if (sigDir.isDirectory()) {
+            String[] children = sigDir.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(sigDir, children[i]).delete();
+            }
+            Log.v("CLR", "Signature cache cleared.");
         }
     }
 

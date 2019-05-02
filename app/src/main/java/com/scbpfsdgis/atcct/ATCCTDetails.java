@@ -120,8 +120,6 @@ public class ATCCTDetails extends AppCompatActivity {
                 "Address: " + own.getOwnerAddress() + "\n" +
                 "Farms: \n" + repo.consolFarms(ownerID));
 
-        FarmsRepo fRepo = new FarmsRepo();
-
         addAR.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -223,7 +221,7 @@ public class ATCCTDetails extends AppCompatActivity {
 
         String pmtMethod = spnPmtMethod.getSelectedItem().toString();
         String pickUpPt = "", accName = "", accNo = "", bankName = "", bankAdd = "";
-        SimpleDateFormat yearDF = new SimpleDateFormat("YY", Locale.getDefault());
+        SimpleDateFormat yearDF = new SimpleDateFormat("yy", Locale.getDefault());
         SimpleDateFormat dateDF = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         DecimalFormat ownIDFormat = new DecimalFormat("00000");
         String atccNo = yearDF.format(new Date()) + "-" + ownIDFormat.format(Integer.parseInt(ownerID));
@@ -262,7 +260,7 @@ public class ATCCTDetails extends AppCompatActivity {
 
             repo.insert(atcc);
 
-            if (arListSize >0) {
+            if (arListSize > 0) {
                 for (int i = 0; i < arListSize; i++) {
                     authRep.setOwnerID(ownerID);
                     authRep.setArFullName(arList.get(i).get("arName"));

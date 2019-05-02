@@ -37,7 +37,7 @@ public class OwnersRepo {
     public Owners getOwnerByID(String id) {
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = ?";
+        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " =?";
         System.out.println(selectQuery);
 
         Owners owners = new Owners();
@@ -119,7 +119,7 @@ public class OwnersRepo {
     }
 
     public String consolFarms(String ownerID) {
-        String farms = "Available Farms: \n";
+        StringBuilder farms = new StringBuilder("Available Farms: \n");
         FarmsRepo repo = new FarmsRepo();
         ArrayList<HashMap<String, String>> availFarms = repo.getFarmsListByOwner(ownerID, "A");
         ArrayList<HashMap<String, String>> nAvailFarms = repo.getFarmsListByOwner(ownerID, "-");
@@ -131,22 +131,24 @@ public class OwnersRepo {
             if (i == availFarmCount - 1) {
                 lineBreak = "";
             }
-            farms += (i + 1) + ". " + availFarms.get(i).get("farmName") + " [" + availFarms.get(i).get("farmCode") + "] - " + availFarms.get(i).get("company") + lineBreak;
+            farms.append(i + 1).append(". ").append(availFarms.get(i).get("farmName")).append(" [").append(availFarms.get(i).get("farmCode")).append("] - ").append(availFarms.get(i).get("company")).append(lineBreak);
+            //farms += (i + 1) + ". " + availFarms.get(i).get("farmName") + " [" + availFarms.get(i).get("farmCode") + "] - " + availFarms.get(i).get("company") + lineBreak;
         }
 
         if (nAvailFarmCount > 0) {
-            farms += "\nNot Available Farms: \n";
+            farms.append("\nNot Available Farms: \n");
             lineBreak = "\n";
             for (int i = 0; i < nAvailFarmCount; i++) {
                 if (i == nAvailFarmCount - 1) {
                     lineBreak = "";
                 }
-                farms += (i + 1) + ". " + nAvailFarms.get(i).get("farmName") + " [" + nAvailFarms.get(i).get("farmCode") + "] - " + nAvailFarms.get(i).get("company") + " " +
-                        "[" + nAvailFarms.get(i).get("status") + "] " + nAvailFarms.get(i).get("remarks") + lineBreak;
+                /*farms += (i + 1) + ". " + nAvailFarms.get(i).get("farmName") + " [" + nAvailFarms.get(i).get("farmCode") + "] - " + nAvailFarms.get(i).get("company") + " " +
+                        "[" + nAvailFarms.get(i).get("status") + "] " + nAvailFarms.get(i).get("remarks") + lineBreak;*/
+                farms.append(i + 1).append(". ").append(nAvailFarms.get(i).get("farmName")).append(" [").append(nAvailFarms.get(i).get("farmCode")).append("] - ").append(nAvailFarms.get(i).get("company")).append(" ").append("[").append(nAvailFarms.get(i).get("status")).append("] ").append(nAvailFarms.get(i).get("remarks")).append(lineBreak);
             }
         }
 
         System.out.println(farms);
-        return farms;
+        return farms.toString();
     }
 }

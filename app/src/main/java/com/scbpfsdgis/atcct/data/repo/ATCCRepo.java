@@ -3,15 +3,36 @@ package com.scbpfsdgis.atcct.data.repo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
 
+import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.List;
+import com.itextpdf.text.ListItem;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.scbpfsdgis.atcct.R;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -19,7 +40,7 @@ import java.util.Locale;
  * Created by William on 12/17/2018.
  */
 
-public class ATCCRepo {
+public class ATCCRepo extends AppCompatActivity {
     private DBHelper dbHelper;
     private SQLiteDatabase db;
 
@@ -121,7 +142,7 @@ public class ATCCRepo {
 
         if (cursor.moveToFirst()) {
             do {
-                atcc.setAtccNo(cursor.getString(cursor.getColumnIndex(ATCC.COL_ACCNO)));
+                atcc.setAtccNo(cursor.getString(cursor.getColumnIndex(ATCC.COL_ATCCNO)));
                 atcc.setOwnerID(cursor.getString(cursor.getColumnIndex(ATCC.COL_OWNERID)));
                 atcc.setPmtMethod(cursor.getString(cursor.getColumnIndex(ATCC.COL_PMTMETHOD)));
                 atcc.setPickupPt(cursor.getString(cursor.getColumnIndex(ATCC.COL_PICKUPPOINT)));

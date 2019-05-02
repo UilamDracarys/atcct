@@ -3,8 +3,8 @@ package com.scbpfsdgis.atcct.data.repo;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
-
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+/*
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;*/
 
 public class UpdateHelper {
 
@@ -30,7 +30,7 @@ public class UpdateHelper {
 
 
     public void check() {
-        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        /*FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
         if(remoteConfig.getBoolean(KEY_UPDATE_ENABLE)) {
             String currentVersion = remoteConfig.getString(KEY_UPDATE_VERSION);
             String appVerson  = getAppVersion(context);
@@ -39,7 +39,7 @@ public class UpdateHelper {
             if(!TextUtils.equals(currentVersion,appVerson) && onUpdateCheckListener != null)
                 onUpdateCheckListener.onUpdateCheckListener(updateURL);
 
-        }
+        }*/
     }
 
     private String getAppVersion(Context context) {
