@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //version number to upgrade database version
     //each time if you Add, Edit table, you need to change the
     //version number.
-    private static final int DATABASE_VERSION =4;
+    private static final int DATABASE_VERSION =5;
     // Database Name
     private static final String DATABASE_NAME = "ATCCT.db";
     private static final String TAG = DBHelper.class.getSimpleName();
@@ -38,6 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(FarmsRepo.createFarmsTbl());
         db.execSQL(FarmsRepo.createFChgsTable());
         db.execSQL(OwnersRepo.createOwnersTbl());
+        db.execSQL(OwnersRepo.createOwnerChgTbl());
         db.execSQL(ATCCRepo.createTable());
         db.execSQL(AuthRepRepo.createARTable());
     }

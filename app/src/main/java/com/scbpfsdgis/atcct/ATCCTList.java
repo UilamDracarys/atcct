@@ -1,6 +1,7 @@
 package com.scbpfsdgis.atcct;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,11 +16,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,6 +74,7 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     ATCCRepo repo;
     TextView tvAtccNo;
     String atccNo, fileName;
+    Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +83,9 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mLayout = findViewById(R.id.atcct_list_layout);
+
+        button = new Button(this);
+        button.setText("Delete");
 
         loadOwners();
 
@@ -169,6 +177,23 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                     }
                 }
             });
+            lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    PopupMenu popup = new PopupMenu(ATCCTList.this, view);
+                    popup.inflate(R.menu.popup_menu);
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            Toast.makeText(getApplicationContext(), "Code to delete", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                    });
+                    popup.show();
+                    return true;
+                }
+            });
             adapter = new SimpleAdapter(ATCCTList.this, atccList, R.layout.atcct_list_item, new String[]{"ATCCNo", "OwnerID", "OwnerName", "ATCCTDetails"}, new int[]{R.id.atccNo, R.id.ownerID, R.id.ownerName, R.id.atcctDetails});
             lv.setAdapter(adapter);
         } else {
@@ -177,13 +202,12 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
         }
     }
 
+
     @Override
     public void onRestart() {
         super.onRestart();
         loadATCCTs();
     }
-
-
 
 
 }

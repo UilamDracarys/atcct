@@ -33,4 +33,6 @@
     <string name="action_add">Add</string>
     <string name="action_new">New</string>
     <string name="action_back">Back</string>
+    <string name="downloadcsv">Download Data</string>
+    <string name="action_delete">Delete</string>
 </resources>

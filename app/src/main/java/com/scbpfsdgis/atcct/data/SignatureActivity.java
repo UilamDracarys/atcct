@@ -1,5 +1,6 @@
 package com.scbpfsdgis.atcct.data;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
@@ -34,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class SignatureActivity extends AppCompatActivity {
 
     String atccNo;
@@ -47,9 +50,11 @@ public class SignatureActivity extends AppCompatActivity {
 
     // Creating Separate Directory for saving Generated Images
     //String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/ATCCTMobile/Signature/";
-    String DIRECTORY = Environment.getExternalStorageDirectory().getPath() + "/ATCCTMobile/Signature/";
+    //File sig = new File(this.getCacheDir(), "");
+    //String DIRECTORY = sig.toPath().toString();
     String pic_name = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-    String StoredPath = DIRECTORY + pic_name + ".png";
+    //String StoredPath = DIRECTORY + pic_name + ".png";
+    String StoredPath = pic_name + ".png";
 
     private View mLayout;
 
@@ -104,17 +109,16 @@ public class SignatureActivity extends AppCompatActivity {
         System.out.println("Get ATCCNO: " + atccNo);
 
         // Method to create Directory, if the Directory doesn't exists
-        file = new File(DIRECTORY);
+        /*file = new File(DIRECTORY);
         if (!file.exists()) {
             file.mkdirs();
             Log.w("DIR", "Signature cache dir created.");
-        }
+        }*/
     }
 
     Button.OnClickListener onButtonClick = new Button.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // TODO Auto-generated method stub
             if (v == mClear) {
                 Log.v("log_tag", "Panel Cleared");
                 mSignature.clear();
@@ -198,7 +202,9 @@ public class SignatureActivity extends AppCompatActivity {
             paint.setStrokeWidth(STROKE_WIDTH);
         }
 
+        @SuppressLint("WrongThread")
         public void save(View v, String StoredPath) {
+            File cache = new File(getCacheDir(), StoredPath);
             Log.v("log_tag", "Width: " + v.getWidth());
             Log.v("log_tag", "Height: " + v.getHeight());
             if (bitmap == null) {
@@ -207,14 +213,14 @@ public class SignatureActivity extends AppCompatActivity {
             Canvas canvas = new Canvas(bitmap);
             try {
                 // Output the file
-                FileOutputStream mFileOutStream = new FileOutputStream(StoredPath);
+                FileOutputStream mFileOutStream = new FileOutputStream(cache);
                 v.draw(canvas);
 
                 // Convert the output file to Image such as .png
                 bitmap.compress(Bitmap.CompressFormat.PNG, 90, mFileOutStream);
                 Intent intent = new Intent(SignatureActivity.this, ATCCTPreview.class);
                 intent.putExtra("atccNo", atccNo);
-                intent.putExtra("imagePath", StoredPath);
+                intent.putExtra("imagePath", getCacheDir().getAbsolutePath() + "/" + StoredPath);
                 intent.putExtra("signed", "YES");
                 startActivity(intent);
                 mFileOutStream.flush();

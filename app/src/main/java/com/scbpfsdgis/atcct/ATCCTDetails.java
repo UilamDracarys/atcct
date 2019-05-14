@@ -81,7 +81,7 @@ public class ATCCTDetails extends AppCompatActivity {
         farmsList = new ArrayList<>();
 
         OwnersRepo repo = new OwnersRepo();
-        Owners own = repo.getOwnerByID(ownerID);
+        Owners own = repo.getOwnerByID(ownerID, "M");
 
         spnPmtMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

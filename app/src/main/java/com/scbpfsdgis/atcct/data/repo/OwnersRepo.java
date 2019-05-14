@@ -1,10 +1,12 @@
 package com.scbpfsdgis.atcct.data.repo;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
+import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 
 import java.util.ArrayList;
@@ -33,24 +35,109 @@ public class OwnersRepo {
         return query;
     }
 
+    public static String createOwnerChgTbl() {
+        String query = "CREATE TABLE IF NOT EXISTS " + Owners.TABLE_OWNERS_CHANGES + " (" +
+                Owners.COL_OWNERID + " TEXT," +
+                Owners.COL_OWNERNAME + " TEXT, " +
+                Owners.COL_OWNERMOB + " TEXT, " +
+                Owners.COL_OWNEREMAIL + " TEXT, " +
+                Owners.COL_OWNERADDRESS + " TEXT)";
+        return query;
+    }
 
-    public Owners getOwnerByID(String id) {
+    public void insert(Owners owner, String table) {
+        String tbl;
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        if (table.equalsIgnoreCase("Owner")) {
+            tbl = Owners.TABLE_OWNERS;
+        } else {
+            tbl = Owners.TABLE_OWNERS_CHANGES;
+        }
+
+        values.put(Owners.COL_OWNERID, owner.getOwnerID());
+        values.put(Owners.COL_OWNERNAME, owner.getOwnerName());
+        values.put(Owners.COL_OWNERMOB, owner.getOwnerMobile());
+        values.put(Owners.COL_OWNEREMAIL, owner.getOwnerEmail());
+        values.put(Owners.COL_OWNERADDRESS, owner.getOwnerAddress());
+
+        // Inserting Row
+
+        db.insert(tbl, null, values);
+        db.close();
+    }
+
+    public void updateChange(Owners chgs) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(Owners.COL_OWNERID, chgs.getOwnerID());
+        values.put(Owners.COL_OWNERNAME, chgs.getOwnerName());
+        values.put(Owners.COL_OWNERMOB, chgs.getOwnerMobile());
+        values.put(Owners.COL_OWNEREMAIL, chgs.getOwnerEmail());
+        values.put(Owners.COL_OWNERADDRESS, chgs.getOwnerAddress());
+
+        db.update(Owners.TABLE_OWNERS_CHANGES, values, Owners.COL_OWNERID + "= ? ", new String[] { String.valueOf(chgs.getOwnerID()) });
+        db.close(); // Closing database connection
+    }
+
+
+    public Owners getOwnerByID(String id, String qryType) {
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " =?";
-        System.out.println(selectQuery);
+        //String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " =?";
+        String selMergeQry = "SELECT O." + Owners.COL_OWNERID + " as OwnerID,\n" +
+                "CASE\n" +
+                "WHEN C." + Owners.COL_OWNERNAME + " IS NULL OR C." + Owners.COL_OWNERNAME + " = '' THEN O." + Owners.COL_OWNERNAME + "\n" +
+                "ELSE C." + Owners.COL_OWNERNAME + "\n" +
+                "END OwnerName,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNERMOB + " IS NULL OR C." + Owners.COL_OWNERMOB + " = '' THEN O." + Owners.COL_OWNERMOB + "\n" +
+                "ELSE C." + Owners.COL_OWNERMOB + "\n" +
+                "END OwnerMobile,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNEREMAIL + " IS NULL OR C." + Owners.COL_OWNEREMAIL + " = '' THEN O." + Owners.COL_OWNEREMAIL + "\n" +
+                "ELSE C." + Owners.COL_OWNEREMAIL + "\n" +
+                "END OwnerEmail,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNERADDRESS + " IS NULL OR C." + Owners.COL_OWNERADDRESS + " = '' THEN O." + Owners.COL_OWNERADDRESS + "\n" +
+                "ELSE C." + Owners.COL_OWNERADDRESS + "\n" +
+                "END OwnerAddress\n" +
+                "FROM\n" +
+                Owners.TABLE_OWNERS + " O LEFT JOIN " + Owners.TABLE_OWNERS_CHANGES + " C\n" +
+                "ON O." + Owners.COL_OWNERID + " = C." + Owners.COL_OWNERID + "\n" +
+                "WHERE OwnerID = ?";
+
+        String selOrigQry = "SELECT " + Owners.COL_OWNERID + " as OwnerID,\n" +
+                Owners.COL_OWNERNAME + " as OwnerName,\n" +
+                Owners.COL_OWNERMOB + " as OwnerMobile,\n" +
+                Owners.COL_OWNEREMAIL + " as OwnerEmail,\n" +
+                Owners.COL_OWNERADDRESS + " as OwnerAddress FROM " +
+                Owners.TABLE_OWNERS + " WHERE OwnerID =?";
+
+
+
+        System.out.println(selMergeQry);
+        String query = "";
+        if (!qryType.equalsIgnoreCase("M")) {
+            query = selOrigQry;
+        } else {
+            query = selMergeQry;
+        }
 
         Owners owners = new Owners();
 
-        Cursor cursor = db.rawQuery(selectQuery, new String[]{id});
+        Cursor cursor = db.rawQuery(query, new String[]{id});
 
         if (cursor.moveToFirst()) {
             do {
-                owners.setOwnerID(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERID)));
-                owners.setOwnerName(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERNAME)));
-                owners.setOwnerMobile(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERMOB)));
-                owners.setOwnerEmail(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNEREMAIL)));
-                owners.setOwnerAddress(cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERADDRESS)));
+                owners.setOwnerID(cursor.getString(cursor.getColumnIndex("OwnerID")));
+                owners.setOwnerName(cursor.getString(cursor.getColumnIndex("OwnerName")));
+                owners.setOwnerMobile(cursor.getString(cursor.getColumnIndex("OwnerMobile")));
+                owners.setOwnerEmail(cursor.getString(cursor.getColumnIndex("OwnerEmail")));
+                owners.setOwnerAddress(cursor.getString(cursor.getColumnIndex("OwnerAddress")));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -65,8 +152,29 @@ public class OwnersRepo {
         //db = DatabaseManager.getInstance().openDatabase();
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " ORDER BY " + Owners.COL_OWNERNAME;
+        //String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " ORDER BY " + Owners.COL_OWNERNAME;
 
+        String selectQuery = "SELECT O." + Owners.COL_OWNERID + " as OwnerID,\n" +
+                "CASE\n" +
+                "WHEN C." + Owners.COL_OWNERNAME + " IS NULL OR C." + Owners.COL_OWNERNAME + " = '' THEN O." + Owners.COL_OWNERNAME + "\n" +
+                "ELSE C." + Owners.COL_OWNERNAME + "\n" +
+                "END OwnerName,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNERMOB + " IS NULL OR C." + Owners.COL_OWNERMOB + " = '' THEN O." + Owners.COL_OWNERMOB + "\n" +
+                "ELSE C." + Owners.COL_OWNERMOB + "\n" +
+                "END OwnerMobile,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNEREMAIL + " IS NULL OR C." + Owners.COL_OWNEREMAIL + " = '' THEN O." + Owners.COL_OWNEREMAIL + "\n" +
+                "ELSE C." + Owners.COL_OWNEREMAIL + "\n" +
+                "END OwnerEmail,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNERADDRESS + " IS NULL OR C." + Owners.COL_OWNERADDRESS + " = '' THEN O." + Owners.COL_OWNERADDRESS + "\n" +
+                "ELSE C." + Owners.COL_OWNERADDRESS + "\n" +
+                "END OwnerAddress\n" +
+                "FROM\n" +
+                Owners.TABLE_OWNERS + " O LEFT JOIN " + Owners.TABLE_OWNERS_CHANGES + " C\n" +
+                "ON O." + Owners.COL_OWNERID + " = C." + Owners.COL_OWNERID + "\n" +
+                "ORDER BY OwnerName ASC";
         System.out.println("OwnersListQuery: " + selectQuery);
 
         ArrayList<HashMap<String, String>> ownersList = new ArrayList<>();
@@ -77,9 +185,9 @@ public class OwnersRepo {
         if (cursor.moveToFirst()) {
             do {
                 HashMap<String, String> owners = new HashMap<>();
-                owners.put("ownerID", cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERID)));
-                owners.put("ownerName", cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERNAME)));
-                owners.put("ownerMobile", cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERMOB)));
+                owners.put("ownerID", cursor.getString(cursor.getColumnIndex("OwnerID")));
+                owners.put("ownerName", cursor.getString(cursor.getColumnIndex("OwnerName")));
+                owners.put("ownerMobile", cursor.getString(cursor.getColumnIndex("OwnerMobile")));
                 ownersList.add(owners);
             } while (cursor.moveToNext());
         }
@@ -95,8 +203,27 @@ public class OwnersRepo {
         //db = DatabaseManager.getInstance().openDatabase();
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS + " ORDER BY " + Owners.COL_OWNERNAME;
-
+        String selectQuery = "SELECT O." + Owners.COL_OWNERID + " as OwnerID,\n" +
+                "CASE\n" +
+                "WHEN C." + Owners.COL_OWNERNAME + " IS NULL OR C." + Owners.COL_OWNERNAME + " = '' THEN O." + Owners.COL_OWNERNAME + "\n" +
+                "ELSE C." + Owners.COL_OWNERNAME + "\n" +
+                "END OwnerName,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNERMOB + " IS NULL OR C." + Owners.COL_OWNERMOB + " = '' THEN O." + Owners.COL_OWNERMOB + "\n" +
+                "ELSE C." + Owners.COL_OWNERMOB + "\n" +
+                "END OwnerMobile,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNEREMAIL + " IS NULL OR C." + Owners.COL_OWNEREMAIL + " = '' THEN O." + Owners.COL_OWNEREMAIL + "\n" +
+                "ELSE C." + Owners.COL_OWNEREMAIL + "\n" +
+                "END OwnerEmail,\n" +
+                "CASE \n" +
+                "WHEN C." + Owners.COL_OWNERADDRESS + " IS NULL OR C." + Owners.COL_OWNERADDRESS + " = '' THEN O." + Owners.COL_OWNERADDRESS + "\n" +
+                "ELSE C." + Owners.COL_OWNERADDRESS + "\n" +
+                "END OwnerAddress\n" +
+                "FROM\n" +
+                Owners.TABLE_OWNERS + " O LEFT JOIN " + Owners.TABLE_OWNERS_CHANGES + " C\n" +
+                "ON O." + Owners.COL_OWNERID + " = C." + Owners.COL_OWNERID + "\n" +
+                "ORDER BY OwnerName ASC";
         System.out.println("OwnersListQuery: " + selectQuery);
 
         ArrayList<String> ownersList = new ArrayList<>();
@@ -107,8 +234,8 @@ public class OwnersRepo {
         if (cursor.moveToFirst()) {
             do {
                 //HashMap<String, String> owners = new HashMap<>();
-                String item = cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERNAME)) + " [" +
-                        "" + cursor.getString(cursor.getColumnIndex(Owners.COL_OWNERID)) + "]";
+                String item = cursor.getString(cursor.getColumnIndex("OwnerName")) + " [" +
+                        "" + cursor.getString(cursor.getColumnIndex("OwnerID")) + "]";
                 ownersList.add(item);
             } while (cursor.moveToNext());
         }
@@ -150,5 +277,37 @@ public class OwnersRepo {
 
         System.out.println(farms);
         return farms.toString();
+    }
+
+    public Boolean isChgExist(String ownerID) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + Owners.TABLE_OWNERS_CHANGES + "" +
+                " WHERE " + Owners.COL_OWNERID + " =?";
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{ownerID});
+
+        if (cursor.moveToFirst()) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public String newOwnerID() {
+        String newOwnerID = null;
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT MAX(" + Owners.COL_OWNERID + ") AS MAX_ID FROM " + Owners.TABLE_OWNERS + "";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()){
+            newOwnerID =  "N-" + (Integer.parseInt(cursor.getString(cursor.getColumnIndex("MAX_ID"))) + 1);
+        } else {
+            newOwnerID = "0";
+        }
+
+        db.close();
+        return newOwnerID;
+
     }
 }

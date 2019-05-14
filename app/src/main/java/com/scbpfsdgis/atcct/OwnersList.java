@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
@@ -33,6 +35,12 @@ public class OwnersList extends AppCompatActivity {
         loadOwners();
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        loadOwners();
+    }
+
     private void loadOwners() {
         final OwnersRepo oRepo = new OwnersRepo();
         ArrayList<HashMap<String, String>> ownersList = oRepo.getOwnersList();
@@ -57,6 +65,7 @@ public class OwnersList extends AppCompatActivity {
                         Intent objIndent;
                         objIndent = new Intent(getApplicationContext(), OwnerDetails.class);
                         objIndent.putExtra("ownerID", ownerID);
+                        objIndent.putExtra("action", "Edit Owner");
                         startActivity(objIndent);
                     }
                 }
@@ -73,5 +82,35 @@ public class OwnersList extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the save_cancel; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.new_back, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_new:
+                newOwner();
+                return true;
+            case R.id.action_back:
+                finish();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void newOwner() {
+        OwnersRepo repo = new OwnersRepo();
+        String ownerID = repo.newOwnerID();
+        System.out.println("New Owner ID: " + ownerID);
+        Intent intent = new Intent(this, OwnerDetails.class);
+        intent.putExtra("action", "New Owner");
+        intent.putExtra("ownerID", ownerID);
+        startActivity(intent);
+    }
 
 }

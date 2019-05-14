@@ -64,7 +64,7 @@ public class FarmDetails extends AppCompatActivity {
         Farms farm = repo.getFarmByID(farmCode, "M");
 
         OwnersRepo oRepo = new OwnersRepo();
-        Owners owner = oRepo.getOwnerByID(farm.getFarmOwnerID());
+        Owners owner = oRepo.getOwnerByID(farm.getFarmOwnerID(), "M");
 
         etFarmName.setText(farm.getFarmName());
         tvPlanter.setText(owner.getOwnerName() + " [" + farm.getFarmOwnerID() + "]");
@@ -168,7 +168,8 @@ public class FarmDetails extends AppCompatActivity {
 
         farm = repo.getFarmByID("", "O");
         System.out.println("Farm is " + farm.getFarmCode());
-        Toast.makeText(this, "Changes recorded!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Changes saved!", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     private String currentFarm(String farmCode) {

@@ -27,13 +27,13 @@
             android:label="Farms" />
         <activity
             android:name=".OwnersList"
-            android:label="Owners" />
+            android:label="Planters" />
         <activity
             android:name=".FarmDetails"
             android:label="Farm Details" />
         <activity
             android:name=".OwnerDetails"
-            android:label="Owner Details" />
+            android:label="Planter Details" />
         <activity
             android:name=".ATCCTList"
             android:label="ATCCT List" />

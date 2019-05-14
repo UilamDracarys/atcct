@@ -106,14 +106,13 @@ public class ATCCTPreview extends AppCompatActivity {
         signed = intent.getStringExtra("signed");
 
 
-
         getSupportActionBar().setTitle("ATCCT NO. " + atccNo);
 
         ATCCRepo atccRepo = new ATCCRepo();
         ATCC atcc = atccRepo.getATCCByNo(atccNo);
         OwnersRepo ownersRepo = new OwnersRepo();
 
-        Owners owner = ownersRepo.getOwnerByID(atcc.getOwnerID());
+        Owners owner = ownersRepo.getOwnerByID(atcc.getOwnerID(), "M");
 
         tvOwnerName = findViewById(R.id.tvOwnerName);
         tvOwnerMobile = findViewById(R.id.tvOwnerMobile);
@@ -176,7 +175,7 @@ public class ATCCTPreview extends AppCompatActivity {
         }
 
         chkConform.setText(conformity);
-        if (signed != null){
+        if (signed != null) {
             chkConform.setChecked(true);
         } else {
             chkConform.setChecked(false);
@@ -217,10 +216,10 @@ public class ATCCTPreview extends AppCompatActivity {
         String image_path = getIntent().getStringExtra("imagePath");
         Bitmap bitmap = BitmapFactory.decodeFile(image_path);
         System.out.println(image_path);
-        if (image_path != null) {
+        /*if (image_path != null) {
             System.out.println("Height: " + bitmap.getHeight());
             System.out.println("Width: " + bitmap.getWidth());
-        }
+        }*/
         signImage.setImageBitmap(bitmap);
 
     }
@@ -283,6 +282,7 @@ public class ATCCTPreview extends AppCompatActivity {
                     File sig = new File(imgPath);
                     sig.delete();
                 }
+                delSigCache();
                 finish();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -300,7 +300,7 @@ public class ATCCTPreview extends AppCompatActivity {
         ATCCRepo atccRepo = new ATCCRepo();
         ATCC atcc = atccRepo.getATCCByNo(atccNo);
         OwnersRepo oRepo = new OwnersRepo();
-        Owners owner = oRepo.getOwnerByID(atcc.getOwnerID());
+        Owners owner = oRepo.getOwnerByID(atcc.getOwnerID(), "M");
         String ownerName = owner.getOwnerName();
         SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHMMSS", Locale.getDefault());
 
@@ -590,11 +590,13 @@ public class ATCCTPreview extends AppCompatActivity {
 
                 return true;
             case R.id.action_cancel:
+                delSigCache();
                 finish();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
     @Override
     public void onBackPressed() {
         delSigCache();
@@ -602,7 +604,7 @@ public class ATCCTPreview extends AppCompatActivity {
     }
 
     private void delSigCache() {
-        File sigDir = new File(sigCacheDir, "");
+        File sigDir = new File(getCacheDir(), "");
         if (sigDir.isDirectory()) {
             String[] children = sigDir.list();
             for (int i = 0; i < children.length; i++) {

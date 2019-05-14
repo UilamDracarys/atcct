@@ -6,6 +6,7 @@ package com.scbpfsdgis.atcct.data.model;
 
 public class Owners {
     public static final String TABLE_OWNERS = "T_OWNERS";
+    public static final String TABLE_OWNERS_CHANGES = "T_OWNERS_CHGS";
 
     //Owners Table
     public static final String COL_OWNERID = "OWNER_ID";

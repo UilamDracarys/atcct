@@ -1,11 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
-<!-- "Mark Favorite", should appear as action button if possible -->
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- "Mark Favorite", should appear as action button if possible -->
 
 
-<item
-    android:id="@+id/action_importdata"
-    android:title="@string/import_data"
-    app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_importdata"
+        android:title="@string/import_data"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_downloadcsv"
+        android:title="@string/downloadcsv"
+        app:showAsAction="never" />
 
 </menu>

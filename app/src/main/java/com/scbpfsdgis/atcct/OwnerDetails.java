@@ -14,8 +14,8 @@ import com.scbpfsdgis.atcct.data.model.Owners;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 public class OwnerDetails extends AppCompatActivity {
-    String ownerID;
-    EditText etOwnerName, etMobile, etBusiness, etContact;
+    String ownerID, action;
+    EditText etOwnerName, etMobile, etEmail, etAddress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,23 +27,32 @@ public class OwnerDetails extends AppCompatActivity {
 
         Intent intent = getIntent();
         ownerID = intent.getStringExtra("ownerID");
-
+        action = intent.getStringExtra("action");
+        System.out.println("Received owner ID: " + ownerID);
         init(ownerID);
 
     }
 
     private void init(String ownerID) {
+
         etOwnerName = findViewById(R.id.etOwnerName);
         etMobile = findViewById(R.id.etMobile);
-        etBusiness = findViewById(R.id.etEmail);
-        etContact = findViewById(R.id.etAddress);
+        etEmail = findViewById(R.id.etEmail);
+        etAddress = findViewById(R.id.etAddress);
 
-        OwnersRepo oRepo = new OwnersRepo();
-        Owners owner = oRepo.getOwnerByID(ownerID);
-        etOwnerName.setText(owner.getOwnerName());
-        etMobile.setText(owner.getOwnerMobile());
-        etBusiness.setText(owner.getOwnerEmail());
-        etContact.setText(owner.getOwnerAddress());
+        if (action.equalsIgnoreCase("New Owner")) {
+            etOwnerName.setText("");
+            etMobile.setText("");
+            etEmail.setText("");
+            etAddress.setText("");
+        } else {
+            OwnersRepo oRepo = new OwnersRepo();
+            Owners owner = oRepo.getOwnerByID(ownerID, "M");
+            etOwnerName.setText(owner.getOwnerName());
+            etMobile.setText(owner.getOwnerMobile());
+            etEmail.setText(owner.getOwnerEmail());
+            etAddress.setText(owner.getOwnerAddress());
+        }
     }
 
     @Override
@@ -68,6 +77,60 @@ public class OwnerDetails extends AppCompatActivity {
     }
 
     private void save() {
-        Toast.makeText(this, "Save changes!", Toast.LENGTH_SHORT).show();
+        OwnersRepo ownersRepo = new OwnersRepo();
+        Owners owner = new Owners();
+        String ownerName = etOwnerName.getText().toString().trim();
+        String ownerMobile = etMobile.getText().toString().trim();
+        String ownerEmail = etEmail.getText().toString().trim();
+        String ownerAddress = etAddress.getText().toString().trim();
+
+        if (!action.equalsIgnoreCase("New Owner")) {
+            owner = ownersRepo.getOwnerByID(ownerID, "M");
+            if (!ownerName.equalsIgnoreCase(owner.getOwnerName())) {
+                System.out.println("Owner name changed to " + ownerName);
+            } else {
+                System.out.println("Owner name not changed.");
+                ownerName = null;
+            }
+
+            if (!ownerMobile.equalsIgnoreCase(owner.getOwnerMobile())) {
+                System.out.println("Owner mobile changed to " + ownerMobile);
+            } else {
+                System.out.println("Owner mobile not changed.");
+                ownerMobile = null;
+            }
+
+            if (!ownerEmail.equalsIgnoreCase(owner.getOwnerEmail())) {
+                System.out.println("Owner email changed to " + ownerEmail);
+            } else {
+                System.out.println("Owner email not changed.");
+                ownerEmail = null;
+            }
+
+            if (!ownerAddress.equalsIgnoreCase(owner.getOwnerAddress())) {
+                System.out.println("Owner email changed to " + ownerAddress);
+            } else {
+                System.out.println("Owner email not changed.");
+                ownerAddress = null;
+            }
+        }
+
+        owner.setOwnerID(ownerID);
+        owner.setOwnerName(ownerName);
+        owner.setOwnerMobile(ownerMobile);
+        owner.setOwnerEmail(ownerEmail);
+        owner.setOwnerAddress(ownerAddress);
+
+        if (action.equalsIgnoreCase("New Owner")) {
+            ownersRepo.insert(owner, "Owner");
+        } else {
+            if (!ownersRepo.isChgExist(ownerID)) {
+                ownersRepo.insert(owner, "Change");
+            } else {
+                ownersRepo.updateChange(owner);
+            }
+        }
+        Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

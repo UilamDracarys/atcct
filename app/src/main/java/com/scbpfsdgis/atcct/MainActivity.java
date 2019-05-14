@@ -4,9 +4,12 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -35,14 +38,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLOutput;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
     public static final int requestcode = 1;
-    String sigCacheDir = Environment.getExternalStorageDirectory().getPath() + "/ATCCTMobile/Signature/";
     SQLiteDatabase db;
     DBHelper dbHelper;
     private View mLayout;
+    String downloadURL = "https://drive.google.com/uc?authuser=0&id=15EfjKmsv511ehyhLelD_QteaoC5sX1OD&export=download";
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -56,20 +60,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-
-        /*File cache = new File(this.getCacheDir(), "test.txt");
-        try {
-            FileOutputStream fos = new FileOutputStream(cache);
-            fos.write(1);
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(cache.toPath().toString());*/
 
         delSigCache();
     }
@@ -99,31 +89,36 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             ContentValues contentValues = new ContentValues();
                             String line = "";
                             db.beginTransaction();
+                            int count = 0;
 
                             while ((line = buffer.readLine()) != null) {
 
-                                String[] str = line.split(";", 9);  // defining 8 columns with null or blank field //values acceptance
-                                String farmCode = str[0].toString();
-                                String farmName = str[1].toString();
-                                String farmBase = str[2].toString();
-                                String farmStatus = str[3].toString();
-                                String ownerID = str[4].toString();
-                                String ownerName = str[5].toString();
-                                String ownerMobile = str[6].toString();
-                                String ownerEmail = str[7].toString();
-                                String ownerAddress = str[8].toString();
+                                if (count == 0) {
+                                    System.out.println("Skipped header row");
+                                } else {
+                                    String[] str = line.split(";", 9);  // defining 8 columns with null or blank field //values acceptance
+                                    String farmCode = str[0];
+                                    String farmName = str[1];
+                                    String farmBase = str[2];
+                                    String farmStatus = str[3];
+                                    String ownerID = str[4];
+                                    String ownerName = str[5];
+                                    String ownerMobile = str[6];
+                                    String ownerEmail = str[7];
+                                    String ownerAddress = str[8];
 
-
-                                contentValues.put(Farms.COL_FARMCODE, farmCode);
-                                contentValues.put(Farms.COL_FARMNAME, farmName);
-                                contentValues.put(Farms.COL_BASE, farmBase);
-                                contentValues.put(Farms.COL_STATUS, farmStatus);
-                                contentValues.put(Farms.COL_OWNERID, ownerID);
-                                contentValues.put(Owners.COL_OWNERNAME, ownerName);
-                                contentValues.put(Owners.COL_OWNERMOB, ownerMobile);
-                                contentValues.put(Owners.COL_OWNEREMAIL, ownerEmail);
-                                contentValues.put(Owners.COL_OWNERADDRESS, ownerAddress);
-                                db.insert(tableName, null, contentValues);
+                                    contentValues.put(Farms.COL_FARMCODE, farmCode);
+                                    contentValues.put(Farms.COL_FARMNAME, farmName);
+                                    contentValues.put(Farms.COL_BASE, farmBase);
+                                    contentValues.put(Farms.COL_STATUS, farmStatus);
+                                    contentValues.put(Farms.COL_OWNERID, ownerID);
+                                    contentValues.put(Owners.COL_OWNERNAME, ownerName);
+                                    contentValues.put(Owners.COL_OWNERMOB, ownerMobile);
+                                    contentValues.put(Owners.COL_OWNEREMAIL, ownerEmail);
+                                    contentValues.put(Owners.COL_OWNERADDRESS, ownerAddress);
+                                    db.insert(tableName, null, contentValues);
+                                }
+                                count += 1;
 
                             }
                             String insertFarms = "INSERT INTO " + Farms.TABLE_FARMS + " (" + Farms.COL_FARMCODE + ", " +
@@ -139,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             db.execSQL("DELETE FROM " + Farms.TABLE_FARMS);
                             System.out.println(insertFarms);
                             db.execSQL(insertFarms);
-                            db.execSQL("DELETE FROM " + Owners.TABLE_OWNERS);
+                            db.execSQL("DELETE FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " NOT LIKE 'N-%'");
                             String insertOwners = "INSERT INTO " + Owners.TABLE_OWNERS + " (" +
                                     Owners.COL_OWNERID + ", " +
                                     Owners.COL_OWNERNAME + ", " +
@@ -159,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                             db.endTransaction();
                             Toast.makeText(this, "Data import successful.", Toast.LENGTH_SHORT).show();
                         } catch (IOException e) {
-                            System.out.println(e.getMessage().toString() + "first");
+                            System.out.println(e.getMessage() + "first");
                         }
                     } else {
                         if (db.inTransaction())
@@ -188,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             // Request for camera permission.
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission has been granted. Start camera preview Activity.
-                Snackbar.make(mLayout, "Storage access granted. Exporting file.",
+                Snackbar.make(mLayout, "Storage access granted.",
                         Snackbar.LENGTH_SHORT)
                         .show();
             } else {
@@ -240,13 +235,21 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             case R.id.action_importdata:
                 importData();
                 return true;
+            case R.id.action_downloadcsv:
+                if (isConnectingToInternet()) {
+                    new DownloadTask(MainActivity.this, downloadURL);
+                    return true;
+                } else {
+                    Toast.makeText(this, "You are not connected to the internet.", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     private void delSigCache() {
-        File sigDir = new File(sigCacheDir, "");
+        File sigDir = new File(getCacheDir(), "");
         if (sigDir.isDirectory()) {
             String[] children = sigDir.list();
             for (int i = 0; i < children.length; i++) {
@@ -320,6 +323,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Intent intent = new Intent(this, ATCCTList.class);
         intent.putExtra("action", "ATCCT List");
         startActivity(intent);
+    }
+
+    private boolean isConnectingToInternet() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager
+                .getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected())
+            return true;
+        else
+            return false;
     }
 
 }
