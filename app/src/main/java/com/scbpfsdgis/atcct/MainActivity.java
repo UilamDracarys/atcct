@@ -1,10 +1,12 @@
 package com.scbpfsdgis.atcct;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,7 +14,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -31,14 +32,14 @@ import com.scbpfsdgis.atcct.data.CustomAdapter;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
+import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
+import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
+import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLOutput;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
@@ -46,7 +47,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     SQLiteDatabase db;
     DBHelper dbHelper;
     private View mLayout;
-    String downloadURL = "https://drive.google.com/uc?authuser=0&id=15EfjKmsv511ehyhLelD_QteaoC5sX1OD&export=download";
+    AlertDialog alertDialog1;
+    CharSequence[] values = {"SCBP", "SNBP", "NNBP"};
+    String downloadURL = "";
+    String nnbpDataURL = "https://drive.google.com/uc?authuser=0&id=15EfjKmsv511ehyhLelD_QteaoC5sX1OD&export=download";
+    String scbpDataURL = "https://drive.google.com/uc?authuser=0&id=1L8JoYCRAmKAaf2SFjvLXPk-Zfu6LhfHN&export=download";
+    String snbpDataURL = "https://drive.google.com/uc?authuser=0&id=11ux9AxUsZTaPpcO2XGWCUK5APPcOTVKJ&export=download";
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -96,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                 if (count == 0) {
                                     System.out.println("Skipped header row");
                                 } else {
-                                    String[] str = line.split(";", 9);  // defining 8 columns with null or blank field //values acceptance
+                                    String[] str = line.split(";", 10);  // defining 8 columns with null or blank field //values acceptance
                                     String farmCode = str[0];
                                     String farmName = str[1];
                                     String farmBase = str[2];
@@ -106,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                     String ownerMobile = str[6];
                                     String ownerEmail = str[7];
                                     String ownerAddress = str[8];
+                                    String ownerBases = str[9];
 
                                     contentValues.put(Farms.COL_FARMCODE, farmCode);
                                     contentValues.put(Farms.COL_FARMNAME, farmName);
@@ -116,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                     contentValues.put(Owners.COL_OWNERMOB, ownerMobile);
                                     contentValues.put(Owners.COL_OWNEREMAIL, ownerEmail);
                                     contentValues.put(Owners.COL_OWNERADDRESS, ownerAddress);
+                                    contentValues.put(Owners.COL_BASES, ownerBases);
                                     db.insert(tableName, null, contentValues);
                                 }
                                 count += 1;
@@ -140,12 +149,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                                     Owners.COL_OWNERNAME + ", " +
                                     Owners.COL_OWNERMOB + ", " +
                                     Owners.COL_OWNEREMAIL + ", " +
-                                    Owners.COL_OWNERADDRESS + ") " +
+                                    Owners.COL_OWNERADDRESS + ", " +
+                                    Owners.COL_BASES + ") " +
                                     "SELECT " + Farms.COL_OWNERID + ", " +
                                     Owners.COL_OWNERNAME + ", " +
                                     Owners.COL_OWNERMOB + ", " +
                                     Owners.COL_OWNEREMAIL + ", " +
-                                    Owners.COL_OWNERADDRESS + " FROM " + Farms.TABLE_MASTERTBL +
+                                    Owners.COL_OWNERADDRESS + ", " +
+                                    Owners.COL_BASES + " FROM " + Farms.TABLE_MASTERTBL +
                                     " GROUP BY " + Farms.COL_OWNERID + " ";
                             System.out.println(insertOwners);
                             db.execSQL(insertOwners);
@@ -168,11 +179,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         db.endTransaction();
 
                     Dialog d = new Dialog(this);
-                    d.setTitle(ex.getMessage().toString() + "second");
+                    d.setTitle(ex.getMessage() + "second");
                     d.show();
                 }
         }
-
     }
 
     @Override
@@ -223,6 +233,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     @Override
+    public void onRestart() {
+        super.onRestart();
+        initMenus();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the save_cancel; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -237,8 +253,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 return true;
             case R.id.action_downloadcsv:
                 if (isConnectingToInternet()) {
-                    new DownloadTask(MainActivity.this, downloadURL);
-                    return true;
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        chooseCompany();
+                        return true;
+                    } else {
+                        requestStoragePermission();
+                        return true;
+                    }
                 } else {
                     Toast.makeText(this, "You are not connected to the internet.", Toast.LENGTH_SHORT).show();
                     return true;
@@ -246,6 +268,31 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void chooseCompany() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Select Company");
+        builder.setSingleChoiceItems(values, -1, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int item) {
+                switch (item) {
+                    case 0:
+                        new DownloadTask(MainActivity.this, scbpDataURL);
+                        break;
+                    case 1:
+                        new DownloadTask(MainActivity.this, snbpDataURL);
+                        break;
+                    case 2:
+                        new DownloadTask(MainActivity.this, nnbpDataURL);
+                        break;
+                }
+                alertDialog1.dismiss();
+
+            }
+        });
+        alertDialog1 = builder.create();
+        alertDialog1.show();
     }
 
     private void delSigCache() {
@@ -279,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private void initMenus() {
         ListView menus = findViewById(R.id.menuList);
         String[] textString = {"Farms List", "Planters List", "ATCCTs"};
-        String[] menuPreviews = {"No. of Farms", "No. of Planters", "No. of ATCCTs"};
+        String[] menuPreviews = {getFarmsSubtitle(), getOwnersSubtitle(), getATCCTSubtitle()};
 
         int[] drawableIds = {R.drawable.ic_farms, R.drawable.ic_people, R.drawable.ic_atccts};
         int[] drawableArrows = {R.drawable.ic_arrow, R.drawable.ic_arrow, R.drawable.ic_arrow};
@@ -305,6 +352,31 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             }
 
         });
+    }
+
+    private String getFarmsSubtitle() {
+        FarmsRepo repo = new FarmsRepo();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total Farms: " + repo.getFarmCount(Farms.TABLE_FARMS) + "\n");
+        sb.append("Farms with Edits: " + repo.getFarmCount(Farms.TABLE_FARM_CHANGES));
+        return sb.toString();
+    }
+
+    private String getOwnersSubtitle() {
+        OwnersRepo repo = new OwnersRepo();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total Planters: " + repo.getOwnerCount(Owners.TABLE_OWNERS) + "\n");
+        sb.append("Planters with Edits: " + repo.getOwnerCount(Owners.TABLE_OWNERS_CHANGES));
+        return sb.toString();
+    }
+
+    private String getATCCTSubtitle() {
+        ATCCRepo repo = new ATCCRepo();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total ATCCTs: " + repo.getATCCTCount("") + "\n");
+        sb.append("Signed: " + repo.getATCCTCount("Signed") + "\n");
+        sb.append("To Sign: " + repo.getATCCTCount("To Sign"));
+        return sb.toString();
     }
 
     public void showFarms() {

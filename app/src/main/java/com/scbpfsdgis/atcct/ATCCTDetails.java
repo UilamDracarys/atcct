@@ -5,9 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,14 +26,13 @@ import android.widget.Toast;
 
 import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.AuthRep;
+import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
 import com.scbpfsdgis.atcct.data.repo.AuthRepRepo;
-import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,8 +48,10 @@ public class ATCCTDetails extends AppCompatActivity {
     EditText etAccName, etAccNo, etBankName, etBankAdd, etRemarks;
     ArrayList<HashMap<String, String>> arList;
     ArrayList<HashMap<String, String>> farmsList;
+    String action;
     String ownerID;
-    ListView lv;
+    String atcctNo;
+    ListView lvAuthRep;
     private View mLayout;
 
     @Override
@@ -59,12 +61,6 @@ public class ATCCTDetails extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         mLayout = findViewById(R.id.atcct_detail_layout);
         setSupportActionBar(myToolbar);
-
-        Intent intent = getIntent();
-        String action = intent.getStringExtra("action");
-        String owner = intent.getStringExtra("owner");
-        ownerID = intent.getStringExtra("ownerID");
-        getSupportActionBar().setTitle(action);
 
         tvOwner = findViewById(R.id.tvOwnerName);
         tvOwnerDetails = findViewById(R.id.tvOwnerDetails);
@@ -76,35 +72,13 @@ public class ATCCTDetails extends AppCompatActivity {
         etBankAdd = findViewById(R.id.etBankAdd);
         etRemarks = findViewById(R.id.etRemarks);
         addAR = findViewById(R.id.btnAddAR);
-        lv = findViewById(R.id.arList);
+        lvAuthRep = findViewById(R.id.arList);
         arList = new ArrayList<>();
         farmsList = new ArrayList<>();
-
-        OwnersRepo repo = new OwnersRepo();
-        Owners own = repo.getOwnerByID(ownerID, "M");
-
         spnPmtMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (spnPmtMethod.getSelectedItemPosition() == 1) {
-                    spnPickup.setVisibility(View.VISIBLE);
-                    etAccName.setVisibility(View.GONE);
-                    etAccNo.setVisibility(View.GONE);
-                    etBankName.setVisibility(View.GONE);
-                    etBankAdd.setVisibility(View.GONE);
-                } else if (spnPmtMethod.getSelectedItemPosition() == 2) {
-                    spnPickup.setVisibility(View.GONE);
-                    etAccName.setVisibility(View.VISIBLE);
-                    etAccNo.setVisibility(View.VISIBLE);
-                    etBankName.setVisibility(View.VISIBLE);
-                    etBankAdd.setVisibility(View.VISIBLE);
-                } else {
-                    spnPickup.setVisibility(View.GONE);
-                    etAccName.setVisibility(View.GONE);
-                    etAccNo.setVisibility(View.GONE);
-                    etBankName.setVisibility(View.GONE);
-                    etBankAdd.setVisibility(View.GONE);
-                }
+                initPmtDetails(spnPmtMethod.getSelectedItemPosition());
             }
 
             @Override
@@ -113,18 +87,11 @@ public class ATCCTDetails extends AppCompatActivity {
             }
         });
 
-
-        tvOwner.setText(owner);
-        tvOwnerDetails.setText("Mobile No.: " + own.getOwnerMobile() + "\n" +
-                "Email: " + own.getOwnerEmail() + "\n" +
-                "Address: " + own.getOwnerAddress() + "\n" +
-                "Farms: \n" + repo.consolFarms(ownerID));
-
         addAR.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (lv.getCount() < 3) {
+                if (lvAuthRep.getCount() < 3) {
                     showDialog(0);
                 } else {
                     Toast.makeText(ATCCTDetails.this, "Maximum number of Authorized Representatives exceeded. Can no longer add.", Toast.LENGTH_SHORT).show();
@@ -133,6 +100,118 @@ public class ATCCTDetails extends AppCompatActivity {
             }
         });
 
+
+        lvAuthRep.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
+
+                PopupMenu popup = new PopupMenu(ATCCTDetails.this, view);
+                popup.inflate(R.menu.popup_menu);
+                MenuItem edit = popup.getMenu().getItem(0);
+                edit.setVisible(false);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_delete:
+                                arList.remove(position);
+                                refreshARList();
+                                return true;
+                            default:
+                                return onOptionsItemSelected(item);
+                        }
+                    }
+                });
+                popup.show();
+                return true;
+            }
+        });
+
+        Intent intent = getIntent();
+        action = intent.getStringExtra("action");
+        getSupportActionBar().setTitle(action);
+
+        ATCCRepo atccRepo = new ATCCRepo();
+        ATCC atcc = null;
+        atcctNo = "";
+
+        OwnersRepo ownersRepo = new OwnersRepo();
+        Owners owner = null;
+        String ownerName = "";
+
+        Farms farms = new Farms();
+        AuthRepRepo authRepRepo = new AuthRepRepo();
+
+        String accName = "",
+                accNo = "",
+                bankName = "",
+                bankAddress = "",
+                remarks = "";
+        int selPmtMethod;
+
+        if (action.equalsIgnoreCase("New ATCCT")) {
+            ownerID = intent.getStringExtra("ownerID");
+        } else {
+            atcctNo = intent.getStringExtra("atccNo");
+            atcc = atccRepo.getATCCByNo(atcctNo);
+            ownerID = atcc.getOwnerID();
+            accName = atcc.getAccName();
+            accNo = atcc.getAccNo();
+            bankName = atcc.getBankName();
+            bankAddress = atcc.getBankAdd();
+            remarks = atcc.getRemarks();
+
+            spnPmtMethod.setSelection(farms.getIdxByItem(getResources().getStringArray(R.array.pmtMethod), atcc.getPmtMethod()));
+            selPmtMethod = spnPmtMethod.getSelectedItemPosition();
+            initPmtDetails(selPmtMethod);
+            if (selPmtMethod == 1) {
+                spnPickup.setSelection(farms.getIdxByItem(getResources().getStringArray(R.array.pickupPt), atcc.getPickupPt()));
+            } else {
+                etAccName.setText(accName);
+                etAccNo.setText(accNo);
+                etBankName.setText(bankName);
+                etBankAdd.setText(bankAddress);
+            }
+            etRemarks.setText(remarks);
+            arList = authRepRepo.getAuthRepForOwner(ownerID);
+            for (int i = 0; i < arList.size(); i++) {
+                System.out.println("AuthRep" + i + ": " + arList.get(i).get(0) + ", " + arList.get(i).get(1) + ", " + arList.get(i).get(2));
+            }
+            refreshARList();
+        }
+
+        owner = ownersRepo.getOwnerByID(ownerID, "M");
+        ownerName = owner.getOwnerName();
+
+        tvOwner.setText(ownerName);
+        tvOwnerDetails.setText("Mobile No.: " + owner.getOwnerMobile() + "\n" +
+                "Email: " + owner.getOwnerEmail() + "\n" +
+                "Address: " + owner.getOwnerAddress() + "\n" +
+                "Farms: \n" + ownersRepo.consolFarms(ownerID));
+
+
+    }
+
+    private void initPmtDetails(int sel) {
+        if (sel == 1) {
+            spnPickup.setVisibility(View.VISIBLE);
+            etAccName.setVisibility(View.GONE);
+            etAccNo.setVisibility(View.GONE);
+            etBankName.setVisibility(View.GONE);
+            etBankAdd.setVisibility(View.GONE);
+        } else if (sel == 2) {
+            spnPickup.setVisibility(View.GONE);
+            etAccName.setVisibility(View.VISIBLE);
+            etAccNo.setVisibility(View.VISIBLE);
+            etBankName.setVisibility(View.VISIBLE);
+            etBankAdd.setVisibility(View.VISIBLE);
+        } else {
+            spnPickup.setVisibility(View.GONE);
+            etAccName.setVisibility(View.GONE);
+            etAccNo.setVisibility(View.GONE);
+            etBankName.setVisibility(View.GONE);
+            etBankAdd.setVisibility(View.GONE);
+        }
     }
 
     public void onRestart() {
@@ -190,6 +269,7 @@ public class ATCCTDetails extends AppCompatActivity {
                     }
                 });
         return alert.create();
+
     }
 
     @Override
@@ -224,7 +304,13 @@ public class ATCCTDetails extends AppCompatActivity {
         SimpleDateFormat yearDF = new SimpleDateFormat("yy", Locale.getDefault());
         SimpleDateFormat dateDF = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         DecimalFormat ownIDFormat = new DecimalFormat("00000");
-        String atccNo = yearDF.format(new Date()) + "-" + ownIDFormat.format(Integer.parseInt(ownerID));
+        String ownID;
+        if (ownerID.startsWith("N-")) {
+            ownID = ownerID;
+        } else {
+            ownID = ownIDFormat.format(Integer.parseInt(ownerID));
+        }
+        String atccNo = yearDF.format(new Date()) + "-" + ownID;
         String createDate = dateDF.format(new Date());
         String remarks = etRemarks.getText().toString();
         int arListSize = arList.size();
@@ -258,18 +344,34 @@ public class ATCCTDetails extends AppCompatActivity {
             atcc.setDteCreated(createDate);
             atcc.setRemarks(remarks);
 
-            repo.insert(atcc);
-
-            if (arListSize > 0) {
-                for (int i = 0; i < arListSize; i++) {
-                    authRep.setOwnerID(ownerID);
-                    authRep.setArFullName(arList.get(i).get("arName"));
-                    authRep.setArRelation(arList.get(i).get("arRel"));
-                    authRep.setArIDType(arList.get(i).get("arID"));
-                    arRepo.insert(authRep);
+            if (action.equalsIgnoreCase("New ATCCT")) {
+                repo.insert(atcc);
+                if (arListSize > 0) {
+                    for (int i = 0; i < arListSize; i++) {
+                        authRep.setOwnerID(ownerID);
+                        authRep.setArFullName(arList.get(i).get("ARName"));
+                        authRep.setArRelation(arList.get(i).get("ARRel"));
+                        authRep.setArIDType(arList.get(i).get("ARIDType"));
+                        arRepo.insert(authRep);
+                    }
                 }
+                Toast.makeText(this, "ATCCT No. " + atccNo + " created on " + createDate, Toast.LENGTH_SHORT).show();
+            } else {
+                atcc.setAtccNo(atcctNo);
+                atcc.setDteModified(createDate);
+                repo.updateATCCT(atcc, "");
+                if (arListSize > 0) {
+                    arRepo.delete(ownerID);
+                    for (int i = 0; i < arListSize; i++) {
+                        authRep.setOwnerID(ownerID);
+                        authRep.setArFullName(arList.get(i).get("ARName"));
+                        authRep.setArRelation(arList.get(i).get("ARRel"));
+                        authRep.setArIDType(arList.get(i).get("ARIDType"));
+                        arRepo.insert(authRep);
+                    }
+                }
+                Toast.makeText(this, "ATCCT No. " + atccNo + " modified on " + createDate, Toast.LENGTH_SHORT).show();
             }
-            Toast.makeText(this, "ATCCT No. " + atccNo + " created on " + createDate, Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -318,19 +420,19 @@ public class ATCCTDetails extends AppCompatActivity {
     }
 
     private void refreshARList() {
-        ListView lv = findViewById(R.id.arList);
-        lv.setFastScrollEnabled(true);
+        lvAuthRep = findViewById(R.id.arList);
+        lvAuthRep.setFastScrollEnabled(true);
         ListAdapter adapter;
-        adapter = new SimpleAdapter(ATCCTDetails.this, arList, R.layout.ar_list_item, new String[]{"arName", "relationID"}, new int[]{R.id.arName, R.id.arRelation});
-        lv.setAdapter(adapter);
+        adapter = new SimpleAdapter(ATCCTDetails.this, arList, R.layout.ar_list_item, new String[]{"ARName", "ARRelID"}, new int[]{R.id.arName, R.id.arRelation});
+        lvAuthRep.setAdapter(adapter);
     }
 
     private void addAR(String name, String rel, String id) {
         HashMap<String, String> authRep = new HashMap<>();
-        authRep.put("arName", name);
-        authRep.put("arRel", rel);
-        authRep.put("arID", id);
-        authRep.put("relationID", rel + " | " + id);
+        authRep.put("ARName", name);
+        authRep.put("ARRel", rel);
+        authRep.put("ARIDType", id);
+        authRep.put("ARRelID", rel + " | " + id);
         arList.add(authRep);
     }
 

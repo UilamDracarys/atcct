@@ -31,7 +31,8 @@ public class OwnersRepo {
                 Owners.COL_OWNERNAME + " TEXT, " +
                 Owners.COL_OWNERMOB + " TEXT, " +
                 Owners.COL_OWNEREMAIL + " TEXT, " +
-                Owners.COL_OWNERADDRESS + " TEXT)";
+                Owners.COL_OWNERADDRESS + " TEXT, " +
+                Owners.COL_BASES + " TEXT)";
         return query;
     }
 
@@ -61,6 +62,9 @@ public class OwnersRepo {
         values.put(Owners.COL_OWNERMOB, owner.getOwnerMobile());
         values.put(Owners.COL_OWNEREMAIL, owner.getOwnerEmail());
         values.put(Owners.COL_OWNERADDRESS, owner.getOwnerAddress());
+        if (table.equalsIgnoreCase("Owner")) {
+            values.put(Owners.COL_BASES, owner.getOwnerBases());
+        }
 
         // Inserting Row
 
@@ -79,7 +83,7 @@ public class OwnersRepo {
         values.put(Owners.COL_OWNEREMAIL, chgs.getOwnerEmail());
         values.put(Owners.COL_OWNERADDRESS, chgs.getOwnerAddress());
 
-        db.update(Owners.TABLE_OWNERS_CHANGES, values, Owners.COL_OWNERID + "= ? ", new String[] { String.valueOf(chgs.getOwnerID()) });
+        db.update(Owners.TABLE_OWNERS_CHANGES, values, Owners.COL_OWNERID + "= ? ", new String[]{String.valueOf(chgs.getOwnerID())});
         db.close(); // Closing database connection
     }
 
@@ -104,7 +108,8 @@ public class OwnersRepo {
                 "CASE \n" +
                 "WHEN C." + Owners.COL_OWNERADDRESS + " IS NULL OR C." + Owners.COL_OWNERADDRESS + " = '' THEN O." + Owners.COL_OWNERADDRESS + "\n" +
                 "ELSE C." + Owners.COL_OWNERADDRESS + "\n" +
-                "END OwnerAddress\n" +
+                "END OwnerAddress, " +
+                "O." + Owners.COL_BASES + " as OwnerBases\n" +
                 "FROM\n" +
                 Owners.TABLE_OWNERS + " O LEFT JOIN " + Owners.TABLE_OWNERS_CHANGES + " C\n" +
                 "ON O." + Owners.COL_OWNERID + " = C." + Owners.COL_OWNERID + "\n" +
@@ -114,9 +119,9 @@ public class OwnersRepo {
                 Owners.COL_OWNERNAME + " as OwnerName,\n" +
                 Owners.COL_OWNERMOB + " as OwnerMobile,\n" +
                 Owners.COL_OWNEREMAIL + " as OwnerEmail,\n" +
-                Owners.COL_OWNERADDRESS + " as OwnerAddress FROM " +
+                Owners.COL_OWNERADDRESS + " as OwnerAddress, \n" +
+                Owners.COL_BASES + " as OwnerBases FROM " +
                 Owners.TABLE_OWNERS + " WHERE OwnerID =?";
-
 
 
         System.out.println(selMergeQry);
@@ -138,6 +143,7 @@ public class OwnersRepo {
                 owners.setOwnerMobile(cursor.getString(cursor.getColumnIndex("OwnerMobile")));
                 owners.setOwnerEmail(cursor.getString(cursor.getColumnIndex("OwnerEmail")));
                 owners.setOwnerAddress(cursor.getString(cursor.getColumnIndex("OwnerAddress")));
+                owners.setOwnerBases(cursor.getString(cursor.getColumnIndex("OwnerBases")));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -246,7 +252,7 @@ public class OwnersRepo {
     }
 
     public String consolFarms(String ownerID) {
-        StringBuilder farms = new StringBuilder("Available Farms: \n");
+        StringBuilder farms = new StringBuilder();
         FarmsRepo repo = new FarmsRepo();
         ArrayList<HashMap<String, String>> availFarms = repo.getFarmsListByOwner(ownerID, "A");
         ArrayList<HashMap<String, String>> nAvailFarms = repo.getFarmsListByOwner(ownerID, "-");
@@ -254,24 +260,40 @@ public class OwnersRepo {
         int nAvailFarmCount = nAvailFarms.size();
         String lineBreak = "\n";
 
-        for (int i = 0; i < availFarmCount; i++) {
-            if (i == availFarmCount - 1) {
-                lineBreak = "";
+        if (availFarmCount > 0) {
+            farms.append("Available Farms: \n");
+            for (int i = 0; i < availFarmCount; i++) {
+                if (i == availFarmCount - 1) {
+                    lineBreak = "";
+                }
+                farms.append(i + 1).append(". ").append(availFarms.get(i).get("farmName")).append(" [").append(availFarms.get(i).get("farmCode")).append("] - ").append(availFarms.get(i).get("company")).append(lineBreak);
             }
-            farms.append(i + 1).append(". ").append(availFarms.get(i).get("farmName")).append(" [").append(availFarms.get(i).get("farmCode")).append("] - ").append(availFarms.get(i).get("company")).append(lineBreak);
-            //farms += (i + 1) + ". " + availFarms.get(i).get("farmName") + " [" + availFarms.get(i).get("farmCode") + "] - " + availFarms.get(i).get("company") + lineBreak;
         }
 
         if (nAvailFarmCount > 0) {
-            farms.append("\nNot Available Farms: \n");
+            if (availFarmCount > 0) {
+                farms.append("\n\n");
+            }
+            farms.append("Not Available Farms:\n");
             lineBreak = "\n";
             for (int i = 0; i < nAvailFarmCount; i++) {
                 if (i == nAvailFarmCount - 1) {
                     lineBreak = "";
                 }
-                /*farms += (i + 1) + ". " + nAvailFarms.get(i).get("farmName") + " [" + nAvailFarms.get(i).get("farmCode") + "] - " + nAvailFarms.get(i).get("company") + " " +
-                        "[" + nAvailFarms.get(i).get("status") + "] " + nAvailFarms.get(i).get("remarks") + lineBreak;*/
                 farms.append(i + 1).append(". ").append(nAvailFarms.get(i).get("farmName")).append(" [").append(nAvailFarms.get(i).get("farmCode")).append("] - ").append(nAvailFarms.get(i).get("company")).append(" ").append("[").append(nAvailFarms.get(i).get("status")).append("] ").append(nAvailFarms.get(i).get("remarks")).append(lineBreak);
+            }
+        }
+
+        if (availFarmCount == 0 && nAvailFarmCount == 0) {
+            farms.setLength(0);
+            farms.append("*** NO FARMS RECORDED ***");
+        }
+
+        OwnersRepo oRepo = new OwnersRepo();
+        Owners owner = oRepo.getOwnerByID(ownerID, "M");
+        if (Integer.parseInt(owner.getOwnerBases()) > 1) {
+            if (availFarmCount > 0 || nAvailFarmCount > 0) {
+                farms.append("\n*This owner has farms in other companies.");
             }
         }
 
@@ -295,19 +317,32 @@ public class OwnersRepo {
     }
 
     public String newOwnerID() {
-        String newOwnerID = null;
+        String newOwnerID;
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT MAX(" + Owners.COL_OWNERID + ") AS MAX_ID FROM " + Owners.TABLE_OWNERS + "";
+        String selectQuery = "SELECT MAX(" + Owners.COL_OWNERID + ") AS MAX_ID FROM " + Owners.TABLE_OWNERS;
         Cursor cursor = db.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()){
-            newOwnerID =  "N-" + (Integer.parseInt(cursor.getString(cursor.getColumnIndex("MAX_ID"))) + 1);
+        if (cursor.moveToFirst()) {
+            newOwnerID = "N-" + (Integer.parseInt(cursor.getString(cursor.getColumnIndex("MAX_ID"))) + 1);
         } else {
             newOwnerID = "0";
         }
 
         db.close();
         return newOwnerID;
-
     }
+
+    public int getOwnerCount(String table) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + table;
+        int count = 0;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        db.close();
+        return count;
+    }
+
 }

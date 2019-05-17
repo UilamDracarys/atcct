@@ -35,4 +35,6 @@
     <string name="action_back">Back</string>
     <string name="downloadcsv">Download Data</string>
     <string name="action_delete">Delete</string>
+    <string name="action_sign">Sign</string>
+    <string name="action_edit">Edit</string>
 </resources>

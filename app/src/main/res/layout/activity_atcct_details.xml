@@ -2,10 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/atcct_detail_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.scbpfsdgis.atcct.ATCCTDetails"
-    android:id="@+id/atcct_detail_layout">
+    tools:context="com.scbpfsdgis.atcct.ATCCTDetails">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -18,16 +18,17 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/my_toolbar">
+        android:layout_height="fill_parent"
+        android:layout_below="@id/my_toolbar"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp">
+            android:paddingTop="8dp"
+            android:paddingRight="8dp">
 
             <TextView
                 android:id="@+id/tvOwnerID"
@@ -41,8 +42,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="Planter Name"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -58,8 +59,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="Payment Details"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -120,8 +121,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="Authorized Representatives"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -135,8 +136,10 @@
             <ListView
                 android:id="@+id/arList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
+
     </ScrollView>
 
 </RelativeLayout>

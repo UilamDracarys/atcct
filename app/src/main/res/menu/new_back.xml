@@ -5,11 +5,29 @@
     <item
         android:id="@+id/action_new"
         android:title="@string/action_new"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_back"
         android:title="@string/action_back"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/chk_all"
+            android:title="Show All"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:checked="true">
+        </item>
+
+        <item android:id="@+id/chk_signed"
+            android:title="Signed"
+            android:icon="@android:drawable/ic_menu_preferences">
+        </item>
+
+        <item android:id="@+id/chk_forsig"
+            android:title="For Signature"
+            android:icon="@android:drawable/ic_menu_preferences">
+        </item>
+    </group>
 
 </menu>

@@ -1,37 +1,33 @@
 package com.scbpfsdgis.atcct;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.BulletSpan;
-import android.text.style.LeadingMarginSpan;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,13 +42,11 @@ import com.itextpdf.text.ListItem;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.scbpfsdgis.atcct.data.SignatureActivity;
 import com.scbpfsdgis.atcct.data.model.ATCC;
-import com.scbpfsdgis.atcct.data.model.AuthRep;
 import com.scbpfsdgis.atcct.data.model.Owners;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
 import com.scbpfsdgis.atcct.data.repo.AuthRepRepo;
@@ -69,9 +63,11 @@ import java.util.Locale;
 public class ATCCTPreview extends AppCompatActivity {
 
     String sigCacheDir = Environment.getExternalStorageDirectory().getPath() + "/ATCCTMobile/Signature/";
+    String signatory;
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
-    TextView tvOwnerName, tvOwnerMobile, tvOwnerEmail, tvOwnerAddress, tvPmtMethod, tvPickupPt, tvAccName, tvAccNo, tvBankDetails, tvRemarks, tvNotes, tvTNC, tvAuthRep;
-    CheckBox chkConform;
+    TextView tvOwnerName, tvOwnerMobile, tvOwnerEmail, tvOwnerAddress, tvPmtMethod, tvPickupPt, tvAccName, tvAccNo,
+            tvBankDetails, tvRemarks, tvNotes, tvTNC, tvAuthRep, tvSignatory;
+    CheckBox chkConform, chkSignatory;
     TableRow rPickupPt, rAccName, rAccNo, rBank, rRemarks;
     String[] notes = {
             "1. Payment per 1 full wagon load Php 625.00 rate subject to 1% withholding tax with applicable exemptions wherein a valid BIR tax exemption certification should be presented.\n\n",
@@ -84,7 +80,8 @@ public class ATCCTPreview extends AppCompatActivity {
             "1. Preference for cane trash collection shall be given to fields with entire canes rows harvested.\n\n",
             "2. In case of adverse weather conditions and trash cannot be collected, Biopower is not obligated to make any payment for a particular field or group of fields.\n\n",
             "3. Cane trash collection shall be solely at the discretion of Biopower, and payments shall be made based on actual cane trash collected from harvested fields.\n\n",
-            "4. In case collecting per field is not completed at cut-off date, partial payment shall be made in proportion to actual area collected."
+            "4. In case collecting per field is not completed at cut-off date, partial payment shall be made in proportion to actual area collected.\n\n",
+            "5. Owner name stated above shall be the payee name (unless explicitly stated in the remarks) for the entire validity of this agreement. Modifications will only be allowed for reasons such as death of owner/payee and change of ownership.\n\n"
     };
     String conformity = "The above terms and conditions are understood and agreed upon between Biopower and I, as supplier of cane trash. This shall be valid until otherwise voided by either party";
     Button sign;
@@ -112,7 +109,7 @@ public class ATCCTPreview extends AppCompatActivity {
         ATCC atcc = atccRepo.getATCCByNo(atccNo);
         OwnersRepo ownersRepo = new OwnersRepo();
 
-        Owners owner = ownersRepo.getOwnerByID(atcc.getOwnerID(), "M");
+        final Owners owner = ownersRepo.getOwnerByID(atcc.getOwnerID(), "M");
 
         tvOwnerName = findViewById(R.id.tvOwnerName);
         tvOwnerMobile = findViewById(R.id.tvOwnerMobile);
@@ -135,6 +132,8 @@ public class ATCCTPreview extends AppCompatActivity {
         rRemarks = findViewById(R.id.rRemarks);
         sign = findViewById(R.id.sign);
         signImage = findViewById(R.id.signature);
+        chkSignatory = findViewById(R.id.chkSignatory);
+        tvSignatory = findViewById(R.id.signatory);
 
         tvPmtMethod.setText(atcc.getPmtMethod());
         if (atcc.getPmtMethod().equalsIgnoreCase(getResources().getStringArray(R.array.pmtMethod)[1])) {
@@ -208,10 +207,32 @@ public class ATCCTPreview extends AppCompatActivity {
             }
         });
 
+        chkSignatory.setText("Signatory is owner.");
+        chkSignatory.setChecked(true);
+        chkSignatory.setTextColor(tvNotes.getTextColors());
+
+        chkSignatory.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (!chkSignatory.isChecked()) {
+                    showDialog(0);
+                } else {
+                    tvSignatory.setText(owner.getOwnerName());
+                }
+
+            }
+        });
+
+        tvSignatory.setText(owner.getOwnerName());
+        signatory = owner.getOwnerName();
+
+
         tvOwnerName.setText(owner.getOwnerName());
         tvOwnerMobile.setText(owner.getOwnerMobile());
         tvOwnerEmail.setText(owner.getOwnerEmail());
         tvOwnerAddress.setText(owner.getOwnerAddress());
+
 
         String image_path = getIntent().getStringExtra("imagePath");
         Bitmap bitmap = BitmapFactory.decodeFile(image_path);
@@ -231,7 +252,7 @@ public class ATCCTPreview extends AppCompatActivity {
         if (requestCode == PERMISSION_REQUEST_WRITESTORAGE) {
             // Request for camera permission.
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission has been granted. Start camera preview Activity.
+                // Permission has been granted.
                 Snackbar.make(mLayout, "Storage access granted.",
                         Snackbar.LENGTH_SHORT)
                         .show();
@@ -303,6 +324,7 @@ public class ATCCTPreview extends AppCompatActivity {
         Owners owner = oRepo.getOwnerByID(atcc.getOwnerID(), "M");
         String ownerName = owner.getOwnerName();
         SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHMMSS", Locale.getDefault());
+        SimpleDateFormat dateSignedFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
         File exportDir = new File(Environment.getExternalStorageDirectory() + "/ATCCTMobile/ATCCTs", "");
         if (!exportDir.exists()) {
@@ -326,9 +348,9 @@ public class ATCCTPreview extends AppCompatActivity {
         Font bold14 = new Font();
         bold14.setStyle(Font.BOLD);
         bold14.setSize(14);
-        Font boldIta10 = new Font();
-        boldIta10.setStyle(Font.BOLDITALIC);
-        boldIta10.setSize(10);
+        Font ita9 = new Font();
+        ita9.setStyle(Font.ITALIC);
+        ita9.setSize(9);
         Font boldBlue11 = new Font();
         boldBlue11.setStyle(Font.BOLDITALIC);
         boldBlue11.setSize(11);
@@ -359,14 +381,7 @@ public class ATCCTPreview extends AppCompatActivity {
         } else {
             sig = null;
         }
-        /*try {
-            image = Image.getInstance(byteArray);
-            image.scaleAbsolute(150,27);
-        } catch (BadElementException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+
         document.add(image);
 
         //TITLE
@@ -461,6 +476,7 @@ public class ATCCTPreview extends AppCompatActivity {
         noteList.add(new ListItem("In case of adverse weather conditions and trash cannot be collected, Biopower is not obligated to make any payment for a particular field or group of fields.", smallFont));
         noteList.add(new ListItem("Cane trash collection shall be solely at the discretion of Biopower, and payments shall be made based on actual cane trash collected from harvested fields.", smallFont));
         noteList.add(new ListItem("In case collecting per field is not completed at cut-off date, partial payment shall be made in proportion to actual area collected.", smallFont));
+        noteList.add(new ListItem("Owner name stated above shall be the payee name (unless explicitly stated in the remarks) for the entire validity of this agreement. Modifications will only be allowed for reasons such as death of owner/payee and change of ownership.", smallFont));
         cell.addElement(noteList);
         tnc.addCell(cell);
 
@@ -485,11 +501,11 @@ public class ATCCTPreview extends AppCompatActivity {
             authRep.addCell(cell);
         } else {
             authRep.setWidths(new int[]{1, 1, 1});
-            cell = new PdfPCell(new Phrase("Name", boldIta10));
+            cell = new PdfPCell(new Phrase("Name", ita9));
             authRep.addCell(cell);
-            cell = new PdfPCell(new Phrase("Relationship to Owner/Planter", boldIta10));
+            cell = new PdfPCell(new Phrase("Relationship to Owner/Planter", ita9));
             authRep.addCell(cell);
-            cell = new PdfPCell(new Phrase("ID Presented", boldIta10));
+            cell = new PdfPCell(new Phrase("ID Presented", ita9));
             authRep.addCell(cell);
             for (int i = 0; i < arList.size(); i++) {
                 cell = new PdfPCell(new Phrase(arList.get(i).get("ARName").toString(), ita10Blue));
@@ -512,8 +528,15 @@ public class ATCCTPreview extends AppCompatActivity {
         Paragraph confClause = new Paragraph("The above terms and conditions are understood and agreed upon between Biopower and I, as supplier of cane trash. This shall be valid until otherwise voided by either party\n\n\n", smallFont);
         confClause.setFirstLineIndent(30);
 
-        Paragraph signature = new Paragraph("___________________________________________\n" +
-                "SIGNATURE OVER PRINTED NAME OF\nPLANTER or AUTHORIZED REPRESENTATIVE", boldIta10);
+        Font boldUnderline = new Font();
+        boldUnderline.setStyle(Font.BOLD | Font.UNDERLINE);
+        boldUnderline.setSize(12);
+
+        Paragraph signName = new Paragraph(signatory.toUpperCase(), boldUnderline);
+        signName.setAlignment(Paragraph.ALIGN_CENTER);
+
+
+        Paragraph signature = new Paragraph("Signature over Printed Name of Planter or Authorized Representative", ita9);
         signature.setAlignment(Paragraph.ALIGN_CENTER);
 
         cell = new PdfPCell();
@@ -521,6 +544,7 @@ public class ATCCTPreview extends AppCompatActivity {
         if (sig != null) {
             cell.addElement(sig);
         }
+        cell.addElement(signName);
         cell.addElement(signature);
         conform.addCell(cell);
 
@@ -535,6 +559,23 @@ public class ATCCTPreview extends AppCompatActivity {
 
         // Closing the document
         document.close();
+
+        atcc.setDteSigned(dateSignedFormat.format(new Date()));
+        atcc.setFileName(fileName);
+        atcc.setSignatory(signatory);
+
+        atccRepo.updateATCCT(atcc, "Signed");
+
+        Intent objIntent = new Intent(Intent.ACTION_VIEW);
+        File file = new File(atcc.getFileName());
+
+        Uri apkURI = FileProvider.getUriForFile(
+                this,
+                getApplicationContext()
+                        .getPackageName() + ".provider", file);
+        objIntent.setDataAndType(apkURI, "application/pdf");
+        objIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(objIntent);
 
        /* Intent intent = new Intent(Intent.ACTION_VIEW);
         File file = new File( fileName  );
@@ -612,5 +653,44 @@ public class ATCCTPreview extends AppCompatActivity {
             }
             Log.v("CLR", "Signature cache cleared.");
         }
+    }
+
+    protected Dialog onCreateDialog(int id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Change Signatory");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        input.setHint("Signatory Fullname");
+        LinearLayout ll = new LinearLayout(this);
+        ll.setPadding(50, 50, 50, 50);
+        ll.addView(input);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+        builder.setView(ll);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (input.getText().toString().equalsIgnoreCase("")) {
+                    Toast.makeText(getApplicationContext(), "Please input a signatory name.", Toast.LENGTH_SHORT).show();
+                    chkSignatory.setChecked(true);
+                } else{
+                    signatory = input.getText().toString();
+                    tvSignatory.setText(signatory);
+                    chkSignatory.setChecked(false);
+                }
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                chkSignatory.setChecked(true);
+            }
+        });
+        return builder.create();
     }
 }

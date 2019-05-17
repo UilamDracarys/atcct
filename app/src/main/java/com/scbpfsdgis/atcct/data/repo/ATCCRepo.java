@@ -45,7 +45,7 @@ public class ATCCRepo extends AppCompatActivity {
     private SQLiteDatabase db;
 
     public ATCCRepo() {
-       ATCC atcc = new ATCC();
+        ATCC atcc = new ATCC();
     }
 
     public static String createTable() {
@@ -56,11 +56,14 @@ public class ATCCRepo extends AppCompatActivity {
                 ATCC.COL_PICKUPPOINT + " TEXT, " +
                 ATCC.COL_ACCNAME + " TEXT, " +
                 ATCC.COL_ACCNO + " TEXT, " +
-                ATCC.COL_BANKNAME  + " TEXT, " +
+                ATCC.COL_BANKNAME + " TEXT, " +
                 ATCC.COL_BANKADD + " TEXT, " +
                 ATCC.COL_REMARKS + " TEXT, " +
                 ATCC.COL_DTECREATED + " TEXT, " +
-                ATCC.COL_DTESIGNED + " TEXT)";
+                ATCC.COL_DTEMODIFIED + " TEXT, " +
+                ATCC.COL_DTESIGNED + " TEXT," +
+                ATCC.COL_FILE + " TEXT," +
+                ATCC.COL_SIGNATORY + " TEXT)";
     }
 
     public void insert(ATCC atcc) {
@@ -84,28 +87,67 @@ public class ATCCRepo extends AppCompatActivity {
         db.close();
     }
 
-    public ArrayList<HashMap<String, String>> getATCCForList() {
+    public void updateATCCT(ATCC atcc, String type) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        if (type.equalsIgnoreCase("Signed")) {
+            values.put(ATCC.COL_DTESIGNED, atcc.getDteSigned());
+            values.put(ATCC.COL_FILE, atcc.getFileName());
+            values.put(ATCC.COL_SIGNATORY, atcc.getSignatory());
+        } else {
+            values.put(ATCC.COL_PMTMETHOD, atcc.getPmtMethod());
+            values.put(ATCC.COL_PICKUPPOINT, atcc.getPickupPt());
+            values.put(ATCC.COL_ACCNAME, atcc.getAccName());
+            values.put(ATCC.COL_ACCNO, atcc.getAccNo());
+            values.put(ATCC.COL_BANKNAME, atcc.getBankName());
+            values.put(ATCC.COL_BANKADD, atcc.getBankAdd());
+            values.put(ATCC.COL_REMARKS, atcc.getRemarks());
+            values.put(ATCC.COL_DTEMODIFIED, atcc.getDteModified());
+        }
+
+        db.update(ATCC.TABLE_ATCC, values, ATCC.COL_ATCCNO + "= ? ", new String[]{String.valueOf(atcc.getAtccNo())});
+        db.close(); // Closing database connection
+    }
+
+    public ArrayList<HashMap<String, String>> getATCCForList(String filter) {
+        String filterClause = " WHERE A." + ATCC.COL_DTESIGNED + "";
+        if (filter.equalsIgnoreCase("Signed")) {
+            filterClause += " IS NOT NULL ";
+        } else if (filter.equalsIgnoreCase("To Sign")) {
+            filterClause += " IS NULL";
+        } else {
+            filterClause = "";
+        }
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
         String selectQuery = "SELECT A." + ATCC.COL_ATCCNO + " as ATCCNo, " +
                 "A." + ATCC.COL_OWNERID + " as OwnerID, " +
                 "O." + Owners.COL_OWNERNAME + " as OwnerName, " +
-                "A." + ATCC.COL_DTECREATED + " as CreateDate " +
+                "A." + ATCC.COL_DTECREATED + " as CreateDate," +
+                "A." + ATCC.COL_DTESIGNED + " as DateSigned " +
                 "FROM " + ATCC.TABLE_ATCC + " A " +
                 "LEFT JOIN " + Owners.TABLE_OWNERS + " O ON " +
-                "A." + ATCC.COL_OWNERID + " = " + "O." + Owners.COL_OWNERID;
+                "A." + ATCC.COL_OWNERID + " = " + "O." + Owners.COL_OWNERID +
+                filterClause +
+                " ORDER BY OwnerName";
+        System.out.println(selectQuery);
 
         ArrayList<HashMap<String, String>> atccList = new ArrayList<>();
         Cursor cursor = db.rawQuery(selectQuery, null);
-
+        OwnersRepo ownersRepo = new OwnersRepo();
+        Owners owner;
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
+                owner = ownersRepo.getOwnerByID(cursor.getString(cursor.getColumnIndex("OwnerID")), "M");
                 HashMap<String, String> atcc = new HashMap<>();
                 atcc.put("ATCCNo", cursor.getString(cursor.getColumnIndex("ATCCNo")));
                 atcc.put("OwnerID", cursor.getString(cursor.getColumnIndex("OwnerID")));
-                atcc.put("OwnerName", cursor.getString(cursor.getColumnIndex("OwnerName")));
-                atcc.put("ATCCTDetails", cursor.getString(cursor.getColumnIndex("ATCCNo"))+ " | " + cursor.getString(cursor.getColumnIndex("CreateDate")));
+                atcc.put("OwnerName", owner.getOwnerName());
+                atcc.put("ATCCTDetails", cursor.getString(cursor.getColumnIndex("ATCCNo")) + " | " + cursor.getString(cursor.getColumnIndex("CreateDate")));
+                atcc.put("DateSigned", cursor.getString(cursor.getColumnIndex("DateSigned")));
                 atccList.add(atcc);
 
             } while (cursor.moveToNext());
@@ -114,6 +156,12 @@ public class ATCCRepo extends AppCompatActivity {
         cursor.close();
         DatabaseManager.getInstance().closeDatabase();
         return atccList;
+    }
+
+    public void delete(String atccNo) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        db.delete(ATCC.TABLE_ATCC, ATCC.COL_ATCCNO + "='" + atccNo + "'", null);
     }
 
     public Boolean isATCCExist(String ownerID) {
@@ -151,12 +199,34 @@ public class ATCCRepo extends AppCompatActivity {
                 atcc.setBankName(cursor.getString(cursor.getColumnIndex(ATCC.COL_BANKNAME)));
                 atcc.setBankAdd(cursor.getString(cursor.getColumnIndex(ATCC.COL_BANKADD)));
                 atcc.setRemarks(cursor.getString(cursor.getColumnIndex(ATCC.COL_REMARKS)));
+                atcc.setFileName(cursor.getString(cursor.getColumnIndex(ATCC.COL_FILE)));
             } while (cursor.moveToNext());
         }
 
         cursor.close();
         DatabaseManager.getInstance().closeDatabase();
         return atcc;
+    }
+
+    public int getATCCTCount(String filter) {
+
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT COUNT(*) FROM " + ATCC.TABLE_ATCC);
+        if (filter.equalsIgnoreCase("Signed")) {
+            query.append(" WHERE " + ATCC.COL_DTESIGNED + " IS NOT NULL");
+        }
+        if (filter.equalsIgnoreCase("To Sign")) {
+            query.append(" WHERE " + ATCC.COL_DTESIGNED + " IS NULL");
+        }
+        int count = 0;
+        Cursor cursor = db.rawQuery(query.toString(), null);
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        db.close();
+        return count;
     }
 
 }

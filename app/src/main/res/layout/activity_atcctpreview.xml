@@ -26,16 +26,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp">
+            android:paddingTop="8dp"
+            android:paddingRight="8dp">
 
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="I. OWNER INFORMATION"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -102,8 +102,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="II. PAYMENT INFORMATION"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -196,8 +196,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="III. NOTES"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -212,8 +212,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="IV. TERMS AND CONDITIONS"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -228,8 +228,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="V. AUTHORIZED REPRESENTATIVES"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -244,8 +244,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#b9f6ca"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="VI. PLANTER'S CONFORMITY"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -260,19 +260,34 @@
                 android:id="@+id/signature"
                 android:layout_width="250dp"
                 android:layout_height="100dp"
-                android:layout_gravity="left"/>
+                android:layout_gravity="left" />
+
+            <TextView
+                android:id="@+id/signatory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:textColor="#003d00"
+                android:textStyle="bold"
+                android:textAllCaps="true"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
-                android:text="[SIGNATURE ABOVE]"/>
+                android:text="[SIGNATURE ABOVE]" />
+
+            <CheckBox
+                android:id="@+id/chkSignatory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
 
             <Button
                 android:id="@+id/sign"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign ATCCT"/>
+                android:text="Sign ATCCT" />
 
 
         </LinearLayout>

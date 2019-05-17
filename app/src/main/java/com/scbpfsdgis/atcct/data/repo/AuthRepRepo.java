@@ -33,6 +33,13 @@ public class AuthRepRepo {
         return query;
     }
 
+    public void delete(String ownerID) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        db.delete(AuthRep.TABLE_AUTHREP, AuthRep.COL_OWNER_ID + "=?", new String[]{String.valueOf(ownerID)});
+        db.close();
+    }
+
     public void insert(AuthRep ar) {
         dbHelper = new DBHelper();
         db = dbHelper.getWritableDatabase();
@@ -64,10 +71,11 @@ public class AuthRepRepo {
                 authReps.put("ARName", cursor.getString(cursor.getColumnIndex(AuthRep.COL_AR_NAME)));
                 authReps.put("ARRel", cursor.getString(cursor.getColumnIndex(AuthRep.COL_AR_REL)));
                 authReps.put("ARIDType", cursor.getString(cursor.getColumnIndex(AuthRep.COL_AR_IDTYPE)));
+                authReps.put("ARRelID", cursor.getString(cursor.getColumnIndex(AuthRep.COL_AR_REL))+ " | " + cursor.getString(cursor.getColumnIndex(AuthRep.COL_AR_IDTYPE)));
                arList.add(authReps);
 
             } while (cursor.moveToNext());
         }
-        return  arList;
+        return arList;
     }
 }

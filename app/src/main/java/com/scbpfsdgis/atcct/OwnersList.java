@@ -1,6 +1,7 @@
 package com.scbpfsdgis.atcct;
 
 import android.content.Intent;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 public class OwnersList extends AppCompatActivity {
     TextView tvOwnerID;
     private View mLayout;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,8 @@ public class OwnersList extends AppCompatActivity {
     @Override
     public void onRestart() {
         super.onRestart();
+        invalidateOptionsMenu();
+        onCreateOptionsMenu(this.menu);
         loadOwners();
     }
 
@@ -86,6 +90,14 @@ public class OwnersList extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the save_cancel; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.new_back, menu);
+        this.menu = menu;
+        MenuItem chkAll = menu.findItem(R.id.chk_all);
+        MenuItem chkSigned = menu.findItem(R.id.chk_signed);
+        MenuItem chkToSign = menu.findItem(R.id.chk_forsig);
+
+        chkAll.setVisible(false);
+        chkSigned.setVisible(false);
+        chkToSign.setVisible(false);
         return true;
     }
 

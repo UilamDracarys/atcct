@@ -14,12 +14,22 @@ public class Owners {
     public static final String COL_OWNERMOB = "OWNER_MOBILE";
     public static final String COL_OWNEREMAIL = "OWNER_EMAIL";
     public static final String COL_OWNERADDRESS = "OWNER_ADDRESS";
+    public static final String COL_BASES = "OWNER_BASES";
 
     private String ownerID;
     private String ownerName;
     private String ownerMobile;
     private String ownerEmail;
     private String ownerAddress;
+    private String ownerBases;
+
+    public String getOwnerBases() {
+        return ownerBases;
+    }
+
+    public void setOwnerBases(String ownerBases) {
+        this.ownerBases = ownerBases;
+    }
 
     public String getOwnerID() {
         return ownerID;

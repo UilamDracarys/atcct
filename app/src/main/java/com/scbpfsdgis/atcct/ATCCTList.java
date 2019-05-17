@@ -1,22 +1,18 @@
 package com.scbpfsdgis.atcct;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,36 +24,13 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.List;
-import com.itextpdf.text.ListItem;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.scbpfsdgis.atcct.data.model.ATCC;
-import com.scbpfsdgis.atcct.data.model.AuthRep;
-import com.scbpfsdgis.atcct.data.model.Owners;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
-import com.scbpfsdgis.atcct.data.repo.AuthRepRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 import in.galaxyofandroid.spinerdialog.OnSpinerItemClick;
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
@@ -65,6 +38,7 @@ import in.galaxyofandroid.spinerdialog.SpinnerDialog;
 public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
+    private Menu menu;
 
     SpinnerDialog spnPlanter;
     ArrayList<String> ownersList = new ArrayList<>();
@@ -80,7 +54,7 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_atcct_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mLayout = findViewById(R.id.atcct_list_layout);
 
@@ -109,12 +83,13 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                 }
             }
         });
-        loadATCCTs();
+        loadATCCTs("All");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the save_cancel; this adds items to the action bar if it is present.
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.new_back, menu);
         return true;
     }
@@ -125,9 +100,22 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
             case R.id.action_new:
                 spnPlanter.showSpinerDialog();
                 return true;
-
             case R.id.action_back:
                 finish();
+                return true;
+            case R.id.chk_all:
+                item.setChecked(true);
+                loadATCCTs("All");
+                return true;
+            case R.id.chk_signed:
+                item.setChecked(true);
+                loadATCCTs("Signed");
+                return true;
+            case R.id.chk_forsig:
+                item.setChecked(true);
+
+                loadATCCTs("To Sign");
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -136,7 +124,6 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     private void newATCC(String owner) {
         Intent intent = new Intent(this, ATCCTDetails.class);
         intent.putExtra("action", "New ATCCT");
-        intent.putExtra("owner", owner);
         intent.putExtra("ownerID", owner.substring(owner.indexOf("[") + 1, owner.indexOf("]")));
         startActivity(intent);
     }
@@ -147,9 +134,9 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
         ownersList = list;
     }
 
-    private void loadATCCTs() {
+    private void loadATCCTs(String filter) {
         final ATCCRepo repo = new ATCCRepo();
-        ArrayList<HashMap<String, String>> atccList = repo.getATCCForList();
+        ArrayList<HashMap<String, String>> atccList = repo.getATCCForList(filter);
 
         ListView lv = findViewById(R.id.lstATCCT);
         lv.setFastScrollEnabled(true);
@@ -169,32 +156,107 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                         atccNo = tvAtccNo.getText().toString();
                         ATCC atcc = repo.getATCCByNo(atccNo);
 
+
                         //createATCCTPDF();
-                        Intent objIndent;
-                        objIndent = new Intent(getApplicationContext(), ATCCTPreview.class);
-                        objIndent.putExtra("atccNo", atcc.getAtccNo());
-                        startActivity(objIndent);
+                        if (atcc.getFileName() != null) {
+                            Intent objIntent = new Intent(Intent.ACTION_VIEW);
+                            File file = new File(atcc.getFileName());
+                            if (!file.exists()) {
+                                Toast.makeText(getApplicationContext(), "File "+fileName+ " not found. It may have been moved or deleted.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            Uri apkURI = FileProvider.getUriForFile(
+                                    ATCCTList.this,
+                                    getApplicationContext()
+                                            .getPackageName() + ".provider", file);
+                            objIntent.setDataAndType(apkURI, "application/pdf");
+                            objIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            startActivity(objIntent);
+                        } else {
+                            Intent objIntent;
+                            objIntent = new Intent(getApplicationContext(), ATCCTPreview.class);
+                            objIntent.putExtra("atccNo", atcc.getAtccNo());
+                            startActivity(objIntent);
+                        }
+
                     }
                 }
             });
             lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
                 @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
+                    tvAtccNo = view.findViewById(R.id.atccNo);
+                    atccNo = tvAtccNo.getText().toString();
+
+                    final ATCC atcc = repo.getATCCByNo(atccNo);
+
                     PopupMenu popup = new PopupMenu(ATCCTList.this, view);
                     popup.inflate(R.menu.popup_menu);
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            Toast.makeText(getApplicationContext(), "Code to delete", Toast.LENGTH_SHORT).show();
-                            return true;
+
+
+                            switch (item.getItemId()) {
+                                case R.id.action_delete:
+                                    StringBuilder message = new StringBuilder();
+                                    if (atcc.getFileName() != null) {
+                                        message.append("You are about to delete ATCCT No. " + atccNo + ". Press continue to proceed.\n");
+                                    } else {
+                                        message.append("ATCCT No. " + atccNo + " is not yet signed. Press continue to proceed.\n");
+                                    }
+                                    message.append("NOTE: Only ATCCT record will be deleted but not the generated PDFs.");
+                                    new AlertDialog.Builder(view.getContext())
+                                            .setTitle("Delete")
+                                            .setMessage(
+                                                    message)
+                                            .setIcon(
+                                                    getResources().getDrawable(
+                                                            android.R.drawable.ic_dialog_alert
+                                                    ))
+                                            .setPositiveButton(
+                                                    "Continue",
+                                                    new DialogInterface.OnClickListener() {
+
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which) {
+                                                            repo.delete(atccNo);
+                                                            onRestart();
+                                                            Toast.makeText(view.getContext(), "ATCCT successfully deleted. ", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    })
+                                            .setNegativeButton(
+                                                    "Cancel",
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which) {
+                                                        }
+                                                    }).show();
+                                    return true;
+                                case R.id.action_edit:
+                                    Intent objIntent;
+                                    objIntent = new Intent(getApplicationContext(), ATCCTDetails.class);
+                                    objIntent.putExtra("atccNo", atcc.getAtccNo());
+                                    objIntent.putExtra("action", "Edit ATCCT");
+                                    startActivity(objIntent);
+                                    return true;
+                                default:
+                                    return onOptionsItemSelected(item);
+                            }
+
+
                         }
                     });
                     popup.show();
                     return true;
                 }
             });
-            adapter = new SimpleAdapter(ATCCTList.this, atccList, R.layout.atcct_list_item, new String[]{"ATCCNo", "OwnerID", "OwnerName", "ATCCTDetails"}, new int[]{R.id.atccNo, R.id.ownerID, R.id.ownerName, R.id.atcctDetails});
+            adapter = new SimpleAdapter(ATCCTList.this, atccList, R.layout.atcct_list_item, new String[]{"ATCCNo", "OwnerID", "OwnerName", "ATCCTDetails", "DateSigned"}, new int[]{R.id.atccNo, R.id.ownerID, R.id.ownerName, R.id.atcctDetails, R.id.isSigned});
+
             lv.setAdapter(adapter);
         } else {
             adapter = null;
@@ -202,12 +264,12 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
         }
     }
 
-
     @Override
     public void onRestart() {
         super.onRestart();
-        loadATCCTs();
+        invalidateOptionsMenu();
+        onCreateOptionsMenu(this.menu);
+        loadATCCTs("All");
     }
-
 
 }

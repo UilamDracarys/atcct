@@ -21,7 +21,10 @@ public class ATCC {
     public static final String COL_BANKADD = "BANK_ADDRESS";
     public static final String COL_REMARKS = "REMARKS";
     public static final String COL_DTECREATED = "DATE_CREATED";
+    public static final String COL_DTEMODIFIED = "DATE_MODIFIED";
     public static final String COL_DTESIGNED = "DATE_SIGNED";
+    public static final String COL_FILE = "FILENAME";
+    public static final String COL_SIGNATORY = "SIGNATORY";
 
     private String atccNo;
     private String ownerID;
@@ -33,8 +36,18 @@ public class ATCC {
     private String bankAdd;
     private String Remarks;
     private String dteCreated;
+    private String dteModified;
     private String dteSigned;
+    private String fileName;
+    private String signatory;
 
+    public String getDteModified() {
+        return dteModified;
+    }
+
+    public void setDteModified(String dteModified) {
+        this.dteModified = dteModified;
+    }
 
     public String getPickupPt() {
         return pickupPt;
@@ -123,5 +136,21 @@ public class ATCC {
 
     public void setAccNo(String accNo) {
         this.accNo = accNo;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getSignatory() {
+        return signatory;
+    }
+
+    public void setSignatory(String signatory) {
+        this.signatory = signatory;
     }
 }

@@ -45,7 +45,8 @@ public class FarmsRepo {
                 Owners.COL_OWNERNAME + " TEXT, " +
                 Owners.COL_OWNERMOB + " TEXT, " +
                 Owners.COL_OWNEREMAIL + " TEXT, " +
-                Owners.COL_OWNERADDRESS + " TEXT)";
+                Owners.COL_OWNERADDRESS + " TEXT, " +
+                Owners.COL_BASES + " TEXT)";
         return query;
     }
 
@@ -89,7 +90,7 @@ public class FarmsRepo {
         values.put(Farms.COL_OWNERID, chgs.getFarmOwnerID());
         values.put(Farms.COL_REMARKS, chgs.getFarmRemarks());
 
-        db.update(Farms.TABLE_FARM_CHANGES, values, Farms.COL_FARMCODE + "= ? ", new String[] { String.valueOf(chgs.getFarmCode()) });
+        db.update(Farms.TABLE_FARM_CHANGES, values, Farms.COL_FARMCODE + "= ? ", new String[]{String.valueOf(chgs.getFarmCode())});
         db.close(); // Closing database connection
     }
 
@@ -289,6 +290,19 @@ public class FarmsRepo {
         return farms;
     }
 
+    public int getFarmCount(String table) {
+
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + table;
+        int count = 0;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        db.close();
+        return count;
+    }
 
 
 

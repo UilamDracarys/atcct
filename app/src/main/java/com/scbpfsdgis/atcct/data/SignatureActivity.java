@@ -1,4 +1,5 @@
 package com.scbpfsdgis.atcct.data;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -65,9 +66,7 @@ public class SignatureActivity extends AppCompatActivity {
         mLayout = findViewById(R.id.linearLayout);
 
 
-
-
-        mContent = (LinearLayout) findViewById(R.id.canvasLayout);
+        mContent = findViewById(R.id.canvasLayout);
 
         ViewGroup.LayoutParams params = mContent.getLayoutParams();
 
@@ -78,7 +77,7 @@ public class SignatureActivity extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        int height = width /3;
+        int height = width / 3;
 
         params.width = width;
         params.height = height;
@@ -94,10 +93,10 @@ public class SignatureActivity extends AppCompatActivity {
         mSignature.setBackgroundColor(Color.WHITE);
         // Dynamically generating Layout through java code
         mContent.addView(mSignature, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mClear = (Button) findViewById(R.id.clear);
-        mGetSign = (Button) findViewById(R.id.getsign);
+        mClear = findViewById(R.id.clear);
+        mGetSign = findViewById(R.id.getsign);
         mGetSign.setEnabled(false);
-        mCancel = (Button) findViewById(R.id.cancel);
+        mCancel = findViewById(R.id.cancel);
         view = mContent;
         mGetSign.setOnClickListener(onButtonClick);
         mClear.setOnClickListener(onButtonClick);
@@ -108,12 +107,6 @@ public class SignatureActivity extends AppCompatActivity {
 
         System.out.println("Get ATCCNO: " + atccNo);
 
-        // Method to create Directory, if the Directory doesn't exists
-        /*file = new File(DIRECTORY);
-        if (!file.exists()) {
-            file.mkdirs();
-            Log.w("DIR", "Signature cache dir created.");
-        }*/
     }
 
     Button.OnClickListener onButtonClick = new Button.OnClickListener() {
@@ -128,11 +121,11 @@ public class SignatureActivity extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= 23) {
                     System.out.println("Build Version: " + Build.VERSION.SDK_INT);
                     isStoragePermissionGranted();
-                    Toast.makeText(getApplicationContext(), "Successfully Saved Build >= 23", Toast.LENGTH_SHORT).show();
+
                 } else {
                     view.setDrawingCacheEnabled(true);
                     mSignature.save(view, StoredPath);
-                    Toast.makeText(getApplicationContext(), "Successfully Saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "ATCCT Successfully Signed!", Toast.LENGTH_SHORT).show();
                     // Calling the same class
                     //recreate();
                 }
@@ -153,7 +146,7 @@ public class SignatureActivity extends AppCompatActivity {
             if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 view.setDrawingCacheEnabled(true);
                 mSignature.save(view, StoredPath);
-                //Toast.makeText(getApplicationContext(), "Successfully Saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "ATCCT Successfully Signed!", Toast.LENGTH_SHORT).show();
                 // Calling the same class
                 //recreate();
                 return true;
