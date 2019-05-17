@@ -105,6 +105,9 @@ public class ATCCRepo extends AppCompatActivity {
             values.put(ATCC.COL_BANKADD, atcc.getBankAdd());
             values.put(ATCC.COL_REMARKS, atcc.getRemarks());
             values.put(ATCC.COL_DTEMODIFIED, atcc.getDteModified());
+            values.put(ATCC.COL_DTESIGNED, "");
+            values.put(ATCC.COL_FILE, "");
+            values.put(ATCC.COL_SIGNATORY, "");
         }
 
         db.update(ATCC.TABLE_ATCC, values, ATCC.COL_ATCCNO + "= ? ", new String[]{String.valueOf(atcc.getAtccNo())});

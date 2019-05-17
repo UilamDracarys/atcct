@@ -159,20 +159,27 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
 
                         //createATCCTPDF();
                         if (atcc.getFileName() != null) {
-                            Intent objIntent = new Intent(Intent.ACTION_VIEW);
-                            File file = new File(atcc.getFileName());
-                            if (!file.exists()) {
-                                Toast.makeText(getApplicationContext(), "File "+fileName+ " not found. It may have been moved or deleted.", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                            if (atcc.getFileName().equalsIgnoreCase("")) {
+                                Intent objIntent;
+                                objIntent = new Intent(getApplicationContext(), ATCCTPreview.class);
+                                objIntent.putExtra("atccNo", atcc.getAtccNo());
+                                startActivity(objIntent);
+                            } else {
+                                Intent objIntent = new Intent(Intent.ACTION_VIEW);
+                                File file = new File(atcc.getFileName());
+                                if (!file.exists()) {
+                                    Toast.makeText(getApplicationContext(), "File " + fileName + " not found. It may have been moved or deleted.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
 
-                            Uri apkURI = FileProvider.getUriForFile(
-                                    ATCCTList.this,
-                                    getApplicationContext()
-                                            .getPackageName() + ".provider", file);
-                            objIntent.setDataAndType(apkURI, "application/pdf");
-                            objIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                            startActivity(objIntent);
+                                Uri apkURI = FileProvider.getUriForFile(
+                                        ATCCTList.this,
+                                        getApplicationContext()
+                                                .getPackageName() + ".provider", file);
+                                objIntent.setDataAndType(apkURI, "application/pdf");
+                                objIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                startActivity(objIntent);
+                            }
                         } else {
                             Intent objIntent;
                             objIntent = new Intent(getApplicationContext(), ATCCTPreview.class);
@@ -202,8 +209,12 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                             switch (item.getItemId()) {
                                 case R.id.action_delete:
                                     StringBuilder message = new StringBuilder();
-                                    if (atcc.getFileName() != null) {
-                                        message.append("You are about to delete ATCCT No. " + atccNo + ". Press continue to proceed.\n");
+                                    if (atcc.getFileName() != null ) {
+                                        if (atcc.getFileName().equalsIgnoreCase("")) {
+                                            message.append("You are about to delete ATCCT No. " + atccNo + ". Press continue to proceed.\n");
+                                        } else {
+                                            message.append("ATCCT No. " + atccNo + " is not yet signed. Press continue to proceed.\n");
+                                        }
                                     } else {
                                         message.append("ATCCT No. " + atccNo + " is not yet signed. Press continue to proceed.\n");
                                     }
@@ -238,11 +249,52 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                                                     }).show();
                                     return true;
                                 case R.id.action_edit:
-                                    Intent objIntent;
-                                    objIntent = new Intent(getApplicationContext(), ATCCTDetails.class);
-                                    objIntent.putExtra("atccNo", atcc.getAtccNo());
-                                    objIntent.putExtra("action", "Edit ATCCT");
-                                    startActivity(objIntent);
+                                    if (atcc.getFileName() != null) {
+                                        if (atcc.getFileName().equalsIgnoreCase("")) {
+                                            Intent objIntent;
+                                            objIntent = new Intent(getApplicationContext(), ATCCTDetails.class);
+                                            objIntent.putExtra("atccNo", atcc.getAtccNo());
+                                            objIntent.putExtra("action", "Edit ATCCT");
+                                            startActivity(objIntent);
+                                        } else {
+                                            new AlertDialog.Builder(view.getContext())
+                                                    .setTitle("Edit")
+                                                    .setMessage("This ATCCT has already been signed. Do you want to continue editing this and sign again?")
+                                                    .setIcon(
+                                                            getResources().getDrawable(
+                                                                    android.R.drawable.ic_dialog_alert
+                                                            ))
+                                                    .setPositiveButton(
+                                                            "Yes",
+                                                            new DialogInterface.OnClickListener() {
+
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog,
+                                                                                    int which) {
+                                                                    Intent objIntent;
+                                                                    objIntent = new Intent(getApplicationContext(), ATCCTDetails.class);
+                                                                    objIntent.putExtra("atccNo", atcc.getAtccNo());
+                                                                    objIntent.putExtra("action", "Edit ATCCT");
+                                                                    startActivity(objIntent);
+                                                                }
+                                                            })
+                                                    .setNegativeButton(
+                                                            "Cancel",
+                                                            new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog,
+                                                                                    int which) {
+                                                                }
+                                                            }).show();
+                                        }
+
+                                    } else {
+                                        Intent objIntent;
+                                        objIntent = new Intent(getApplicationContext(), ATCCTDetails.class);
+                                        objIntent.putExtra("atccNo", atcc.getAtccNo());
+                                        objIntent.putExtra("action", "Edit ATCCT");
+                                        startActivity(objIntent);
+                                    }
                                     return true;
                                 default:
                                     return onOptionsItemSelected(item);
