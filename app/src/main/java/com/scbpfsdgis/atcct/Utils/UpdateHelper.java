@@ -1,8 +1,7 @@
-package com.scbpfsdgis.atcct.data.repo;
+package com.scbpfsdgis.atcct.Utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 /*
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;*/
 

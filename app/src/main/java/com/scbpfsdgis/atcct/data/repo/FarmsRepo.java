@@ -304,7 +304,8 @@ public class FarmsRepo {
         return count;
     }
 
-
-
+    public String selectChanges() {
+        return "SELECT * FROM " + Farms.TABLE_FARM_CHANGES;
+    }
 
 }

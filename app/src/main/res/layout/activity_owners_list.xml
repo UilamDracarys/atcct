@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/owners_list_layout"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/owners_list_layout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/AppTheme"
-    tools:context="com.scbpfsdgis.atcct.FarmsList"
+    android:orientation="vertical"
+    android:layout_height="fill_parent"
+
+    tools:context="com.scbpfsdgis.atcct.OwnersList"
     android:background="#F5F5F5">
 
     <android.support.v7.widget.Toolbar
@@ -19,13 +20,27 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/my_toolbar"
-        android:background="@android:color/white"
-        android:elevation="2dp"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/my_toolbar"
+            android:background="@android:color/white"
+            android:elevation="2dp"/>
 
-</RelativeLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:theme="@style/ThemeOverlay.AppCompat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp" />
+
+    </FrameLayout>
+
+</LinearLayout>

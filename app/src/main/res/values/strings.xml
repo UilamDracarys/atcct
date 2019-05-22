@@ -37,4 +37,8 @@
     <string name="action_delete">Delete</string>
     <string name="action_sign">Sign</string>
     <string name="action_edit">Edit</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="backupDB">Backup Data</string>
+    <string name="exportChgList">Export Change List</string>
+    <string name="action_exportATCC">Export List</string>
 </resources>

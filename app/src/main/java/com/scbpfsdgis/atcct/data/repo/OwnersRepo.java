@@ -345,4 +345,8 @@ public class OwnersRepo {
         return count;
     }
 
+    public String selectChanges() {
+        return "SELECT * FROM " + Owners.TABLE_OWNERS_CHANGES;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.scbpfsdgis.atcct;
+package com.scbpfsdgis.atcct.Utils;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -16,24 +16,12 @@ import com.scbpfsdgis.atcct.data.model.DBHelper;
 
 public class Utils {
 
-    private boolean isThereData() {
-        DBHelper dbhelper = new DBHelper();
-        SQLiteDatabase db = dbhelper.getReadableDatabase();
-        String query = "SELECT farm_id FROM farms";
-        Cursor cursor = db.rawQuery(query, null);
-        if (cursor.getCount() == 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
+    public static final String mainDir = "/ATCCTMobile";
+    public static final String dataSubDir = "/Data";
+    public static final String atcctSubDir = "/ATCCTs";
+    public static final String backupSubDir = "/Backups";
+    public static final String chgListSubDir = "/Change Lists";
 
-    private void updateFarmNames() {
-        DBHelper dbHelper = new DBHelper();
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.execSQL("UPDATE farms SET farm_name = REPLACE(farm_name, '''','')");
-        db.close();
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static String getActualPath(final Context context, final Uri uri) {

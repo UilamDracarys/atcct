@@ -13,4 +13,14 @@
         android:title="@string/downloadcsv"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_exportChgList"
+        android:title="@string/exportChgList"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_backupdb"
+        android:title="@string/backupDB"
+        app:showAsAction="never" />
+
 </menu>

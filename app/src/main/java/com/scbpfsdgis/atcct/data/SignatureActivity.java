@@ -77,7 +77,7 @@ public class SignatureActivity extends AppCompatActivity {
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        int height = width / 3;
+        int height = (width*4)/9;
 
         params.width = width;
         params.height = height;
@@ -136,6 +136,7 @@ public class SignatureActivity extends AppCompatActivity {
                 intent.putExtra("atccNo", atccNo);
                 System.out.println("Signed ATCC No. " + atccNo);
                 startActivity(intent);
+                finish();
             }
         }
     };

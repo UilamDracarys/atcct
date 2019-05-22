@@ -3,6 +3,7 @@ package com.scbpfsdgis.atcct;
 import android.content.Intent;
 import android.opengl.Visibility;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -23,6 +24,7 @@ public class OwnersList extends AppCompatActivity {
     TextView tvOwnerID;
     private View mLayout;
     private Menu menu;
+    FloatingActionButton newItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,15 @@ public class OwnersList extends AppCompatActivity {
 
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        newItem = findViewById(R.id.fab);
+        newItem.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                newOwner();
+            }
+        });
         //getSupportActionBar().setTitle("Owner Details");
 
         loadOwners();
@@ -94,10 +105,12 @@ public class OwnersList extends AppCompatActivity {
         MenuItem chkAll = menu.findItem(R.id.chk_all);
         MenuItem chkSigned = menu.findItem(R.id.chk_signed);
         MenuItem chkToSign = menu.findItem(R.id.chk_forsig);
+        MenuItem exportATCCT = menu.findItem(R.id.action_exportATCCT);
 
         chkAll.setVisible(false);
         chkSigned.setVisible(false);
         chkToSign.setVisible(false);
+        exportATCCT.setVisible(false);
         return true;
     }
 
@@ -105,9 +118,10 @@ public class OwnersList extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_new:
+            /*case R.id.action_new:
                 newOwner();
                 return true;
+            */
             case R.id.action_back:
                 finish();
             default:

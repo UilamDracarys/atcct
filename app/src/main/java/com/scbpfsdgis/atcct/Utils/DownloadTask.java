@@ -1,4 +1,4 @@
-package com.scbpfsdgis.atcct;
+package com.scbpfsdgis.atcct.Utils;
 
 import android.app.Dialog;
 import android.content.ContentValues;
@@ -50,7 +50,7 @@ public class DownloadTask {
 
     private class DownloadingTask extends AsyncTask<Void, Void, Void> {
 
-        File apkStorage = new File(Environment.getExternalStorageDirectory() + "/ATCCTMobile/Data", "");
+        File apkStorage = new File(Environment.getExternalStorageDirectory() + Utils.mainDir + Utils.dataSubDir, "");
         File outputFile = null;
 
         @Override

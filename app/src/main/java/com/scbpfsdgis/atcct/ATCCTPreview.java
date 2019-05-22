@@ -45,6 +45,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.scbpfsdgis.atcct.Utils.Utils;
 import com.scbpfsdgis.atcct.data.SignatureActivity;
 import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.Owners;
@@ -62,7 +63,6 @@ import java.util.Locale;
 
 public class ATCCTPreview extends AppCompatActivity {
 
-    String sigCacheDir = Environment.getExternalStorageDirectory().getPath() + "/ATCCTMobile/Signature/";
     String signatory;
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
     TextView tvOwnerName, tvOwnerMobile, tvOwnerEmail, tvOwnerAddress, tvPmtMethod, tvPickupPt, tvAccName, tvAccNo,
@@ -71,7 +71,7 @@ public class ATCCTPreview extends AppCompatActivity {
     TableRow rPickupPt, rAccName, rAccNo, rBank, rRemarks;
     String[] notes = {
             "1. Payment per 1 full wagon load Php 625.00 rate subject to 1% withholding tax with applicable exemptions wherein a valid BIR tax exemption certification should be presented.\n\n",
-            "2. For changes in payee information as declared above, a letter of authorization should be provided duly signed by the owner with valid ID’S attached.\n\n",
+            "2. For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.\n\n",
             "3. Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).\n\n",
             "4. Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.\n\n",
             "5. If unclaimed at TLS, Check/Cheque may be claimed at SCBP plant site, San Carlos Ecozone, Brgy. Palampas, San Carlos City."
@@ -81,7 +81,7 @@ public class ATCCTPreview extends AppCompatActivity {
             "2. In case of adverse weather conditions and trash cannot be collected, Biopower is not obligated to make any payment for a particular field or group of fields.\n\n",
             "3. Cane trash collection shall be solely at the discretion of Biopower, and payments shall be made based on actual cane trash collected from harvested fields.\n\n",
             "4. In case collecting per field is not completed at cut-off date, partial payment shall be made in proportion to actual area collected.\n\n",
-            "5. Owner name stated above shall be the payee name (unless explicitly stated in the remarks) for the entire validity of this agreement. Modifications will only be allowed for reasons such as death of owner/payee and change of ownership.\n\n"
+            "5. Owner name stated above shall be the payee name (unless explicitly stated in the remarks) for the entire validity of this agreement. Modifications will only be allowed for reasons such as death of owner/payee and change of ownership."
     };
     String conformity = "The above terms and conditions are understood and agreed upon between Biopower and I, as supplier of cane trash. This shall be valid until otherwise voided by either party";
     Button sign;
@@ -309,7 +309,7 @@ public class ATCCTPreview extends AppCompatActivity {
                 e.printStackTrace();
             }
             finish();
-            Toast.makeText(this, "ATCCT No. " + atccNo + " successfully generated.\nFilename: " + fileName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "ATCCT No. " + atccNo + " successfully generated.\nFilename: " + fileName, Toast.LENGTH_LONG).show();
         } else {
             // Permission is missing and must be requested.
             requestStoragePermission();
@@ -326,7 +326,7 @@ public class ATCCTPreview extends AppCompatActivity {
         SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHMMSS", Locale.getDefault());
         SimpleDateFormat dateSignedFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-        File exportDir = new File(Environment.getExternalStorageDirectory() + "/ATCCTMobile/ATCCTs", "");
+        File exportDir = new File(Environment.getExternalStorageDirectory() + Utils.mainDir + Utils.atcctSubDir, "");
         if (!exportDir.exists()) {
             exportDir.mkdirs();
             System.out.println("ATCCT Dir Created");
@@ -452,7 +452,7 @@ public class ATCCTPreview extends AppCompatActivity {
         List noteList = new List(List.ORDERED);
         noteList.setFirst(1);
         noteList.add(new ListItem("Payment per 1 full wagon load Php 625.00 rate subject to 1% withholding tax with applicable exemptions wherein a valid BIR tax exemption certification should be presented.", smallFont));
-        noteList.add(new ListItem("For changes in payee information as declared above, a letter of authorization should be provided duly signed by the owner with valid ID’S attached.", smallFont));
+        noteList.add(new ListItem("For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.", smallFont));
         noteList.add(new ListItem("Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).", smallFont));
         noteList.add(new ListItem("Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.", smallFont));
         noteList.add(new ListItem("If unclaimed at TLS, Check/Cheque may be claimed at SCBP plant site, San Carlos Ecozone, Brgy. Palampas, San Carlos City.", smallFont));
@@ -562,7 +562,7 @@ public class ATCCTPreview extends AppCompatActivity {
 
         atcc.setDteSigned(dateSignedFormat.format(new Date()));
         atcc.setFileName(fileName);
-        atcc.setSignatory(signatory);
+        atcc.setSignatory(signatory.toUpperCase());
 
         atccRepo.updateATCCT(atcc, "Signed");
 
@@ -663,6 +663,7 @@ public class ATCCTPreview extends AppCompatActivity {
         final EditText input = new EditText(this);
         input.setHint("Signatory Fullname");
         LinearLayout ll = new LinearLayout(this);
+        ll.setOrientation(LinearLayout.VERTICAL);
         ll.setPadding(50, 50, 50, 50);
         ll.addView(input);
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text

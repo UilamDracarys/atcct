@@ -9,17 +9,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +34,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.scbpfsdgis.atcct.Utils.CSVWriter;
+import com.scbpfsdgis.atcct.Utils.DownloadTask;
+import com.scbpfsdgis.atcct.Utils.Utils;
 import com.scbpfsdgis.atcct.data.CustomAdapter;
+import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
@@ -39,17 +49,22 @@ import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
     public static final int requestcode = 1;
+    private String action = "";
     SQLiteDatabase db;
     DBHelper dbHelper;
     private View mLayout;
     AlertDialog alertDialog1;
     CharSequence[] values = {"SCBP", "SNBP", "NNBP"};
-    String downloadURL = "";
     String nnbpDataURL = "https://drive.google.com/uc?authuser=0&id=15EfjKmsv511ehyhLelD_QteaoC5sX1OD&export=download";
     String scbpDataURL = "https://drive.google.com/uc?authuser=0&id=1L8JoYCRAmKAaf2SFjvLXPk-Zfu6LhfHN&export=download";
     String snbpDataURL = "https://drive.google.com/uc?authuser=0&id=11ux9AxUsZTaPpcO2XGWCUK5APPcOTVKJ&export=download";
@@ -196,6 +211,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 Snackbar.make(mLayout, "Storage access granted.",
                         Snackbar.LENGTH_SHORT)
                         .show();
+                if (action.equalsIgnoreCase("backup")) {
+                    backupDatabase();
+                } else if (action.equalsIgnoreCase("download")) {
+                    chooseCompany();
+                } else if (action.equalsIgnoreCase("importcsv")) {
+                    importFromCSV();
+                } else if (action.equalsIgnoreCase("exportchg")) {
+                    exportChanges();
+                }
             } else {
                 // Permission request was denied.
                 Snackbar.make(mLayout, "Storage access denied.",
@@ -249,8 +273,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_importdata:
-                importData();
-                return true;
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    importFromCSV();
+                    return true;
+                } else {
+                    action = "importcsv";
+                    requestStoragePermission();
+                    return true;
+                }
             case R.id.action_downloadcsv:
                 if (isConnectingToInternet()) {
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -258,11 +289,33 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         chooseCompany();
                         return true;
                     } else {
+                        action = "download";
                         requestStoragePermission();
                         return true;
                     }
                 } else {
                     Toast.makeText(this, "You are not connected to the internet.", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            case R.id.action_exportChgList:
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    exportChanges();
+                    return true;
+                } else {
+                    action = "exportchg";
+                    requestStoragePermission();
+                    return true;
+                }
+
+            case R.id.action_backupdb:
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    backupDatabase();
+                    return true;
+                } else {
+                    action = "backup";
+                    requestStoragePermission();
                     return true;
                 }
             default:
@@ -306,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
-    private void importData() {
+    private void importFromCSV() {
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission is already available
@@ -406,6 +459,128 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         else
             return false;
     }
+
+    private void backupDatabase() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Backup");
+        builder.setMessage("Do you want to create a backup of the database? \nEnter password and click OK to continue.");
+
+        TextInputLayout textInputLayout = new TextInputLayout(this);
+        textInputLayout.setPasswordVisibilityToggleEnabled(true);
+
+        final TextInputEditText password = new TextInputEditText(this);
+        textInputLayout.setPadding(50, 20, 50, 50);
+        password.setHint("Password");
+        password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        textInputLayout.addView(password);
+
+        builder.setView(textInputLayout);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (password.length() < 6) {
+                    if (password.length() == 0) {
+                        Toast.makeText(getApplicationContext(), "Password for backup is required.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Password should be a minimum of 6 characters.", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                } else {
+                    DatabaseManager db = new DatabaseManager();
+                    try {
+                        db.backupDB(getApplicationContext(), "ATCCT.db", Utils.mainDir + Utils.backupSubDir, password.getText().toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.create();
+        builder.show();
+    }
+
+    private void exportChanges() {
+        final File chgListDir = new File(Environment.getExternalStorageDirectory() + Utils.mainDir + Utils.chgListSubDir, "");
+        if (!chgListDir.exists()) {
+            chgListDir.mkdirs();
+        }
+
+        FarmsRepo farmsRepo = new FarmsRepo();
+        OwnersRepo ownersRepo = new OwnersRepo();
+
+        final DateFormat fileDF = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        final String strDate = fileDF.format(new Date());
+
+        final String farmChgFilename = "FARM_CHGS_" + strDate + ".csv";
+        final String planterChgFilename = "PLANTER_CGHS_" + strDate + ".csv";
+        final File farmChanges = new File(chgListDir, farmChgFilename);
+        final File planterChanges = new File(chgListDir, planterChgFilename);
+
+        int farmChgCount = farmsRepo.getFarmCount(Farms.TABLE_FARM_CHANGES);
+        int planterChgCount = ownersRepo.getOwnerCount(Owners.TABLE_OWNERS_CHANGES);
+
+        String changes = "";
+        if (farmChgCount > 0 && planterChgCount == 0) {
+            changes = "Farms Only";
+        } else if (farmChgCount == 0 && planterChgCount >0) {
+            changes = "Planters Only";
+        } else if (farmChgCount > 0 && planterChgCount > 0) {
+            changes = "Both";
+        } else {
+            changes = "None";
+        }
+
+        String message = "";
+        switch (changes) {
+            case "Farms Only":
+                message = "Farm changes exported. No planter changes.";
+                csvWriter(farmChanges, farmsRepo.selectChanges());
+                break;
+            case "Planters Only":
+                message = "Planter changes exported. No farm changes.";
+                csvWriter(planterChanges, ownersRepo.selectChanges());
+                break;
+            case "Both":
+                message = "Changes successfully exported.";
+                csvWriter(farmChanges, farmsRepo.selectChanges());
+                csvWriter(planterChanges, ownersRepo.selectChanges());
+                break;
+            default:
+                message = "No changes to export";
+                break;
+        }
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void csvWriter(File file, String query) {
+        DBHelper dbhelper = new DBHelper();
+        SQLiteDatabase db = dbhelper.getReadableDatabase();
+
+        Cursor curCSV = db.rawQuery(query, null);
+        try {
+            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+            csvWrite.writeNext(curCSV.getColumnNames());
+            while (curCSV.moveToNext()) {
+                String arrStr[] = new String[curCSV.getColumnCount()];
+                for (int i = 0; i < curCSV.getColumnCount(); i++) {
+                    arrStr[i] = curCSV.getString(i);
+                }
+                csvWrite.writeNext(arrStr);
+            }
+            csvWrite.close();
+            curCSV.close();
+        } catch (Exception sqlEx) {
+            Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
+        }
+    }
+
 
 }
 

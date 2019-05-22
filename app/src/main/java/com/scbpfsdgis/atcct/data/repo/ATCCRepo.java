@@ -3,38 +3,16 @@ package com.scbpfsdgis.atcct.data.repo;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 
-import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.List;
-import com.itextpdf.text.ListItem;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.scbpfsdgis.atcct.R;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
-import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Created by William on 12/17/2018.
@@ -116,13 +94,17 @@ public class ATCCRepo extends AppCompatActivity {
 
     public ArrayList<HashMap<String, String>> getATCCForList(String filter) {
         String filterClause = " WHERE A." + ATCC.COL_DTESIGNED + "";
+        System.out.println("Filter " + filter);
         if (filter.equalsIgnoreCase("Signed")) {
-            filterClause += " IS NOT NULL ";
+            filterClause += " IS NOT NULL AND A." + ATCC.COL_DTESIGNED + " <> ''";
+            System.out.println("Filter Clause: " + filterClause);
         } else if (filter.equalsIgnoreCase("To Sign")) {
-            filterClause += " IS NULL";
+            filterClause += " IS NULL OR A." + ATCC.COL_DTESIGNED + " = ''";
         } else {
             filterClause = "";
+            System.out.println("Filter " + filter);
         }
+
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
         String selectQuery = "SELECT A." + ATCC.COL_ATCCNO + " as ATCCNo, " +
@@ -218,10 +200,10 @@ public class ATCCRepo extends AppCompatActivity {
         StringBuilder query = new StringBuilder();
         query.append("SELECT COUNT(*) FROM " + ATCC.TABLE_ATCC);
         if (filter.equalsIgnoreCase("Signed")) {
-            query.append(" WHERE " + ATCC.COL_DTESIGNED + " IS NOT NULL");
+            query.append(" WHERE " + ATCC.COL_DTESIGNED + " IS NOT NULL AND " + ATCC.COL_DTESIGNED + " <> ''");
         }
         if (filter.equalsIgnoreCase("To Sign")) {
-            query.append(" WHERE " + ATCC.COL_DTESIGNED + " IS NULL");
+            query.append(" WHERE " + ATCC.COL_DTESIGNED + " IS NULL OR " + ATCC.COL_DTESIGNED + " = ''");
         }
         int count = 0;
         Cursor cursor = db.rawQuery(query.toString(), null);
@@ -230,6 +212,27 @@ public class ATCCRepo extends AppCompatActivity {
         }
         db.close();
         return count;
+    }
+
+    public String selectATCCTs() {
+        return "SELECT A.ATCC_NO AS \"ATCC No.\",\n" +
+                "A.OWNER_ID AS \"Planter ID\",\n" +
+                "O.OWNER_NAME AS \"Planter Name\",\n" +
+                "A.PAYMENT_METHOD AS \"Payment Method\",\n" +
+                "A.REMARKS AS Remarks,\n" +
+                "A.DATE_CREATED AS Created,\n" +
+                "A.DATE_MODIFIED AS Modified,\n" +
+                "A.FILENAME AS Filename,\n" +
+                "A.SIGNATORY AS \"Signed By\",\n" +
+                "\"" + getDeviceName() + "\" AS Device\n" +
+                "FROM T_ATCC A JOIN T_OWNERS O\n" +
+                "ON A.OWNER_ID = O.OWNER_ID";
+    }
+
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        return manufacturer + " " + model;
     }
 
 }

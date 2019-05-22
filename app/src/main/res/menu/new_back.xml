@@ -2,12 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_new"
-        android:title="@string/action_new"
-        app:showAsAction="always"/>
-
-    <item
+  <item
         android:id="@+id/action_back"
         android:title="@string/action_back"
         app:showAsAction="always"/>
@@ -16,18 +11,21 @@
         <item android:id="@+id/chk_all"
             android:title="Show All"
             android:icon="@android:drawable/ic_menu_preferences"
-            android:checked="true">
-        </item>
+            android:checked="true"/>
 
         <item android:id="@+id/chk_signed"
             android:title="Signed"
-            android:icon="@android:drawable/ic_menu_preferences">
-        </item>
+            android:icon="@android:drawable/ic_menu_preferences"/>
 
         <item android:id="@+id/chk_forsig"
             android:title="For Signature"
-            android:icon="@android:drawable/ic_menu_preferences">
-        </item>
+            android:icon="@android:drawable/ic_menu_preferences"/>
     </group>
+
+    <item
+        android:id="@+id/action_exportATCCT"
+        android:title="@string/action_exportATCC"
+        app:showAsAction="never"
+        />
 
 </menu>

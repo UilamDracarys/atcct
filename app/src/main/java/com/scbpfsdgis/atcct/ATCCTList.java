@@ -2,16 +2,21 @@ package com.scbpfsdgis.atcct;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,13 +29,21 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.scbpfsdgis.atcct.Utils.CSVWriter;
+import com.scbpfsdgis.atcct.Utils.Utils;
 import com.scbpfsdgis.atcct.data.model.ATCC;
+import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import in.galaxyofandroid.spinerdialog.OnSpinerItemClick;
 import in.galaxyofandroid.spinerdialog.SpinnerDialog;
@@ -49,6 +62,7 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     TextView tvAtccNo;
     String atccNo, fileName;
     Button button;
+    FloatingActionButton newItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +97,14 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                 }
             }
         });
+        newItem = findViewById(R.id.fab);
+        newItem.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                spnPlanter.showSpinerDialog();
+            }
+        });
         loadATCCTs("All");
     }
 
@@ -97,9 +119,6 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_new:
-                spnPlanter.showSpinerDialog();
-                return true;
             case R.id.action_back:
                 finish();
                 return true;
@@ -113,8 +132,15 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                 return true;
             case R.id.chk_forsig:
                 item.setChecked(true);
-
                 loadATCCTs("To Sign");
+                return true;
+            case R.id.action_exportATCCT:
+                ATCCRepo repo = new ATCCRepo();
+                if (repo.getATCCTCount("") > 0) {
+                    exportATCCTList();
+                } else {
+                    Toast.makeText(this, "Nothing to export", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -209,7 +235,7 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                             switch (item.getItemId()) {
                                 case R.id.action_delete:
                                     StringBuilder message = new StringBuilder();
-                                    if (atcc.getFileName() != null ) {
+                                    if (atcc.getFileName() != null) {
                                         if (atcc.getFileName().equalsIgnoreCase("")) {
                                             message.append("You are about to delete ATCCT No. " + atccNo + ". Press continue to proceed.\n");
                                         } else {
@@ -322,6 +348,49 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
         invalidateOptionsMenu();
         onCreateOptionsMenu(this.menu);
         loadATCCTs("All");
+    }
+
+
+    private void exportATCCTList() {
+        final File atcctListDir = new File(Environment.getExternalStorageDirectory() + Utils.mainDir + Utils.atcctSubDir, "");
+        if (!atcctListDir.exists()) {
+            atcctListDir.mkdirs();
+        }
+
+        ATCCRepo repo = new ATCCRepo();
+
+        final DateFormat fileDF = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+        final String strDate = fileDF.format(new Date());
+
+        final String atcctListFilename = "ATCCTS_" + strDate + ".csv";
+        final File atcctList = new File(atcctListDir, atcctListFilename);
+
+        csvWriter(atcctList, repo.selectATCCTs());
+
+        Toast.makeText(this, "ATCCT List successfully exported to " + atcctListDir.getAbsolutePath(), Toast.LENGTH_LONG).show();
+    }
+
+
+    private void csvWriter(File file, String query) {
+        DBHelper dbhelper = new DBHelper();
+        SQLiteDatabase db = dbhelper.getReadableDatabase();
+
+        Cursor curCSV = db.rawQuery(query, null);
+        try {
+            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+            csvWrite.writeNext(curCSV.getColumnNames());
+            while (curCSV.moveToNext()) {
+                String arrStr[] = new String[curCSV.getColumnCount()];
+                for (int i = 0; i < curCSV.getColumnCount(); i++) {
+                    arrStr[i] = curCSV.getString(i);
+                }
+                csvWrite.writeNext(arrStr);
+            }
+            csvWrite.close();
+            curCSV.close();
+        } catch (Exception sqlEx) {
+            Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
+        }
     }
 
 }
