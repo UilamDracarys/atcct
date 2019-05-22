@@ -26,28 +26,28 @@ public class FarmsList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farms_list);
         mLayout = findViewById(R.id.farms_list_layout);
-        Toolbar myToolbar =  findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
         loadFarms();
     }
 
     @Override
-    public void onRestart(){
+    public void onRestart() {
         super.onRestart();
         loadFarms();
     }
 
     private void loadFarms() {
         final FarmsRepo repo = new FarmsRepo();
-        ArrayList<HashMap<String, String>> farmsList =  repo.getFarmsList();
+        ArrayList<HashMap<String, String>> farmsList = repo.getFarmsList();
 
-        ListView lv = findViewById(R.id.list);
+        ListView lv = findViewById(R.id.farmsList);
         lv.setFastScrollEnabled(true);
         ListAdapter adapter;
-        if(farmsList.size()!=0) {
+        if (farmsList.size() != 0) {
             System.out.println("Farms: " + farmsList.size());
-            lv = findViewById(R.id.list);
+            lv = findViewById(R.id.farmsList);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
@@ -56,7 +56,7 @@ public class FarmsList extends AppCompatActivity {
                     Intent intent = getIntent();
                     Bundle b = intent.getExtras();
 
-                    if (b!=null) {
+                    if (b != null) {
                         tvFarmCode = view.findViewById(R.id.farmCode);
                         System.out.println("Selected Farm: " + tvFarmCode.getText().toString());
                         String farmCode = tvFarmCode.getText().toString();
@@ -68,15 +68,17 @@ public class FarmsList extends AppCompatActivity {
                     }
                 }
             });
-            adapter = new SimpleAdapter( FarmsList.this,farmsList, R.layout.farms_list_item, new String[] { "farmCode","farmName", "planter"}, new int[] {R.id.farmCode, R.id.farmName, R.id.pltrName});
+            adapter = new SimpleAdapter(FarmsList.this,
+                    farmsList,
+                    R.layout.farms_list_item,
+                    new String[]{"farmCode", "farmName", "planter"},
+                    new int[]{R.id.farmCode, R.id.farmName, R.id.pltrName});
             lv.setAdapter(adapter);
         } else {
             adapter = null;
             lv.setAdapter(adapter);
         }
     }
-
-
 
 
 }

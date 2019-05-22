@@ -252,7 +252,6 @@ public class ATCCTDetails extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "ID Type required", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Toast.makeText(getApplicationContext(), "Okay", Toast.LENGTH_SHORT).show();
                 addAR(arName.getText().toString(), arRelation.getText().toString(), arID.getText().toString());
                 refreshARList();
                 arName.setText("");
@@ -369,6 +368,8 @@ public class ATCCTDetails extends AppCompatActivity {
                         authRep.setArIDType(arList.get(i).get("ARIDType"));
                         arRepo.insert(authRep);
                     }
+                }  else {
+                    arRepo.delete(ownerID);
                 }
                 Toast.makeText(this, "ATCCT No. " + atccNo + " modified on " + createDate, Toast.LENGTH_SHORT).show();
             }

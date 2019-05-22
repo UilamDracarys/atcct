@@ -323,7 +323,7 @@ public class ATCCTPreview extends AppCompatActivity {
         OwnersRepo oRepo = new OwnersRepo();
         Owners owner = oRepo.getOwnerByID(atcc.getOwnerID(), "M");
         String ownerName = owner.getOwnerName();
-        SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHMMSS", Locale.getDefault());
+        SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
         SimpleDateFormat dateSignedFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
         File exportDir = new File(Environment.getExternalStorageDirectory() + Utils.mainDir + Utils.atcctSubDir, "");

@@ -1,7 +1,6 @@
 package com.scbpfsdgis.atcct;
 
 import android.content.Intent;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -59,12 +58,12 @@ public class OwnersList extends AppCompatActivity {
     private void loadOwners() {
         final OwnersRepo oRepo = new OwnersRepo();
         ArrayList<HashMap<String, String>> ownersList = oRepo.getOwnersList();
-        ListView lv = findViewById(R.id.list);
+        ListView lv = findViewById(R.id.ownersList);
         lv.setFastScrollEnabled(true);
         ListAdapter adapter;
         if (ownersList.size() != 0) {
             System.out.println("Owners: " + ownersList.size());
-            lv = findViewById(R.id.list);
+            lv = findViewById(R.id.ownersList);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override

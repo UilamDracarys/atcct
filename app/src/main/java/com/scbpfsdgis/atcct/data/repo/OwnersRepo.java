@@ -291,9 +291,11 @@ public class OwnersRepo {
 
         OwnersRepo oRepo = new OwnersRepo();
         Owners owner = oRepo.getOwnerByID(ownerID, "M");
-        if (Integer.parseInt(owner.getOwnerBases()) > 1) {
-            if (availFarmCount > 0 || nAvailFarmCount > 0) {
-                farms.append("\n*This owner has farms in other companies.");
+        if (!ownerID.startsWith("N-")) {
+            if (Integer.parseInt(owner.getOwnerBases()) > 1) {
+                if (availFarmCount > 0 || nAvailFarmCount > 0) {
+                    farms.append("\n*This owner has farms in other companies.");
+                }
             }
         }
 

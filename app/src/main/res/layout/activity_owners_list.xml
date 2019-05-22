@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/owners_list_layout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="fill_parent"
-
+    android:orientation="vertical"
     tools:context="com.scbpfsdgis.atcct.OwnersList"
-    android:background="#F5F5F5">
+    android:id="@+id/owners_list_layout">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -18,28 +15,27 @@
         android:background="#69F0AE"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ListView
-            android:id="@+id/list"
-            android:layout_width="wrap_content"
+            android:id="@+id/ownersList"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/my_toolbar"
             android:background="@android:color/white"
-            android:elevation="2dp"/>
+            android:elevation="2dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
-            android:theme="@style/ThemeOverlay.AppCompat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
             android:layout_gravity="end|bottom"
-            android:layout_margin="16dp" />
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add"
+            android:theme="@style/ThemeOverlay.AppCompat" />
 
     </FrameLayout>
 
