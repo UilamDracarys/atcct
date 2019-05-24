@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/owners_list_layout"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context="com.scbpfsdgis.atcct.OwnersList"
-    android:id="@+id/owners_list_layout">
+    tools:context="com.scbpfsdgis.atcct.OwnersList">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"

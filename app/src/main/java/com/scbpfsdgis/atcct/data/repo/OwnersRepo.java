@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
-import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -84,6 +84,21 @@ public class OwnersRepo {
         values.put(Owners.COL_OWNERADDRESS, chgs.getOwnerAddress());
 
         db.update(Owners.TABLE_OWNERS_CHANGES, values, Owners.COL_OWNERID + "= ? ", new String[]{String.valueOf(chgs.getOwnerID())});
+        db.close(); // Closing database connection
+    }
+
+    public void update(Owners chgs) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(Owners.COL_OWNERID, chgs.getOwnerID());
+        values.put(Owners.COL_OWNERNAME, chgs.getOwnerName());
+        values.put(Owners.COL_OWNERMOB, chgs.getOwnerMobile());
+        values.put(Owners.COL_OWNEREMAIL, chgs.getOwnerEmail());
+        values.put(Owners.COL_OWNERADDRESS, chgs.getOwnerAddress());
+
+        db.update(Owners.TABLE_OWNERS, values, Owners.COL_OWNERID + "= ? ", new String[]{String.valueOf(chgs.getOwnerID())});
         db.close(); // Closing database connection
     }
 
@@ -320,12 +335,18 @@ public class OwnersRepo {
 
     public String newOwnerID() {
         String newOwnerID;
+        DecimalFormat id = new DecimalFormat("00000");
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
         String selectQuery = "SELECT MAX(" + Owners.COL_OWNERID + ") AS MAX_ID FROM " + Owners.TABLE_OWNERS;
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
-            newOwnerID = "N-" + (Integer.parseInt(cursor.getString(cursor.getColumnIndex("MAX_ID"))) + 1);
+            String tempID = "";
+            if (cursor.getString(cursor.getColumnIndex("MAX_ID")).startsWith("N-")) {
+                tempID = cursor.getString(cursor.getColumnIndex("MAX_ID")).substring(2);
+                System.out.println("TempID: " + tempID);
+            }
+            newOwnerID = "N-" + id.format(Integer.parseInt(tempID) + 1);
         } else {
             newOwnerID = "0";
         }
@@ -347,8 +368,15 @@ public class OwnersRepo {
         return count;
     }
 
-    public String selectChanges() {
-        return "SELECT * FROM " + Owners.TABLE_OWNERS_CHANGES;
+    public String getChgQuery() {
+        return "SELECT O." + Owners.COL_OWNERID + " AS OwnerID,\n" +
+                "O." + Owners.COL_OWNERNAME + " AS \"Owner Name\",\n" +
+                "C." + Owners.COL_OWNERNAME + " AS \"New Owner Name\",\n" +
+                "C." + Owners.COL_OWNERMOB + " AS \"New Mobile No.\",\n" +
+                "C." + Owners.COL_OWNEREMAIL + " AS \"New Email\",\n" +
+                "C." + Owners.COL_OWNERADDRESS + " AS \"New Address\"\n" +
+                "FROM " + Owners.TABLE_OWNERS + " O JOIN " + Owners.TABLE_OWNERS_CHANGES + " C\n" +
+                "ON O." + Owners.COL_OWNERID + " = C." + Owners.COL_OWNERID;
     }
 
 }

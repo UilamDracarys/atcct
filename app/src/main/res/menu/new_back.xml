@@ -2,30 +2,35 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <item
-        android:id="@+id/action_back"
-        android:title="@string/action_back"
-        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:orderInCategory="200"
+        android:title="Search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always" />
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/chk_all"
-            android:title="Show All"
+        <item
+            android:id="@+id/chk_all"
+            android:checked="true"
             android:icon="@android:drawable/ic_menu_preferences"
-            android:checked="true"/>
+            android:title="Show All" />
 
-        <item android:id="@+id/chk_signed"
-            android:title="Signed"
-            android:icon="@android:drawable/ic_menu_preferences"/>
+        <item
+            android:id="@+id/chk_signed"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="Signed" />
 
-        <item android:id="@+id/chk_forsig"
-            android:title="For Signature"
-            android:icon="@android:drawable/ic_menu_preferences"/>
+        <item
+            android:id="@+id/chk_forsig"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="For Signature" />
     </group>
 
     <item
         android:id="@+id/action_exportATCCT"
         android:title="@string/action_exportATCC"
-        app:showAsAction="never"
-        />
+        app:showAsAction="never" />
 
 </menu>

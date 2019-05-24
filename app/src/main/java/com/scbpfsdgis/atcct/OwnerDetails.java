@@ -2,9 +2,9 @@ package com.scbpfsdgis.atcct;
 
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -59,7 +59,7 @@ public class OwnerDetails extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the save_cancel; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.save_cancel, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -124,10 +124,14 @@ public class OwnerDetails extends AppCompatActivity {
         if (action.equalsIgnoreCase("New Owner")) {
             ownersRepo.insert(owner, "Owner");
         } else {
-            if (!ownersRepo.isChgExist(ownerID)) {
-                ownersRepo.insert(owner, "Change");
+            if (ownerID.startsWith("N-")) {
+                ownersRepo.update(owner);
             } else {
-                ownersRepo.updateChange(owner);
+                if (!ownersRepo.isChgExist(ownerID)) {
+                    ownersRepo.insert(owner, "Change");
+                } else {
+                    ownersRepo.updateChange(owner);
+                }
             }
         }
         Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();

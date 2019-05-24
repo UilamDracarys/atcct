@@ -3,17 +3,18 @@ package com.scbpfsdgis.atcct;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.scbpfsdgis.atcct.Utils.SearchableAdapter;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class OwnersList extends AppCompatActivity {
     private View mLayout;
     private Menu menu;
     FloatingActionButton newItem;
+    SearchableAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,6 @@ public class OwnersList extends AppCompatActivity {
         ArrayList<HashMap<String, String>> ownersList = oRepo.getOwnersList();
         ListView lv = findViewById(R.id.ownersList);
         lv.setFastScrollEnabled(true);
-        ListAdapter adapter;
         if (ownersList.size() != 0) {
             System.out.println("Owners: " + ownersList.size());
             lv = findViewById(R.id.ownersList);
@@ -84,7 +85,7 @@ public class OwnersList extends AppCompatActivity {
                     }
                 }
             });
-            adapter = new SimpleAdapter(OwnersList.this,
+            adapter = new SearchableAdapter(OwnersList.this,
                     ownersList,
                     R.layout.owners_list_item,
                     new String[]{"ownerID", "ownerName", "ownerMobile"},
@@ -105,6 +106,20 @@ public class OwnersList extends AppCompatActivity {
         MenuItem chkSigned = menu.findItem(R.id.chk_signed);
         MenuItem chkToSign = menu.findItem(R.id.chk_forsig);
         MenuItem exportATCCT = menu.findItem(R.id.action_exportATCCT);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
 
         chkAll.setVisible(false);
         chkSigned.setVisible(false);
@@ -117,12 +132,6 @@ public class OwnersList extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*case R.id.action_new:
-                newOwner();
-                return true;
-            */
-            case R.id.action_back:
-                finish();
             default:
                 return super.onOptionsItemSelected(item);
         }

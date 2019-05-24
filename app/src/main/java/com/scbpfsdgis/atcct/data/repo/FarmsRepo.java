@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.scbpfsdgis.atcct.FarmsList;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Farms;
@@ -207,6 +206,7 @@ public class FarmsRepo {
 
         cursor.close();
         DatabaseManager.getInstance().closeDatabase();
+        db.close();
         return farmsList;
     }
 
@@ -304,8 +304,32 @@ public class FarmsRepo {
         return count;
     }
 
-    public String selectChanges() {
-        return "SELECT * FROM " + Farms.TABLE_FARM_CHANGES;
+    public String getChgQuery() {
+        return "SELECT F." + Farms.COL_FARMCODE + " AS Farmcode,\n" +
+                "F." + Farms.COL_FARMNAME + " AS Farmname,\n" +
+                "F." + Farms.COL_OWNERID + " AS OwnerID,\n" +
+                "CASE WHEN \n" +
+                "(SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS_CHANGES + " WHERE " + Owners.COL_OWNERID + " = F." + Farms.COL_OWNERID + ") IS NOT NULL OR \n" +
+                "(SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS_CHANGES + " WHERE " + Owners.COL_OWNERID + " = F." + Farms.COL_OWNERID + ") <> ''\n" +
+                "THEN (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS_CHANGES + " WHERE " + Owners.COL_OWNERID + " = F." + Farms.COL_OWNERID + ")\n" +
+                "ELSE (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = F." + Farms.COL_OWNERID + ")\n" +
+                "END OwnerName,\n" +
+                "F." + Farms.COL_BASE + " AS \"Base/Company\",\n" +
+                "F." + Farms.COL_STATUS + " AS Status,\n" +
+                "(SELECT " + Farms.COL_FARMNAME + " FROM " + Farms.TABLE_FARM_CHANGES + " WHERE " + Farms.COL_FARMCODE + " = F." + Farms.COL_FARMCODE + ") AS \"New Farm Name\",\n" +
+                "C." + Farms.COL_OWNERID + " AS \"New Farm OwnerID\",\n" +
+                "CASE WHEN \n" +
+                "(SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS_CHANGES + " WHERE " + Owners.COL_OWNERID + " = C." + Farms.COL_OWNERID + ") IS NOT NULL OR \n" +
+                "(SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS_CHANGES + " WHERE " + Owners.COL_OWNERID + " = C." + Farms.COL_OWNERID + ") <> '' \n" +
+                "THEN (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS_CHANGES + " WHERE " + Owners.COL_OWNERID + " = C." + Farms.COL_OWNERID + ")\n" +
+                "ELSE (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = C." + Farms.COL_OWNERID + ")\n" +
+                "END \"New Farm Owner\",\n" +
+                "(SELECT C." + Farms.COL_BASE + " FROM " + Farms.TABLE_FARM_CHANGES + " WHERE " + Farms.COL_FARMCODE + " = F." + Farms.COL_FARMCODE + ") AS \"New Base\",\n" +
+                "(SELECT C." + Farms.COL_STATUS + " FROM " + Farms.TABLE_FARM_CHANGES + " WHERE " + Farms.COL_FARMCODE + " = F." + Farms.COL_FARMCODE + ") AS \"New Status\",\n" +
+                "(SELECT C." + Farms.COL_REMARKS + " FROM " + Farms.TABLE_FARM_CHANGES + " WHERE " + Farms.COL_FARMCODE + " = F." + Farms.COL_FARMCODE + ") AS \"Comments\"\n" +
+                "FROM " + Farms.TABLE_FARMS + " F JOIN " + Owners.TABLE_OWNERS + " O JOIN " + Farms.TABLE_FARM_CHANGES + " C\n" +
+                "ON F." + Farms.COL_OWNERID + " = O." + Owners.COL_OWNERID + " AND \n" +
+                "F." + Farms.COL_FARMCODE + "= C." + Farms.COL_FARMCODE + "\n";
     }
 
 }

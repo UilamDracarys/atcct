@@ -119,9 +119,6 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_back:
-                finish();
-                return true;
             case R.id.chk_all:
                 item.setChecked(true);
                 loadATCCTs("All");

@@ -541,16 +541,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         switch (changes) {
             case "Farms Only":
                 message = "Farm changes exported. No planter changes.";
-                csvWriter(farmChanges, farmsRepo.selectChanges());
+                csvWriter(farmChanges, farmsRepo.getChgQuery());
                 break;
             case "Planters Only":
                 message = "Planter changes exported. No farm changes.";
-                csvWriter(planterChanges, ownersRepo.selectChanges());
+                csvWriter(planterChanges, ownersRepo.getChgQuery());
                 break;
             case "Both":
                 message = "Changes successfully exported.";
-                csvWriter(farmChanges, farmsRepo.selectChanges());
-                csvWriter(planterChanges, ownersRepo.selectChanges());
+                csvWriter(farmChanges, farmsRepo.getChgQuery());
+                csvWriter(planterChanges, ownersRepo.getChgQuery());
                 break;
             default:
                 message = "No changes to export";
