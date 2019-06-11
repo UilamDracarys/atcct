@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -16,7 +17,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
@@ -70,11 +70,10 @@ public class ATCCTPreview extends AppCompatActivity {
     CheckBox chkConform, chkSignatory;
     TableRow rPickupPt, rAccName, rAccNo, rBank, rRemarks;
     String[] notes = {
-            "1. Payment per 1 full wagon load Php 625.00 rate subject to 1% withholding tax with applicable exemptions wherein a valid BIR tax exemption certification should be presented.\n\n",
-            "2. For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.\n\n",
-            "3. Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).\n\n",
-            "4. Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.\n\n",
-            "5. If unclaimed at TLS, Check/Cheque may be claimed at SCBP plant site, San Carlos Ecozone, Brgy. Palampas, San Carlos City."
+            "1. For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.\n\n",
+            "2. Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).\n\n",
+            "3. Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.\n\n",
+            "4. If unclaimed at TLS, Check/Cheque may be claimed at SCBP plant site, San Carlos Ecozone, Brgy. Palampas, San Carlos City."
     };
     String[] tnc = {
             "1. Preference for cane trash collection shall be given to fields with entire canes rows harvested.\n\n",
@@ -451,7 +450,6 @@ public class ATCCTPreview extends AppCompatActivity {
         cell = new PdfPCell();
         List noteList = new List(List.ORDERED);
         noteList.setFirst(1);
-        noteList.add(new ListItem("Payment per 1 full wagon load Php 625.00 rate subject to 1% withholding tax with applicable exemptions wherein a valid BIR tax exemption certification should be presented.", smallFont));
         noteList.add(new ListItem("For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.", smallFont));
         noteList.add(new ListItem("Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).", smallFont));
         noteList.add(new ListItem("Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.", smallFont));
@@ -556,6 +554,11 @@ public class ATCCTPreview extends AppCompatActivity {
         document.add(tnc);
         document.add(authRep);
         document.add(conform);
+        if (sig != null) {
+            Paragraph sigDate = new Paragraph("Date Signed: " + dateSignedFormat.format(new Date()), smallFont);
+            sigDate.setAlignment(Paragraph.ALIGN_RIGHT);
+            document.add(sigDate);
+        }
 
         // Closing the document
         document.close();
@@ -677,7 +680,7 @@ public class ATCCTPreview extends AppCompatActivity {
                 if (input.getText().toString().equalsIgnoreCase("")) {
                     Toast.makeText(getApplicationContext(), "Please input a signatory name.", Toast.LENGTH_SHORT).show();
                     chkSignatory.setChecked(true);
-                } else{
+                } else {
                     signatory = input.getText().toString();
                     tvSignatory.setText(signatory);
                     chkSignatory.setChecked(false);

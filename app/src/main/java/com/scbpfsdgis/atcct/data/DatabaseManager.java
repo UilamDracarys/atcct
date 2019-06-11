@@ -70,7 +70,7 @@ public class DatabaseManager {
         Date date = new Date();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault());
 
-        String bakFilePath = backupDirectory + "BAK_" + df.format(date) + ".rar";
+        String bakFilePath = backupDirectory + "/BAK_" + df.format(date) + ".rar";
 
         ZipArchive zipArchive = new ZipArchive();
         zipArchive.zip(inFileName, bakFilePath, password);

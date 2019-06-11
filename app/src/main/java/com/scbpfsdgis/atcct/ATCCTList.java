@@ -234,14 +234,14 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                                     StringBuilder message = new StringBuilder();
                                     if (atcc.getFileName() != null) {
                                         if (atcc.getFileName().equalsIgnoreCase("")) {
-                                            message.append("You are about to delete ATCCT No. " + atccNo + ". Press continue to proceed.\n");
-                                        } else {
                                             message.append("ATCCT No. " + atccNo + " is not yet signed. Press continue to proceed.\n");
+                                        } else {
+                                            message.append("You are about to delete ATCCT No. " + atccNo + ". Press continue to proceed.\n");
+                                            message.append("NOTE: Only ATCCT record will be deleted but not the generated PDFs.");
                                         }
                                     } else {
                                         message.append("ATCCT No. " + atccNo + " is not yet signed. Press continue to proceed.\n");
                                     }
-                                    message.append("NOTE: Only ATCCT record will be deleted but not the generated PDFs.");
                                     new AlertDialog.Builder(view.getContext())
                                             .setTitle("Delete")
                                             .setMessage(
