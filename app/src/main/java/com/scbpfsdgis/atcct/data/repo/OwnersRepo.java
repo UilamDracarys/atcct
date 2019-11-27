@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.google.android.gms.common.internal.BaseGmsClient;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Owners;
@@ -344,11 +345,14 @@ public class OwnersRepo {
             String tempID = "";
             if (cursor.getString(cursor.getColumnIndex("MAX_ID")).startsWith("N-")) {
                 tempID = cursor.getString(cursor.getColumnIndex("MAX_ID")).substring(2);
-                System.out.println("TempID: " + tempID);
+
+            } else {
+                tempID = cursor.getString(cursor.getColumnIndex("MAX_ID"));
             }
             newOwnerID = "N-" + id.format(Integer.parseInt(tempID) + 1);
         } else {
             newOwnerID = "0";
+
         }
 
         db.close();
