@@ -1,0 +1,19 @@
+Changelog
+
+New:
+ATCC
+1. Added Signing columns (FileName, Signatory) and date modified column.
+2. Option to edit atcc.
+3. Option to delete authorized representatives.
+4. Option to show all, signed, or for signature ATCCTs.
+5. Open PDF after saving signed ATCCT.
+
+Owners
+1. Added BaseCount column to identify planters with farms in other companies.
+2.
+
+Others
+1. Added option to choose which company data to download.
+2. Set download functionality to directly import the data and delete downloaded CSV afterwards.
+3. Fixed issue where download fails on fresh install of the app due to permissions not granted.
+4. Fixed issue where only one Authorized Representative is showing.

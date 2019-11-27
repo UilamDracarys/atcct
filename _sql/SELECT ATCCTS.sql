@@ -1,0 +1,19 @@
+SELECT A.ATCC_NO AS "ATCC No.",
+A.OWNER_ID AS "Planter ID",
+O.OWNER_NAME AS "Planter Name",
+A.PAYMENT_METHOD AS "Payment Method",
+A.PICKUP_PT AS "Pickup Point",
+A.ACC_NAME AS "Account Name",
+A.ACC_NO AS "Account No.",
+CASE 
+WHEN A.BANK_NAME = 'N/A' THEN 'N/A'
+ELSE A.BANK_NAME || ' - ' || A.BANK_ADDRESS 
+END Bank,
+A.REMARKS AS Remarks,
+A.DATE_CREATED AS Created,
+A.DATE_MODIFIED AS Modified,
+A.FILENAME AS Filename,
+A.SIGNATORY AS "Signed By"
+
+FROM T_ATCC A JOIN T_OWNERS O
+ON A.OWNER_ID = O.OWNER_ID
