@@ -7,6 +7,9 @@ import android.util.Log;
 import com.scbpfsdgis.atcct.app.App;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
 import com.scbpfsdgis.atcct.data.repo.AuthRepRepo;
+import com.scbpfsdgis.atcct.data.repo.ConfigRepo;
+import com.scbpfsdgis.atcct.data.repo.ContactRepo;
+import com.scbpfsdgis.atcct.data.repo.FIRRepo;
 import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
@@ -21,7 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //version number to upgrade database version
     //each time if you Add, Edit table, you need to change the
     //version number.
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 17;
     // Database Name
     private static final String DATABASE_NAME = "ATCCT.db";
     private static final String TAG = DBHelper.class.getSimpleName();
@@ -43,6 +46,9 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(OwnersRepo.createOwnerChgTbl());
         db.execSQL(ATCCRepo.createTable());
         db.execSQL(AuthRepRepo.createARTable());
+        db.execSQL(FIRRepo.createFIRTbl());
+        db.execSQL(ConfigRepo.createCFG());
+        db.execSQL(ContactRepo.createContactsTbl());
     }
 
     @Override
@@ -62,6 +68,26 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         if (oldVersion <= 8) {
             db.execSQL("ALTER TABLE " + Farms.TABLE_MASTERTBL + " ADD " + Owners.COL_BASES + " TEXT");
+        }
+
+        if (oldVersion <= 11) {
+            db.execSQL("ALTER TABLE " + Farms.TABLE_FARMS + " ADD " + Farms.COL_CONTPRSN + " TEXT");
+            db.execSQL("ALTER TABLE " + Farms.TABLE_FARMS + " ADD " + Farms.COL_CONTNUM + " TEXT");
+            db.execSQL("ALTER TABLE " + Farms.TABLE_MASTERTBL + " ADD " + Farms.COL_CONTPRSN + " TEXT");
+            db.execSQL("ALTER TABLE " + Farms.TABLE_MASTERTBL + " ADD " + Farms.COL_CONTNUM + " TEXT");
+            db.execSQL(FIRRepo.createFIRTbl());
+        }
+
+        if (oldVersion <= 12) {
+            db.execSQL("ALTER TABLE " + FIR.TABLE_FIR + " ADD " +  FIR.COL_COORNAME + " TEXT") ;
+        }
+
+        if (oldVersion <= 15) {
+            db.execSQL("ALTER TABLE " + FIR.TABLE_FIR + " ADD " + FIR.COL_FIRPATH + " TEXT");
+        }
+
+        if (oldVersion <= 16) {
+            db.execSQL(ContactRepo.createContactsTbl());
         }
         onCreate(db);
     }

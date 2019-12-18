@@ -4,6 +4,8 @@
     <string name="import_data">Import Data from CSV</string>
     <string name="action_save">save</string>
     <string name="action_cancel">cancel</string>
+    <string name="action_exportFIR">Export</string>
+    <string name="action_editFIR">Edit FIR</string>
     <string-array name="bases">
         <item>SCBP</item>
         <item>SNBP</item>
@@ -41,4 +43,30 @@
     <string name="backupDB">Backup Data</string>
     <string name="exportChgList">Export Change List</string>
     <string name="action_exportATCC">Export List</string>
+
+    <string-array name="harvMeth">
+        <item>- Harvest Method - </item>
+        <item>Linear (L)</item>
+        <item>Tonnage (T)</item>
+        <item>Combination (C)</item>
+    </string-array>
+
+    <string-array name="obstructions">
+        <item>Ditches (Pangpang) [DT]</item>
+        <item>Canals/Creek [CN]</item>
+        <item>Stones &amp; Boulders [SB]</item>
+        <item>Electric Posts (Low-lying Wires) [EP]</item>
+        <item>Termite Mound [TM]</item>
+        <item>Wooden Ladder [WL]</item>
+        <item>Tree Branches [TB]</item>
+        <item>Irrigation &amp; hydrants [IR]</item>
+        <item>Well (Tabay) [WLL]</item>
+        <item>Tree Stomps [TS]</item>
+        <item>Cane Points (Patdan) [CPT]</item>
+        <item>Cane Piles [CPL]</item>
+        <item>Cane Trash [CT]</item>
+        <item>Tire Tracks [TT]</item>
+        <item>Slope/Steep (Bakilid) [SLP]</item>
+        <item>Slightly Rolling [SR]</item>
+    </string-array>
 </resources>

@@ -187,6 +187,14 @@ public class SearchableAdapter extends SimpleAdapter implements Filterable {
                             list.get(i).get("planter").toLowerCase().contains(filterString)) {
                         nlist.add(hashMap);
                     }
+                } else if (list.get(0).containsKey("farmNameFIR")){
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    hashMap.put("ID", list.get(i).get("ID"));
+                    hashMap.put("farmNameFIR", list.get(i).get("farmNameFIR"));
+                    hashMap.put("IDFldNo", list.get(i).get("IDFldNo"));
+                    if (list.get(i).get("farmNameFIR").toLowerCase().contains(filterString)) {
+                        nlist.add(hashMap);
+                    }
                 } else {
                     HashMap<String, String> hashMap = new HashMap<>();
                     hashMap.put("ownerID", list.get(i).get("ownerID"));

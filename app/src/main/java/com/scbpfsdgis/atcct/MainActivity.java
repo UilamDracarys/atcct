@@ -15,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -22,7 +23,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
@@ -43,6 +43,7 @@ import com.scbpfsdgis.atcct.data.model.DBHelper;
 import com.scbpfsdgis.atcct.data.model.Farms;
 import com.scbpfsdgis.atcct.data.model.Owners;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
+import com.scbpfsdgis.atcct.data.repo.FIRRepo;
 import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
@@ -57,7 +58,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
-    private static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
+    public static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
     public static final int requestcode = 1;
     private String action = "";
     SQLiteDatabase db;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     String nnbpDataURL = "https://drive.google.com/uc?authuser=0&id=15EfjKmsv511ehyhLelD_QteaoC5sX1OD&export=download";
     String scbpDataURL = "https://drive.google.com/uc?authuser=0&id=1L8JoYCRAmKAaf2SFjvLXPk-Zfu6LhfHN&export=download";
     String snbpDataURL = "https://drive.google.com/uc?authuser=0&id=11ux9AxUsZTaPpcO2XGWCUK5APPcOTVKJ&export=download";
+    //String nnbpDataURL = "https://drive.google.com//uc?authuser=0&id=1PxedAjqHh6QEsdSC5Y8x_3xpm-Jx47m4&export=download";
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -216,7 +218,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 } else if (action.equalsIgnoreCase("download")) {
                     chooseCompany();
                 } else if (action.equalsIgnoreCase("importcsv")) {
-                    importFromCSV();
+                    /*importFromCSV();*/
+                    Toast.makeText(getApplicationContext(), "This function is no longer supported. Please go online and download the data. Thank you.", Toast.LENGTH_LONG).show();
                 } else if (action.equalsIgnoreCase("exportchg")) {
                     exportChanges();
                 }
@@ -273,15 +276,18 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_importdata:
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                Toast.makeText(getApplicationContext(), "This function is no longer supported. Please go online and download the data. Thank you.", Toast.LENGTH_LONG).show();
+                /*if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED) {
-                    importFromCSV();
+                  *//*  importFromCSV();*//*
                     return true;
                 } else {
-                    action = "importcsv";
-                    requestStoragePermission();
+                    Toast.makeText(getApplicationContext(), "This function is no longer supported. Please go online and download the data. Thank you.", Toast.LENGTH_LONG).show();
+                    *//*action = "importcsv";
+                    requestStoragePermission();*//*
                     return true;
-                }
+                }*/
+                return true;
             case R.id.action_downloadcsv:
                 if (isConnectingToInternet()) {
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -378,11 +384,17 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void initMenus() {
         ListView menus = findViewById(R.id.menuList);
-        String[] textString = {"Farms List", "Planters List", "ATCCTs"};
-        String[] menuPreviews = {getFarmsSubtitle(), getOwnersSubtitle(), getATCCTSubtitle()};
+        String[] textString = {"Farms List", "Planters List", "ATCCTs", "Field Inspection Reports"};
+        String[] menuPreviews = {getFarmsSubtitle(), getOwnersSubtitle(), getATCCTSubtitle(), getFIRSubtitle()};
 
-        int[] drawableIds = {R.drawable.ic_farms, R.drawable.ic_people, R.drawable.ic_atccts};
-        int[] drawableArrows = {R.drawable.ic_arrow, R.drawable.ic_arrow, R.drawable.ic_arrow};
+        int[] drawableIds = {R.drawable.ic_farms,
+                R.drawable.ic_people,
+                R.drawable.ic_atccts,
+                R.drawable.ic_atccts};
+        int[] drawableArrows = {R.drawable.ic_arrow,
+                R.drawable.ic_arrow,
+                R.drawable.ic_arrow,
+                R.drawable.ic_arrow};
         CustomAdapter adapter = new CustomAdapter(this, textString, menuPreviews, drawableIds, drawableArrows);
         menus.setAdapter(adapter);
 
@@ -399,6 +411,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         return;
                     case 2:
                         showATCCTs();
+                        return;
+                    case 3:
+                        showFIRs();
                         return;
                     default:
                 }
@@ -432,6 +447,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         return sb.toString();
     }
 
+    private String getFIRSubtitle() {
+        FIRRepo repo = new FIRRepo();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Total FIRs: " + repo.getFIRCount() );
+        return sb.toString();
+    }
+
+
     public void showFarms() {
         Intent intent = new Intent(this, FarmsList.class);
         intent.putExtra("action", "Farms List");
@@ -447,6 +470,12 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public void showATCCTs() {
         Intent intent = new Intent(this, ATCCTList.class);
         intent.putExtra("action", "ATCCT List");
+        startActivity(intent);
+    }
+
+    public void showFIRs() {
+        Intent intent = new Intent(this, FIRList.class);
+        intent.putExtra("action", "FIR List");
         startActivity(intent);
     }
 
@@ -529,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         String changes = "";
         if (farmChgCount > 0 && planterChgCount == 0) {
             changes = "Farms Only";
-        } else if (farmChgCount == 0 && planterChgCount >0) {
+        } else if (farmChgCount == 0 && planterChgCount > 0) {
             changes = "Planters Only";
         } else if (farmChgCount > 0 && planterChgCount > 0) {
             changes = "Both";

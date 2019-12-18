@@ -21,9 +21,7 @@ public class App extends Application{
         context = this.getApplicationContext();
         dbHelper = new DBHelper();
         DatabaseManager.initializeInstance(dbHelper);
-
-        System.out.println("ATCC Database Created!");
-
+        System.out.println("FC Tools Database Created!");
     }
 
     public static Context getContext(){

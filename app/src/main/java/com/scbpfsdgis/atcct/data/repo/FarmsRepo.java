@@ -30,7 +30,10 @@ public class FarmsRepo {
                 Farms.COL_FARMNAME + " TEXT, " +
                 Farms.COL_BASE + " TEXT, " +
                 Farms.COL_STATUS + " TEXT, " +
-                Farms.COL_OWNERID + " TEXT)";
+                Farms.COL_OWNERID + " TEXT," +
+                Farms.COL_CONTPRSN + " TEXT," +
+                Farms.COL_CONTNUM + " TEXT)";
+        System.out.println("Creating Farms Table: " + query);
         return query;
     }
 
@@ -45,7 +48,9 @@ public class FarmsRepo {
                 Owners.COL_OWNERMOB + " TEXT, " +
                 Owners.COL_OWNEREMAIL + " TEXT, " +
                 Owners.COL_OWNERADDRESS + " TEXT, " +
-                Owners.COL_BASES + " TEXT)";
+                Owners.COL_BASES + " TEXT, " +
+                Farms.COL_CONTPRSN + " TEXT, " +
+                Farms.COL_CONTNUM + " TEXT)";
         return query;
     }
 
@@ -272,6 +277,7 @@ public class FarmsRepo {
         } else {
             query = selOrigQry;
         }
+        System.out.println("191202: " + farmCode);
         Cursor cursor = db.rawQuery(query, new String[]{farmCode});
 
         if (cursor.moveToFirst()) {
@@ -331,5 +337,51 @@ public class FarmsRepo {
                 "ON F." + Farms.COL_OWNERID + " = O." + Owners.COL_OWNERID + " AND \n" +
                 "F." + Farms.COL_FARMCODE + "= C." + Farms.COL_FARMCODE + "\n";
     }
+
+    public ArrayList<String> getFarmsForSpinner() {
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT M." + Farms.COL_FARMCODE + " AS FarmCode,\n" +
+                "CASE \n" +
+                "WHEN C." + Farms.COL_FARMNAME + " IS NULL OR C." + Farms.COL_FARMNAME + " = '' THEN M." + Farms.COL_FARMNAME + "\n" +
+                "ELSE C." + Farms.COL_FARMNAME + "\n" +
+                "END FarmName,\n" +
+                "CASE \n" +
+                "WHEN C." + Farms.COL_BASE + " IS NULL OR C." + Farms.COL_BASE + " = '' THEN M." + Farms.COL_BASE + "\n" +
+                "ELSE C." + Farms.COL_BASE + "\n" +
+                "END Base,\n" +
+                "CASE\n" +
+                "WHEN C." + Farms.COL_STATUS + " IS NULL OR C." + Farms.COL_STATUS + " = '' THEN M." + Farms.COL_STATUS + "\n" +
+                "ELSE C." + Farms.COL_STATUS + "\n" +
+                "END Status,\n" +
+                "CASE\n" +
+                "WHEN C." + Farms.COL_OWNERID + " IS NULL OR C." + Farms.COL_OWNERID + " = '' THEN M." + Farms.COL_OWNERID + "\n" +
+                "ELSE C." + Farms.COL_OWNERID + "\n" +
+                "END OwnerID,\n" +
+                "CASE \n" +
+                "WHEN C." + Farms.COL_OWNERID + " IS NULL OR C." + Farms.COL_OWNERID + " = '' THEN (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = M." + Farms.COL_OWNERID + ")\n" +
+                "ELSE (SELECT " + Owners.COL_OWNERNAME + " FROM " + Owners.TABLE_OWNERS + " WHERE " + Owners.COL_OWNERID + " = C." + Farms.COL_OWNERID + ")\n" +
+                "END OwnerName\n" +
+                "FROM " + Farms.TABLE_FARMS + " M LEFT JOIN " + Farms.TABLE_FARM_CHANGES + " C\n" +
+                "ON M." + Farms.COL_FARMCODE + " = C." + Farms.COL_FARMCODE + "\n" +
+                "ORDER BY FarmName";
+
+        ArrayList<String> farmsList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                String item = cursor.getString(cursor.getColumnIndex("FarmName")) + " [" +
+                        "" + cursor.getString(cursor.getColumnIndex("FarmCode")) + "]";
+                farmsList.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        return farmsList;
+    }
+
 
 }

@@ -179,7 +179,6 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                         atccNo = tvAtccNo.getText().toString();
                         ATCC atcc = repo.getATCCByNo(atccNo);
 
-
                         //createATCCTPDF();
                         if (atcc.getFileName() != null) {
                             if (atcc.getFileName().equalsIgnoreCase("")) {

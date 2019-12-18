@@ -177,7 +177,7 @@ public class DownloadTask {
                     if (count == 0) {
                         System.out.println("Skipped header row");
                     } else {
-                        String[] str = line.split(";", 10);  // defining 8 columns with null or blank field //values acceptance
+                        String[] str = line.split(";", 12);  // defining 12 columns with null or blank field //values acceptance
                         String farmCode = str[0];
                         String farmName = str[1];
                         String farmBase = str[2];
@@ -188,6 +188,8 @@ public class DownloadTask {
                         String ownerEmail = str[7];
                         String ownerAddress = str[8];
                         String ownerBases = str[9];
+                        String farmContPrsn = str[10];
+                        String farmContNum = str[11];
 
                         contentValues.put(Farms.COL_FARMCODE, farmCode);
                         contentValues.put(Farms.COL_FARMNAME, farmName);
@@ -199,6 +201,8 @@ public class DownloadTask {
                         contentValues.put(Owners.COL_OWNEREMAIL, ownerEmail);
                         contentValues.put(Owners.COL_OWNERADDRESS, ownerAddress);
                         contentValues.put(Owners.COL_BASES, ownerBases);
+                        contentValues.put(Farms.COL_CONTPRSN, farmContPrsn);
+                        contentValues.put(Farms.COL_CONTNUM, farmContNum);
                         db.insert(tableName, null, contentValues);
                     }
                     count += 1;
@@ -208,12 +212,16 @@ public class DownloadTask {
                         Farms.COL_FARMNAME + ", " +
                         Farms.COL_BASE + ", " +
                         Farms.COL_STATUS + ", " +
-                        Farms.COL_OWNERID + ") " +
+                        Farms.COL_OWNERID + ", " +
+                        Farms.COL_CONTPRSN + ", " +
+                        Farms.COL_CONTNUM + ") " +
                         "SELECT " + Farms.COL_FARMCODE + ", " +
                         Farms.COL_FARMNAME + ", " +
                         Farms.COL_BASE + ", " +
                         Farms.COL_STATUS + ", " +
-                        Farms.COL_OWNERID + " FROM " + Farms.TABLE_MASTERTBL;
+                        Farms.COL_OWNERID + ", " +
+                        Farms.COL_CONTPRSN + ", " +
+                        Farms.COL_CONTNUM + " FROM " + Farms.TABLE_MASTERTBL;
                 db.execSQL("DELETE FROM " + Farms.TABLE_FARMS);
                 System.out.println(insertFarms);
                 db.execSQL(insertFarms);

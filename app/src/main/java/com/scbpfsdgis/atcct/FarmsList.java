@@ -94,8 +94,8 @@ public class FarmsList extends AppCompatActivity {
 
                     if (b != null) {
                         tvFarmCode = view.findViewById(R.id.farmCode);
-                        System.out.println("Selected Farm: " + tvFarmCode.getText().toString());
                         String farmCode = tvFarmCode.getText().toString();
+                        System.out.println("Selected Farm: " + farmCode);
                         Farms farm = repo.getFarmByID(farmCode, "M");
                         Intent objIndent;
                         objIndent = new Intent(getApplicationContext(), FarmDetails.class);
@@ -113,7 +113,6 @@ public class FarmsList extends AppCompatActivity {
         } else {
             adapter = null;
             lv.setAdapter(adapter);
-
         }
     }
 

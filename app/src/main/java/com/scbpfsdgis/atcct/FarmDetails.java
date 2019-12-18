@@ -44,6 +44,7 @@ public class FarmDetails extends AppCompatActivity {
 
         Intent intent = getIntent();
         farmCode = intent.getStringExtra("farmCode");
+        System.out.println("Intent String: " + farmCode);
 
         loadOwners();
         init(farmCode);
@@ -60,6 +61,7 @@ public class FarmDetails extends AppCompatActivity {
         tvCurFarm = findViewById(R.id.currentFarm);
 
         tvFarmCode.setText(farmCode);
+
         FarmsRepo repo = new FarmsRepo();
         Farms farm = repo.getFarmByID(farmCode, "M");
 

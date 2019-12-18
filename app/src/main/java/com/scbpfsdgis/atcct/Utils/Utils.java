@@ -18,6 +18,7 @@ public class Utils {
     public static final String atcctSubDir = "/ATCCTs";
     public static final String backupSubDir = "/Backups";
     public static final String chgListSubDir = "/Change Lists";
+    public static final String firSubDir = "/FIR";
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

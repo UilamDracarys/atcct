@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
-ext.versionMajor = 1
-ext.versionMinor = 2
-ext.versionPatch = 32
+ext.versionMajor = 2
+ext.versionMinor = 0
+ext.versionPatch = 0
 ext.versionClassifier = null
 ext.minimumSdkVersion = 19
 
@@ -57,7 +57,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-config:11.6.2'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    compile 'com.github.ghost1372:Mzip-Android:0.4.0'
+    implementation 'com.github.ghost1372:Mzip-Android:0.4.0'
+    compile project(path: ':libmultispinner')
 }
 
 apply plugin: 'com.google.gms.google-services'

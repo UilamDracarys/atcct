@@ -18,12 +18,35 @@ public class Farms {
     public static final String COL_OWNERID = "FARM_OWNERID";
     public static final String COL_REMARKS = "FARM_REMARKS";
 
+    //New Columns as of 27Nov2019
+    public static final String COL_CONTPRSN = "FARM_CONTPRSN";
+    public static final String COL_CONTNUM = "FARM_CONTNUM";
+
+
     private String farmCode;
     private String farmName;
     private String farmBase;
     private String farmStatus;
     private String farmOwnerID;
     private String farmRemarks;
+    private String farmContPerson;
+    private String farmContNum;
+
+    public String getFarmContPerson() {
+        return farmContPerson;
+    }
+
+    public void setFarmContPerson(String farmContPerson) {
+        this.farmContPerson = farmContPerson;
+    }
+
+    public String getFarmContNum() {
+        return farmContNum;
+    }
+
+    public void setFarmContNum(String farmContNum) {
+        this.farmContNum = farmContNum;
+    }
 
     public String getFarmCode() {
             return farmCode;

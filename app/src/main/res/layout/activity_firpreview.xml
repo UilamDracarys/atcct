@@ -5,8 +5,8 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/linearLayout"
-    tools:context="com.scbpfsdgis.atcct.ATCCTPreview">
+    tools:context=".FIRPreview">
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -37,7 +37,7 @@
                 android:background="#b9f6ca"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:text="I. OWNER INFORMATION"
+                android:text="I. FARM INFORMATION"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -49,7 +49,33 @@
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Owner Name" />
+                        android:text="Farm Code" />
+
+                    <TextView
+                        android:id="@+id/tvFarmCode"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Farm Name" />
+
+                    <TextView
+                        android:id="@+id/tvFarmName"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Owner" />
 
                     <TextView
                         android:id="@+id/tvOwnerName"
@@ -62,10 +88,10 @@
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Mobile No." />
+                        android:text="Contact Person" />
 
                     <TextView
-                        android:id="@+id/tvOwnerMobile"
+                        android:id="@+id/tvContPerson"
                         android:padding="4dp"
                         android:textColor="#003d00"
                         android:textStyle="bold" />
@@ -75,23 +101,10 @@
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Email" />
+                        android:text="Contact Number" />
 
                     <TextView
-                        android:id="@+id/tvOwnerEmail"
-                        android:padding="4dp"
-                        android:textColor="#003d00"
-                        android:textStyle="bold" />
-                </TableRow>
-
-                <TableRow>
-
-                    <TextView
-                        android:padding="4dp"
-                        android:text="Address" />
-
-                    <TextView
-                        android:id="@+id/tvAddress"
+                        android:id="@+id/tvContNum"
                         android:padding="4dp"
                         android:textColor="#003d00"
                         android:textStyle="bold" />
@@ -105,7 +118,7 @@
                 android:background="#b9f6ca"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:text="II. PAYMENT INFORMATION"
+                android:text="II. FIELD INSPECTION DETAILS"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -113,79 +126,118 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TableRow>
+                <TableRow android:id="@+id/rFldNo">
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Payment Method" />
+                        android:text="Field No." />
 
                     <TextView
-                        android:id="@+id/tvPmtMethod"
-                        android:padding="4dp"
-                        android:textColor="#003d00"
-                        android:textStyle="bold" />
-                </TableRow>
-
-                <TableRow android:id="@+id/rPickup">
-
-                    <TextView
-                        android:padding="4dp"
-                        android:text="PickupPoint" />
-
-                    <TextView
-                        android:id="@+id/tvPickupPt"
+                        android:id="@+id/tvFldNo"
                         android:padding="4dp"
                         android:textColor="#003d00"
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rAccNo">
+                <TableRow android:id="@+id/rArea">
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Account No." />
+                        android:text="RFR Area" />
 
                     <TextView
-                        android:id="@+id/tvAccNo"
-                        android:padding="4dp"
-                        android:textColor="#003d00"
-                        android:textStyle="bold" />
-                </TableRow>
-
-                <TableRow android:id="@+id/rAccName">
-
-                    <TextView
-                        android:padding="4dp"
-                        android:text="Account Name" />
-
-                    <TextView
-                        android:id="@+id/tvAccName"
+                        android:id="@+id/tvRFRArea"
                         android:padding="4dp"
                         android:textColor="#003d00"
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rBankDetails">
+                <TableRow android:id="@+id/rObst">
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Bank Name &amp; Branch" />
+                        android:text="Obstructions" />
 
                     <TextView
-                        android:id="@+id/tvBankDetails"
+                        android:id="@+id/tvObstructions"
                         android:padding="4dp"
                         android:textColor="#003d00"
                         android:textStyle="bold" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rRemarks">
+                <TableRow android:id="@+id/rHarvMeth">
 
                     <TextView
                         android:padding="4dp"
-                        android:text="Remarks" />
+                        android:text="Harvest Method" />
 
                     <TextView
-                        android:id="@+id/tvRemarks"
+                        android:id="@+id/tvHarvMeth"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rFlags">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="No. of Flags" />
+
+                    <TextView
+                        android:id="@+id/tvFlags"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rStart">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Start Time" />
+
+                    <TextView
+                        android:id="@+id/tvStart"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rEnd">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="End Time" />
+
+                    <TextView
+                        android:id="@+id/tvEnd"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rNotes">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Notes" />
+
+                    <TextView
+                        android:id="@+id/tvNotes"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rCoor">
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Coordinator" />
+
+                    <TextView
+                        android:id="@+id/tvCoor"
                         android:padding="4dp"
                         android:textColor="#003d00"
                         android:textStyle="bold" />
@@ -199,96 +251,18 @@
                 android:background="#b9f6ca"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:text="III. NOTES"
+                android:text="III. MAP"
                 android:textSize="18sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvNotes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="#b9f6ca"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="IV. TERMS AND CONDITIONS"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvTNC"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="#b9f6ca"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="V. AUTHORIZED REPRESENTATIVES"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvAuthRep"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="#b9f6ca"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:text="VI. PLANTER'S CONFORMITY"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <CheckBox
-                android:id="@+id/tvConform"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp" />
 
             <ImageView
-                android:id="@+id/signature"
-                android:layout_width="250dp"
-                android:layout_height="100dp"
-                android:layout_gravity="left" />
-
-            <TextView
-                android:id="@+id/signatory"
-                android:layout_width="match_parent"
+                android:id="@+id/imgMap"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:textColor="#003d00"
-                android:textStyle="bold"
-                android:textAllCaps="true"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:text="[SIGNATURE ABOVE]" />
-
-            <CheckBox
-                android:id="@+id/chkSignatory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp" />
-
-            <Button
-                android:id="@+id/sign"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sign ATCCT" />
+                android:background="#bdbdbd"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
+                android:layout_marginTop="8dp"/>
 
 
         </LinearLayout>

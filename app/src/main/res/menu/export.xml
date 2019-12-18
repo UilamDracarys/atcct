@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- "Mark Favorite", should appear as action button if possible -->
+
+    <item
+        android:id="@+id/action_editFIR"
+        android:title="@string/action_editFIR"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_edit"/>
+
+    <item
+        android:id="@+id/action_exportFIR"
+        android:title="@string/action_exportFIR"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_export_to_pdf"/>
+
+</menu>
