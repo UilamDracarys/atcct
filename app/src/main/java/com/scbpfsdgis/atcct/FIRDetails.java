@@ -142,14 +142,14 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             if (obst.length != 0 && !obst[0].equals("-")) {
                 spnObstructions.setSelection(fir.getIndexArray(obst, getResources().getStringArray(R.array.obstructions)));
             }
-            String mapPath = fir.getFirMap();
+            mapPath = fir.getFirMap();
             File file  = new File(mapPath);
             if (file.exists()) {
                 Bitmap bmp = BitmapFactory.decodeFile(fir.getFirMap());
                 Bitmap orientedBmp = ExifUtil.rotateBitmap(fir.getFirMap(), bmp);
                 imgMap.setImageBitmap(orientedBmp);
             } else {
-
+                mapPath = "";
             }
 
         } else {
@@ -218,10 +218,13 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                 return true;
             case R.id.action_cancel:
                 finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
     public String getAttCode(String str) {
         return str.substring(str.indexOf("(") + 1, str.indexOf(")"));
@@ -497,8 +500,8 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             return false;
         }
 
-        if (etContName.getText().toString().equalsIgnoreCase("")) {
-            final boolean[] result = {false};
+        /*if (etContName.getText().toString().equalsIgnoreCase("")) {
+            final boolean[] result = null;
             new AlertDialog.Builder(this)
                     .setTitle("Save")
                     .setMessage(
@@ -513,7 +516,8 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                                 @Override
                                 public void onClick(DialogInterface dialog,
                                                     int which) {
-                                    result[0] = true;
+                                    result[0] ;
+                                    System.out.println("result is true");
                                 }
                             })
                     .setNegativeButton(
@@ -525,8 +529,9 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                                     result[0] = false;
                                 }
                             }).show();
+            System.out.println("Contact Details Dialog result = " + result[0]);
             return result[0];
-        }
+        }*/
 
         return true;
     }

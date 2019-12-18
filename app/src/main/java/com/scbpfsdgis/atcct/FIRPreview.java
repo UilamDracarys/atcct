@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,30 +15,26 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfPage;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.scbpfsdgis.atcct.Utils.ExifUtil;
 import com.scbpfsdgis.atcct.Utils.Utils;
@@ -53,11 +48,8 @@ import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -70,6 +62,7 @@ public class FIRPreview extends AppCompatActivity {
     String firID;
     String obstructions = "";
     String fileName;
+    String mapPath;
     private View mLayout;
     ImageView imgMap;
     TextView tvFarmCode, tvFarmName, tvOwnerName, tvContPerson, tvContNum,
@@ -138,9 +131,16 @@ public class FIRPreview extends AppCompatActivity {
         tvNotes.setText(fir.getFirNotes());
         tvCoor.setText(fir.getFirCoorName());
 
-        Bitmap bmp = BitmapFactory.decodeFile(fir.getFirMap());
-        Bitmap orientedBmp = ExifUtil.rotateBitmap(fir.getFirMap(), bmp);
-        imgMap.setImageBitmap(orientedBmp);
+        File map = new File(fir.getFirMap());
+        if (map.exists()) {
+            Bitmap bmp = BitmapFactory.decodeFile(fir.getFirMap());
+            Bitmap orientedBmp = ExifUtil.rotateBitmap(fir.getFirMap(), bmp);
+            imgMap.setImageBitmap(orientedBmp);
+            mapPath = map.getPath();
+        } else {
+            mapPath = "";
+            Toast.makeText(this, "Map screenshot could not be located. It may have been moved or deleted.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private String getObstruction(String code) {
@@ -240,6 +240,41 @@ public class FIRPreview extends AppCompatActivity {
         return true;
     }
 
+    private void delete() {
+        final FIRRepo repo = new FIRRepo();
+        new AlertDialog.Builder(this)
+                .setTitle("Delete")
+                .setMessage(
+                        "You are about to delete this FIR with ID No. " + firID + ". Press CONTINUE to proceed.")
+                .setIcon(
+                        getResources().getDrawable(
+                                android.R.drawable.ic_dialog_alert
+                        ))
+                .setPositiveButton(
+                        "Continue",
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                repo.delete(firID);
+                                onRestart();
+                                Toast.makeText(getApplicationContext(), "FIR successfully deleted. ", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        }
+                        )
+                .setNegativeButton(
+                        "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                            }
+                        }).show();
+
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_exportFIR:
@@ -298,6 +333,10 @@ public class FIRPreview extends AppCompatActivity {
                     startActivity(objIntent);
                 }
                 return true;
+
+            case R.id.action_deleteFIR:
+                delete();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -308,6 +347,11 @@ public class FIRPreview extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission is already available
             try {
+
+                if (mapPath.equalsIgnoreCase("")) {
+                    Toast.makeText(this, "Could not generate FIR PDF without map screenshot. Please edit the FIR first and try again.", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 createFIRPDF(firID);
                 finish();
             } catch (Exception e) {
@@ -332,7 +376,7 @@ public class FIRPreview extends AppCompatActivity {
         Contact contact = contactRepo.getContactByFarm(farm.getFarmCode());
         SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault());
         String farmFieldNo = farm.getFarmName() + "_FldNo-" + fir.getFirFldNo();
-        Rectangle longSize = new Rectangle((float) (8.5*72), 13*72);
+        Rectangle longSize = new Rectangle((float) (8.5 * 72), 13 * 72);
 
         File exportDir = new File(Environment.getExternalStorageDirectory() + Utils.mainDir + Utils.firSubDir, "");
         if (!exportDir.exists()) {
@@ -449,7 +493,7 @@ public class FIRPreview extends AppCompatActivity {
         firDetails.addCell(new Phrase("No. of Flags", fldNameFont));
         firDetails.addCell(new Phrase(String.valueOf(fir.getFirFlags()), boldBlue11));
         firDetails.addCell(new Phrase("Start & End Time", fldNameFont));
-        firDetails.addCell(new Phrase(timeFmt.format(Time.valueOf(fir.getFirStart())) + " ~ "  + timeFmt.format(Time.valueOf(fir.getFirEnd())), boldBlue11));
+        firDetails.addCell(new Phrase(timeFmt.format(Time.valueOf(fir.getFirStart())) + " ~ " + timeFmt.format(Time.valueOf(fir.getFirEnd())), boldBlue11));
         firDetails.addCell(new Phrase("Notes", fldNameFont));
         firDetails.addCell(new Phrase(fir.getFirNotes(), boldBlue11));
         firDetails.addCell(new Phrase("Field Coordinator", fldNameFont));

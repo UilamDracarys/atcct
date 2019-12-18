@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ATCCT</string>
+    <string name="app_name">FC Tools</string>
     <string name="btnImportText">IMPORT CSV</string>
     <string name="import_data">Import Data from CSV</string>
     <string name="action_save">save</string>
