@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scbpfsdgis.atcct.Utils.SearchableAdapter;
 import com.scbpfsdgis.atcct.data.model.Farms;
@@ -69,7 +70,11 @@ public class FarmsList extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                if (adapter != null) {
+                    adapter.getFilter().filter(newText);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Farms list is empty. Please download the data first.", Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
         });

@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Time;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -364,7 +365,7 @@ public class FIRPreview extends AppCompatActivity {
         }
     }
 
-    private void createFIRPDF(String firID) throws IOException, DocumentException {
+    private void createFIRPDF(String firID) throws IOException, DocumentException, ParseException {
 
         FIRRepo firRepo = new FIRRepo();
         FarmsRepo farmsRepo = new FarmsRepo();
@@ -375,6 +376,7 @@ public class FIRPreview extends AppCompatActivity {
         ContactRepo contactRepo = new ContactRepo();
         Contact contact = contactRepo.getContactByFarm(farm.getFarmCode());
         SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault());
+        SimpleDateFormat dateFormat =  new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
         String farmFieldNo = farm.getFarmName() + "_FldNo-" + fir.getFirFldNo();
         Rectangle longSize = new Rectangle((float) (8.5 * 72), 13 * 72);
 
@@ -385,7 +387,8 @@ public class FIRPreview extends AppCompatActivity {
         }
 
         fileName = exportDir.getAbsolutePath() + "/" + "FIR_"
-                + farmFieldNo.replace("\"", "") + "_"
+                //+ farmFieldNo.replace("\"", "") + "_"
+                + farmFieldNo.replaceAll("[^A-Za-z0-9()_\\- \\[\\]]", " ") + "_"
                 + dateForFile.format(new Date()) + "_ID" + firID + ".pdf";
         fir.setFirPath(fileName);
         Document document = new Document(longSize);
@@ -478,6 +481,8 @@ public class FIRPreview extends AppCompatActivity {
         firDetails.setWidthPercentage(100);
         firDetails.setWidths(new int[]{1, 4});
 
+        Date firDate = new SimpleDateFormat("yyyy-MM-dd").parse(fir.getFirDate());
+
         cell = new PdfPCell(new Phrase("II. FIELD INSPECTION DETAILS", bold));
         cell.setColspan(2);
         cell.setBackgroundColor(headerFill);
@@ -492,8 +497,8 @@ public class FIRPreview extends AppCompatActivity {
         firDetails.addCell(new Phrase(getHarvMeth(fir.getFirHarvMeth()), boldBlue11));
         firDetails.addCell(new Phrase("No. of Flags", fldNameFont));
         firDetails.addCell(new Phrase(String.valueOf(fir.getFirFlags()), boldBlue11));
-        firDetails.addCell(new Phrase("Start & End Time", fldNameFont));
-        firDetails.addCell(new Phrase(timeFmt.format(Time.valueOf(fir.getFirStart())) + " ~ " + timeFmt.format(Time.valueOf(fir.getFirEnd())), boldBlue11));
+        firDetails.addCell(new Phrase("Date Inspected", fldNameFont));
+        firDetails.addCell(new Phrase(dateFormat.format(firDate) + " ," + timeFmt.format(Time.valueOf(fir.getFirStart())) + " ~ " + timeFmt.format(Time.valueOf(fir.getFirEnd())), boldBlue11));
         firDetails.addCell(new Phrase("Notes", fldNameFont));
         firDetails.addCell(new Phrase(fir.getFirNotes(), boldBlue11));
         firDetails.addCell(new Phrase("Field Coordinator", fldNameFont));

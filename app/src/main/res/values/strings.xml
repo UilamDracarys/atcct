@@ -49,6 +49,7 @@
         <item>Linear (L)</item>
         <item>Tonnage (T)</item>
         <item>Combination (C)</item>
+        <item>Mechanical (M)</item>
     </string-array>
 
     <string-array name="obstructions">

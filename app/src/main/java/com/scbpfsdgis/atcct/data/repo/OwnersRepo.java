@@ -342,12 +342,15 @@ public class OwnersRepo {
         String selectQuery = "SELECT MAX(" + Owners.COL_OWNERID + ") AS MAX_ID FROM " + Owners.TABLE_OWNERS;
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
-            String tempID = "";
-            if (cursor.getString(cursor.getColumnIndex("MAX_ID")).startsWith("N-")) {
-                tempID = cursor.getString(cursor.getColumnIndex("MAX_ID")).substring(2);
+            String tempID = "0";
+            String maxID = cursor.getString(cursor.getColumnIndex("MAX_ID"));
+            if (maxID != null) {
+                if (cursor.getString(cursor.getColumnIndex("MAX_ID")).startsWith("N-")) {
+                    tempID = cursor.getString(cursor.getColumnIndex("MAX_ID")).substring(2);
 
-            } else {
-                tempID = cursor.getString(cursor.getColumnIndex("MAX_ID"));
+                } else {
+                    tempID = cursor.getString(cursor.getColumnIndex("MAX_ID"));
+                }
             }
             newOwnerID = "N-" + id.format(Integer.parseInt(tempID) + 1);
         } else {
@@ -356,6 +359,7 @@ public class OwnersRepo {
         }
 
         db.close();
+        System.out.println("New Owner ID: " + newOwnerID);
         return newOwnerID;
     }
 

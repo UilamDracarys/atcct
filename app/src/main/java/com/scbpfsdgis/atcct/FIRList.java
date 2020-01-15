@@ -131,7 +131,11 @@ public class FIRList extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                if (adapter != null) {
+                    adapter.getFilter().filter(newText);
+                } else {
+                    Toast.makeText(getApplicationContext(), "FIR list is empty.", Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
         });
