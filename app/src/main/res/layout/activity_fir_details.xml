@@ -24,6 +24,7 @@
         android:fillViewport="true">
         <LinearLayout
 
+            android:id="@+id/firLayout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -208,6 +209,54 @@
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"/>
 
+            <TextView
+                android:id="@+id/attHeader"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="ATTACHMENTS"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/attachments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <!--<Button
+
+                android:id="@+id/btnAddAtt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Attachment..." />-->
+
+            <Button
+                android:id="@+id/btnCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check Attachments"
+                android:visibility="gone"/>
+
+
+
         </LinearLayout>
     </ScrollView>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAddAtt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_attach"
+            android:theme="@style/ThemeOverlay.AppCompat" />
+    </FrameLayout>
 </RelativeLayout>

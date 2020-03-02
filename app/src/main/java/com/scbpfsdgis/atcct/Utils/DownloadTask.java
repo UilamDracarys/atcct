@@ -41,6 +41,7 @@ public class DownloadTask {
         this.context = context;
         this.downloadUrl = downloadUrl;
 
+//        downloadFileName = dlFileName;
         downloadFileName = "master_data.csv";
         Log.e(TAG, downloadFileName);
 

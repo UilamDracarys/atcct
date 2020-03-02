@@ -3,6 +3,7 @@ package com.scbpfsdgis.atcct.data.model;
 public class FIR {
 
     public static final String TABLE_FIR = "T_FIR";
+    public static final String TABLE_FIR_ATT = "T_FIR_ATT";
 
     public static final String COL_ID = "FIR_ID";
     public static final String COL_FIRDATE = "FIR_DATE";
@@ -18,6 +19,12 @@ public class FIR {
     public static final String COL_MAP = "FIR_MAP";
     public static final String COL_COORNAME = "FIR_COORNAME";
     public static final String COL_FIRPATH = "FIR_PATH";
+
+    public static final String COL_FIR_ID = COL_ID;
+    public static final String COL_FIR_ATT_PATH = "ATT_PATH";
+    public static final String COL_FIR_ATT_CAP = "ATT_CAPTION";
+
+
 
     private String firID;
     private String firDate;

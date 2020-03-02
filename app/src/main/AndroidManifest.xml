@@ -40,10 +40,11 @@
             android:label="ATCCT List" />
         <activity
             android:name=".FIRList"
-            android:label="FIR List" />
+            android:label="FIR List"/>
         <activity
             android:name=".FIRDetails"
-            android:label="Field Inspection Report Form" />
+            android:label="Field Inspection Report Form"
+            />
         <activity android:name=".ATCCTDetails" />
         <activity android:name=".data.SignatureActivity" />
         <activity

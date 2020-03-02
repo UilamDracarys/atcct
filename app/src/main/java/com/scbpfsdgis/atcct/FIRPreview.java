@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,10 +21,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.kernel.pdf.action.PdfTargetDictionary;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -53,7 +59,9 @@ import java.io.IOException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static com.scbpfsdgis.atcct.app.App.getContext;
@@ -69,6 +77,7 @@ public class FIRPreview extends AppCompatActivity {
     TextView tvFarmCode, tvFarmName, tvOwnerName, tvContPerson, tvContNum,
             tvFldNo, tvArea, tvObst, tvHarvMeth, tvFlags, tvStart, tvEnd, tvNotes, tvCoor;
     SimpleDateFormat timeFmt = new SimpleDateFormat("h:mm aa", Locale.getDefault());
+    ArrayList<HashMap<String, String>> attList;
 
 
     @Override
@@ -94,6 +103,9 @@ public class FIRPreview extends AppCompatActivity {
         Farms farm = farmsRepo.getFarmByID(fir.getFirFarmCode(), "M");
         Owners owner = ownersRepo.getOwnerByID(farm.getFarmOwnerID(), "M");
         Contact contact = contactRepo.getContactByFarm(fir.getFirFarmCode());
+
+        attList = fRepo.getAttachments(firID);
+        loadAttachments();
 
         tvFarmCode.setText(fir.getFirFarmCode());
         tvFarmName.setText(farm.getFarmName());
@@ -141,6 +153,42 @@ public class FIRPreview extends AppCompatActivity {
         } else {
             mapPath = "";
             Toast.makeText(this, "Map screenshot could not be located. It may have been moved or deleted.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void loadAttachments() {
+        RelativeLayout root = findViewById(R.id.firPreview);
+        ScrollView scrollView = (ScrollView) root.getChildAt(1);
+        LinearLayout linearLayout = (LinearLayout) scrollView.getChildAt(0);
+        if (attList.size() > 0) {
+            for (int i = 0; i < attList.size(); i++) {
+                String cap = attList.get(i).get("AttCaption");
+                String path = attList.get(i).get("AttPath");
+                TextView caption = new TextView(this);
+                caption.setTextColor(Color.parseColor("#003d00"));
+                caption.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD_ITALIC));
+                ImageView attach = new ImageView(this);
+                caption.setText(i + 1 + ". " + cap);
+                File att = new File(attList.get(i).get("AttPath"));
+                if (att.exists()) {
+                    Bitmap bmp = BitmapFactory.decodeFile(path);
+                    Bitmap orientedBmp = ExifUtil.rotateBitmap(path, bmp);
+                    attach.setImageBitmap(orientedBmp);
+                    attach.setAdjustViewBounds(true);
+                    attach.setScaleType(ImageView.ScaleType.FIT_XY);
+                    linearLayout.addView(caption);
+                    linearLayout.addView(attach);
+                } else {
+                    caption.setText(i + 1 + ". The attachment with caption \"" + cap + "\" and path \"" + path + "\" could not be located.");
+                    caption.setTextColor(Color.RED);
+                    caption.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
+                    linearLayout.addView(caption);
+                }
+            }
+        } else {
+            TextView textView = new TextView(this);
+            textView.setText("***NO ATTACHMENTS***");
+            linearLayout.addView(textView);
         }
     }
 
@@ -264,7 +312,7 @@ public class FIRPreview extends AppCompatActivity {
                                 finish();
                             }
                         }
-                        )
+                )
                 .setNegativeButton(
                         "Cancel",
                         new DialogInterface.OnClickListener() {
@@ -376,7 +424,7 @@ public class FIRPreview extends AppCompatActivity {
         ContactRepo contactRepo = new ContactRepo();
         Contact contact = contactRepo.getContactByFarm(farm.getFarmCode());
         SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault());
-        SimpleDateFormat dateFormat =  new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
         String farmFieldNo = farm.getFarmName() + "_FldNo-" + fir.getFirFldNo();
         Rectangle longSize = new Rectangle((float) (8.5 * 72), 13 * 72);
 
@@ -432,7 +480,7 @@ public class FIRPreview extends AppCompatActivity {
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.biopower);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 75, stream);
+        bm.compress(Bitmap.CompressFormat.PNG, 50, stream);
         byte[] byteArray = stream.toByteArray();
         Image logo = Image.getInstance(byteArray);
         logo.scaleAbsolute(150, 27);
@@ -510,9 +558,16 @@ public class FIRPreview extends AppCompatActivity {
 
         Image imgMap;
         if (fir.getFirMap() != null) {
+           /* Bitmap bmp = BitmapFactory.decodeFile(fir.getFirMap());
+            Bitmap orientedBmp = ExifUtil.rotateBitmap(fir.getFirMap(), bmp);
+
+            ByteArrayOutputStream stream3 = new ByteArrayOutputStream();
+            orientedBmp.compress(Bitmap.CompressFormat.PNG, 50, stream3);*/
+
             imgMap = Image.getInstance(fir.getFirMap());
             imgMap.setAlignment(Image.ALIGN_CENTER);
             imgMap.setScaleToFitHeight(true);
+            System.out.println("X: " + imgMap.getAbsoluteX() + ", Y: " + imgMap.getAbsoluteY());
 
         } else {
             imgMap = null;
@@ -523,7 +578,6 @@ public class FIRPreview extends AppCompatActivity {
         mapHdr.addCell(cell);
 
         document.add(logo);
-        //document.add(revNo);
         document.add(title);
         document.add(farmInfo);
         document.add(firDetails);
@@ -552,6 +606,57 @@ public class FIRPreview extends AppCompatActivity {
         map.addCell(cell).setFixedHeight(vertPost - 36);
 
         document.add(map);
+
+
+        if (attList.size() > 0) {
+            document.newPage();
+            PdfPTable attHdr = new PdfPTable(1);
+            attHdr.setWidthPercentage(100);
+
+            cell = new PdfPCell(new Phrase("IV. ATTACHMENTS for " + firID, bold));
+            cell.setBackgroundColor(headerFill);
+
+            attHdr.addCell(cell);
+            document.add(attHdr);
+
+            Image attach;
+
+            for (int i=0;i<attList.size();i++) {
+
+                String path = attList.get(i).get("AttPath");
+                String caption = attList.get(i).get("AttCaption");
+
+                File file = new File(path);
+
+                if (file.exists()) {
+                    PdfPTable capTbl = new PdfPTable(1);
+                    capTbl.setWidthPercentage(100);
+
+                    PdfPTable attTbl = new PdfPTable(1);
+                    attTbl.setWidthPercentage(100);
+
+                    cell = new PdfPCell(new Phrase(caption, boldBlue11));
+                    capTbl.addCell(cell);
+                    document.add(capTbl);
+
+                    attach = Image.getInstance(path);
+                    attach.setAlignment(Image.ALIGN_CENTER);
+
+                    cell = new PdfPCell(attach, true);
+                    cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+                    cell.setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+                    if (i < attList.size() - 1) {
+                        System.out.println("Vert Position at " + i + " " + writer.getVerticalPosition(false));
+                        attTbl.addCell(cell).setFixedHeight(((writer.getVerticalPosition(false))/2) - 36);
+                    } else {
+                        System.out.println("Vert Position at " + i + " " + writer.getVerticalPosition(false));
+                        attTbl.addCell(cell).setFixedHeight(writer.getVerticalPosition(false) - 36);
+                    }
+                    document.add(attTbl);
+                }
+
+            }
+        }
         document.close();
 
         firRepo.updateFIRPath(fir);
@@ -595,5 +700,4 @@ public class FIRPreview extends AppCompatActivity {
                     MainActivity.PERMISSION_REQUEST_WRITESTORAGE);
         }
     }
-
 }

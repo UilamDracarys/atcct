@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private View mLayout;
     AlertDialog alertDialog1;
     CharSequence[] values = {"SCBP", "SNBP", "NNBP"};
+    String versionName = BuildConfig.VERSION_NAME;
     String nnbpDataURL = "https://drive.google.com/uc?authuser=0&id=15EfjKmsv511ehyhLelD_QteaoC5sX1OD&export=download";
     String scbpDataURL = "https://drive.google.com/uc?authuser=0&id=1L8JoYCRAmKAaf2SFjvLXPk-Zfu6LhfHN&export=download";
     String snbpDataURL = "https://drive.google.com/uc?authuser=0&id=11ux9AxUsZTaPpcO2XGWCUK5APPcOTVKJ&export=download";
@@ -272,9 +274,42 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         return true;
     }
 
+    public static String getDeviceName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        return manufacturer + " " + model;
+    }
+
+    private void showAppInfoDlg() throws Resources.NotFoundException {
+        DBHelper dbHelper = new DBHelper();
+        new android.support.v7.app.AlertDialog.Builder(this)
+
+                .setTitle("FC Tools")
+                .setMessage("App Version: " + versionName + "\n" +
+                        "DB Version: " + dbHelper.getDatabaseVersion() + "\n" +
+                        "Device: " + getDeviceName())
+                .setIcon(
+                        getResources().getDrawable(
+                                android.R.drawable.ic_dialog_info))
+                .setPositiveButton(
+                        "OK",
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+
+                            }
+                        })
+                .show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_info:
+                showAppInfoDlg();
+                return true;
             case R.id.action_importdata:
                 Toast.makeText(getApplicationContext(), "This function is no longer supported. Please go online and download the data. Thank you.", Toast.LENGTH_LONG).show();
                 /*if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)

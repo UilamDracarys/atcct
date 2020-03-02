@@ -43,6 +43,28 @@ public class FIRRepo {
         return query;
     }
 
+    public static String createFIRAttTbl() {
+        String query = "CREATE TABLE IF NOT EXISTS " + FIR.TABLE_FIR_ATT + " (" +
+                FIR.COL_FIR_ID + " TEXT, " +
+                FIR.COL_FIR_ATT_PATH + " TEXT, " +
+                FIR.COL_FIR_ATT_CAP + " TEXT)";
+        return query;
+    }
+
+    public void insertFIRAtt(String firID, String firAttPath, String firAttCaption) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(FIR.COL_FIR_ID, firID);
+        values.put(FIR.COL_FIR_ATT_PATH, firAttPath);
+        values.put(FIR.COL_FIR_ATT_CAP, firAttCaption);
+
+        // Inserting Row
+        db.insert(FIR.TABLE_FIR_ATT, null, values);
+        db.close();
+    }
+
     public void insert(FIR fir) {
         dbHelper = new DBHelper();
         db = dbHelper.getWritableDatabase();
@@ -82,8 +104,14 @@ public class FIRRepo {
         dbHelper = new DBHelper();
         db = dbHelper.getWritableDatabase();
         db.delete(FIR.TABLE_FIR, FIR.COL_ID + "='" + firID + "'", null);
+        db.delete(FIR.TABLE_FIR_ATT, FIR.COL_ID + "='" + firID + "'", null);
     }
 
+    public void deleteAtt(String firID) {
+        dbHelper = new DBHelper();
+        db = dbHelper.getWritableDatabase();
+        db.delete(FIR.TABLE_FIR_ATT, FIR.COL_ID + "='" + firID + "'", null);
+    }
 
     public void update(FIR fir) {
         dbHelper = new DBHelper();
@@ -141,6 +169,37 @@ public class FIRRepo {
         DatabaseManager.getInstance().closeDatabase();
         db.close();
         return firList;
+    }
+
+    public ArrayList<HashMap<String, String>> getAttachments(String firID) {
+
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+
+        String selectQuery = "SELECT " + FIR.COL_ID + " as ID, " +
+                FIR.COL_FIR_ATT_PATH + " as AttPath, " +
+                FIR.COL_FIR_ATT_CAP + " as AttCaption " +
+                "FROM " + FIR.TABLE_FIR_ATT + " " +
+                "WHERE " + FIR.COL_ID + " = '" + firID + "'";
+
+        ArrayList<HashMap<String, String>> attList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> fir = new HashMap<>();
+                fir.put("ID", cursor.getString(cursor.getColumnIndex("ID")));
+                fir.put("AttPath", cursor.getString(cursor.getColumnIndex("AttPath")));
+                fir.put("AttCaption", cursor.getString(cursor.getColumnIndex("AttCaption")));
+                attList.add(fir);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        db.close();
+        return attList;
     }
 
 

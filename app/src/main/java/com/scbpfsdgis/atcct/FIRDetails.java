@@ -3,31 +3,38 @@ package com.scbpfsdgis.atcct;
 import android.Manifest;
 import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.guna.libmultispinner.MultiSelectionSpinner;
+import com.itextpdf.text.pdf.PdfPCell;
 import com.scbpfsdgis.atcct.Utils.ExifUtil;
 import com.scbpfsdgis.atcct.Utils.Utils;
 import com.scbpfsdgis.atcct.data.model.Config;
@@ -48,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,22 +72,28 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
     Time timeStart, timeEnd;
     SimpleDateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     SimpleDateFormat dispFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
-
+    FloatingActionButton fab;
 
     //Declare fields
-    TextView farmNameCode;
+    TextView farmNameCode, attHeader;
     EditText fldNo, rfrArea, flags, start, end, notes, coor, etContNum;
     Spinner harvMeth;
     MultiSelectionSpinner spnObstructions;
-    Button btnSelStart, btnSelEnd, btnSelImg;
+    Button btnSelStart, btnSelEnd, btnSelImg, btnAddAtt, btnCheckAtt;
     ImageView imgMap;
     String mapPath = "";
+    int attCount = 0;
     AutoCompleteTextView etContName;
+    List<EditText> attCaptions;
+    List<ImageView> attachments;
+    ArrayList<HashMap<String, String>> attList;
+    private boolean add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fir_details);
+
         mLayout = findViewById(R.id.fir_detail_layout);
 
 
@@ -88,6 +102,7 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
 
 
         Intent intent = getIntent();
+        fab = findViewById(R.id.fabAddAtt);
         farmCode = intent.getStringExtra("farmCode");
         firID = intent.getStringExtra("firID");
         action = intent.getStringExtra("type");
@@ -143,7 +158,7 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                 spnObstructions.setSelection(fir.getIndexArray(obst, getResources().getStringArray(R.array.obstructions)));
             }
             mapPath = fir.getFirMap();
-            File file  = new File(mapPath);
+            File file = new File(mapPath);
             if (file.exists()) {
                 Bitmap bmp = BitmapFactory.decodeFile(fir.getFirMap());
                 Bitmap orientedBmp = ExifUtil.rotateBitmap(fir.getFirMap(), bmp);
@@ -151,6 +166,9 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             } else {
                 mapPath = "";
             }
+
+            attList = firRepo.getAttachments(firID);
+            loadAttachments(firID);
 
         } else {
             title = intent.getStringExtra("title");
@@ -171,6 +189,7 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
     private void init(String action, String firID) {
 
         //Initialize fields
+        attHeader = findViewById(R.id.attHeader);
         farmNameCode = findViewById(R.id.tvFarmCode);
         fldNo = findViewById(R.id.etFldNo);
         rfrArea = findViewById(R.id.etRFRArea);
@@ -190,14 +209,32 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
         btnSelImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectMap();
+                selectMap("");
             }
         });
         btnSelStart.setOnClickListener(this);
         btnSelEnd.setOnClickListener(this);
+        btnCheckAtt = findViewById(R.id.btnCheck);
+        btnCheckAtt.setOnClickListener(this);
         imgMap = findViewById(R.id.imgMap);
         etContName = findViewById(R.id.etContName);
         etContNum = findViewById(R.id.etContNum);
+
+        attCaptions = new ArrayList<>();
+        attachments = new ArrayList<>();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayout firLayout = findViewById(R.id.attachments);
+                if (firLayout.getChildCount() >= 2) {
+                    Toast.makeText(getApplicationContext(), "Can only attach up to 2 photos.", Toast.LENGTH_SHORT).show();
+                } else {
+                    selectMap("Att");
+                }
+
+            }
+        });
 
         farmNameCode.setText(farm.getFarmName() + " (" + farmCode + ")\n" + owner.getOwnerName() + "\nFIR No.: " + firID);
     }
@@ -223,7 +260,6 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
 
     public String getAttCode(String str) {
@@ -282,11 +318,13 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
 
             if (action.equalsIgnoreCase("New")) {
                 fRepo.insert(fir);
+                saveAttachments();
                 Toast.makeText(this, "FIR No. " + firID + " created on " + createDate, Toast.LENGTH_SHORT).show();
             } else {
                 fRepo.update(fir);
                 fir.setFirPath("");
                 fRepo.updateFIRPath(fir);
+                saveAttachments();
                 Toast.makeText(this, "FIR No. " + firID + " successfully updated.", Toast.LENGTH_SHORT).show();
             }
             finish();
@@ -331,10 +369,6 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                                 timeEnd = null;
                                 end.setText("");
                                 System.out.println("Time Start: " + timeStart.toString());
-                                /*c.setTime(timeStart);
-                                c.add(Calendar.MINUTE, 30);
-                                timeEnd = new Time(c.getTime().getHours(), c.getTime().getMinutes(), 0);
-                                end.setText(timeEnd.getHours() + ":" + timeEnd.getMinutes());*/
 
                                 if (end.getText().toString().equalsIgnoreCase("")) {
                                     if (timeEnd != null) {
@@ -348,8 +382,7 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                                 btnSelEnd.setEnabled(true);
                             } else {
                                 timeEnd = new Time(hourOfDay, minute, 0);
-                               /* timeEnd = new Time(hourOfDay, minute, 0);
-                                System.out.println("Start: " + timeStart + "\nEnd: " + timeEnd);*/
+
                                 if (timeEnd.before(timeStart)) {
                                     Toast.makeText(getApplicationContext(), "Time end should not be before time start.", Toast.LENGTH_SHORT).show();
                                     return;
@@ -360,21 +393,30 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                         }
                     }, mHour, mMinute, false);
             timePickerDialog.show();
+        } else if (v == btnCheckAtt) {
+            saveAttachments();
         } else {
 
         }
     }
 
-    private void selectMap() {
+    private void selectMap(String type) {
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission is already available
-            Intent fileintent = new Intent(Intent.ACTION_PICK);
-            fileintent.setType("image/*");
-            try {
-                startActivityForResult(Intent.createChooser(fileintent, "Select map"), requestcode);
-            } catch (ActivityNotFoundException e) {
-                System.out.println("Not found");
+            Intent fileintent = new Intent(Intent.ACTION_PICK).setType("image/*");
+            if (type.equals("Att")) {
+                try {
+                    startActivityForResult(Intent.createChooser(fileintent, "Select map"), 2);
+                } catch (ActivityNotFoundException e) {
+                    System.out.println("Not found");
+                }
+            } else {
+                try {
+                    startActivityForResult(Intent.createChooser(fileintent, "Select map"), requestcode);
+                } catch (ActivityNotFoundException e) {
+                    System.out.println("Not found");
+                }
             }
         } else {
             // Permission is missing and must be requested.
@@ -422,7 +464,7 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                 Snackbar.make(mLayout, "Storage access granted.",
                         Snackbar.LENGTH_SHORT)
                         .show();
-                selectMap();
+                selectMap("Att");
             } else {
                 // Permission request was denied.
                 Snackbar.make(mLayout, "Storage access denied.",
@@ -445,14 +487,110 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                 //Normal setting of image via URI
                 Uri uri = data.getData();
                 mapPath = Utils.getActualPath(this, uri);
-                //imgMap.setImageURI(uri);
-
 
                 //Process via ExifUtil to correct orientation
                 String filepath = Utils.getActualPath(this, uri);
                 Bitmap bmp = BitmapFactory.decodeFile(filepath);
                 Bitmap orientedBmp = ExifUtil.rotateBitmap(filepath, bmp);
                 imgMap.setImageBitmap(orientedBmp);
+                break;
+            case 2:
+
+                uri = data.getData();
+                addAttachment(uri);
+
+                break;
+
+        }
+    }
+
+
+    private void addAttachment(Uri uri) {
+        final LinearLayout firLayout = findViewById(R.id.attachments);
+
+        LayoutInflater layoutInflater =
+                (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View addAtt = layoutInflater.inflate(R.layout.attachment, null);
+        System.out.println("AttID: " + addAtt.getId());
+        Button remove = addAtt.findViewById(R.id.removeBtn);
+
+        final View.OnClickListener removeListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((LinearLayout) addAtt.getParent()).removeView(addAtt);
+            }
+        };
+        remove.setOnClickListener(removeListener);
+
+        String filepath;
+        ImageView attImg = addAtt.findViewById(R.id.attImg);
+        filepath = Utils.getActualPath(this, uri);
+        Bitmap bmp = BitmapFactory.decodeFile(filepath);
+        Bitmap orientedBmp = ExifUtil.rotateBitmap(filepath, bmp);
+        attImg.setImageBitmap(orientedBmp);
+        attImg.setTag(filepath);
+
+        firLayout.addView(addAtt);
+
+    }
+
+    private void loadAttachments(String firID) {
+        if (attList.size() > 0) {
+            for (int i = 0;i<attList.size();i++){
+                String filepath = attList.get(i).get("AttPath");
+                String caption = attList.get(i).get("AttCaption");
+                File file  = new File(attList.get(i).get("AttPath"));
+                if (file.exists()) {
+
+                    final LinearLayout firLayout = findViewById(R.id.attachments);
+
+                    LayoutInflater layoutInflater =
+                            (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    final View addAtt = layoutInflater.inflate(R.layout.attachment, null);
+                    Button remove = addAtt.findViewById(R.id.removeBtn);
+                    TextInputEditText captionET = addAtt.findViewById(R.id.caption);
+                    captionET.setText(caption);
+
+                    final View.OnClickListener removeListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ((LinearLayout) addAtt.getParent()).removeView(addAtt);
+                        }
+                    };
+                    remove.setOnClickListener(removeListener);
+
+                    ImageView attImg = addAtt.findViewById(R.id.attImg);
+                    Bitmap bmp = BitmapFactory.decodeFile(filepath);
+                    Bitmap orientedBmp = ExifUtil.rotateBitmap(filepath, bmp);
+                    attImg.setImageBitmap(orientedBmp);
+                    attImg.setTag(filepath);
+
+                    firLayout.addView(addAtt);
+                }
+
+            }
+        }
+    }
+
+    private void saveAttachments() {
+
+        FIRRepo repo = new FIRRepo();
+        LinearLayout firLayout = findViewById(R.id.attachments);
+        int attCount = firLayout.getChildCount();
+        repo.deleteAtt(firID);
+
+        for (int i = 0; i < attCount; i++) {
+
+            LinearLayout rootLayout = (LinearLayout) firLayout.getChildAt(i);
+            ConstraintLayout subLayout1 = (ConstraintLayout) rootLayout.getChildAt(0);
+            TextInputLayout subLayout2 = (TextInputLayout) subLayout1.getChildAt(0);
+            FrameLayout subLayout3 = (FrameLayout) subLayout2.getChildAt(0);
+            TextInputEditText cap = (TextInputEditText) subLayout3.getChildAt(0);
+            ImageView img = (ImageView) rootLayout.getChildAt(1);
+            System.out.println("Attachment: \n" +
+                    "Path: " + img.getTag().toString() + "\n" +
+                    "Caption: " + cap.getText().toString());
+            repo.insertFIRAtt(firID, img.getTag().toString(), cap.getText().toString());
         }
     }
 
@@ -500,39 +638,6 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             return false;
         }
 
-        /*if (etContName.getText().toString().equalsIgnoreCase("")) {
-            final boolean[] result = null;
-            new AlertDialog.Builder(this)
-                    .setTitle("Save")
-                    .setMessage(
-                            "Do you want to save without contact details?")
-                    .setIcon(
-                            getResources().getDrawable(
-                                    android.R.drawable.ic_dialog_info))
-                    .setPositiveButton(
-                            "OK",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    result[0] ;
-                                    System.out.println("result is true");
-                                }
-                            })
-                    .setNegativeButton(
-                            "Cancel",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    result[0] = false;
-                                }
-                            }).show();
-            System.out.println("Contact Details Dialog result = " + result[0]);
-            return result[0];
-        }*/
-
         return true;
     }
 
@@ -544,29 +649,6 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
         if (!config.getCfgCoor().equalsIgnoreCase(curCoor)) {
             repo.insert(config);
         }
-    }
-
-
-    private void generateFIR() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            // Permission is already available
-            try {
-
-                finish();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            finish();
-            //Toast.makeText(this, "ATCCT No. " + atccNo + " successfully generated.\nFilename: " + fileName, Toast.LENGTH_LONG).show();
-        } else {
-            // Permission is missing and must be requested.
-            requestStoragePermission();
-        }
-    }
-
-    private void exportPDFFIR() {
-
     }
 
 }

@@ -24,7 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
     //version number to upgrade database version
     //each time if you Add, Edit table, you need to change the
     //version number.
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 19;
     // Database Name
     private static final String DATABASE_NAME = "ATCCT.db";
     private static final String TAG = DBHelper.class.getSimpleName();
@@ -49,6 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(FIRRepo.createFIRTbl());
         db.execSQL(ConfigRepo.createCFG());
         db.execSQL(ContactRepo.createContactsTbl());
+        db.execSQL(FIRRepo.createFIRAttTbl());
     }
 
     @Override
@@ -89,6 +90,12 @@ public class DBHelper extends SQLiteOpenHelper {
         if (oldVersion <= 16) {
             db.execSQL(ContactRepo.createContactsTbl());
         }
+
+        if (oldVersion <= 18) {
+            db.execSQL(FIRRepo.createFIRAttTbl());
+            db.execSQL("DROP TABLE IF EXISTS T_ATTACH");
+        }
+
         onCreate(db);
     }
 }

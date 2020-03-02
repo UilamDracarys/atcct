@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
+    android:id="@+id/firPreview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FIRPreview">
@@ -264,6 +264,15 @@
                 android:adjustViewBounds="true"
                 android:layout_marginTop="8dp"/>
 
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="IV. ATTACHMENTS"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
     </ScrollView>

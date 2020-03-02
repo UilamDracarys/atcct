@@ -2,6 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- "Mark Favorite", should appear as action button if possible -->
 
+    <item
+        android:id="@+id/action_info"
+        android:title="@string/import_data"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_info"/>
 
     <item
         android:id="@+id/action_importdata"
