@@ -7,18 +7,8 @@
     android:layout_height="fill_parent"
     tools:context="com.scbpfsdgis.atcct.FIRDetails">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#69F0AE"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
 
     <ScrollView
-        android:layout_below="@id/my_toolbar"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:fillViewport="true">

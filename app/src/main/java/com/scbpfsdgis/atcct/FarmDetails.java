@@ -37,10 +37,12 @@ public class FarmDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_farm_details);
         mLayout = findViewById(R.id.farm_detail_layout);
+/*
 
 
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+*/
 
         Intent intent = getIntent();
         farmCode = intent.getStringExtra("farmCode");

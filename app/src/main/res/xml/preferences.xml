@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:defaultValue="Field Coordinator"
+        android:key="fc_name"
+        android:title="FC Name"
+        android:singleLineTitle="true"/>
+</PreferenceScreen>

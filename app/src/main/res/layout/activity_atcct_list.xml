@@ -8,14 +8,6 @@
     tools:context="com.scbpfsdgis.atcct.ATCCTList"
     android:id="@+id/atcct_list_layout">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#69F0AE"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -34,6 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
+            android:backgroundTint="@color/colorPrimary"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp" />
 

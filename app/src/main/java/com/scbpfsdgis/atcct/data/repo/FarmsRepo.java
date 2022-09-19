@@ -383,5 +383,27 @@ public class FarmsRepo {
         return farmsList;
     }
 
+    public ArrayList<String> getFarmsForSpnSimp() {
+        dbHelper = new DBHelper();
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + Farms.TABLE_FARMS + " ORDER BY " + Farms.COL_FARMNAME;
+        System.out.println(selectQuery);
+
+        ArrayList<String> farmsList = new ArrayList<>();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                String item = cursor.getString(cursor.getColumnIndex(Farms.COL_FARMNAME));
+                farmsList.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        DatabaseManager.getInstance().closeDatabase();
+        return farmsList;
+    }
+
 
 }

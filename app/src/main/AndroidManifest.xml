@@ -2,9 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.scbpfsdgis.atcct">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
         android:name=".app.App"
         android:allowBackup="true"
@@ -12,8 +9,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".FIRPreview"></activity>
+        android:theme="@style/AppTheme">
+        <activity android:name=".SettingsActivity"
+            android:label="Settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
+        <!-- android:theme="@style/Theme.AppCompat.Light.NoActionBar"> -->
+        <activity android:name=".SendUpdate" />
+        <activity android:name=".SMSUpdates" />
+        <activity android:name=".FIRPreview" />
         <activity
             android:name=".MainActivity"
             android:label="FC Tools">
@@ -40,11 +47,10 @@
             android:label="ATCCT List" />
         <activity
             android:name=".FIRList"
-            android:label="FIR List"/>
+            android:label="FIR List" />
         <activity
             android:name=".FIRDetails"
-            android:label="Field Inspection Report Form"
-            />
+            android:label="Field Inspection Report Form" />
         <activity android:name=".ATCCTDetails" />
         <activity android:name=".data.SignatureActivity" />
         <activity
@@ -61,5 +67,10 @@
                 android:resource="@xml/provider_paths" />
         </provider>
     </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>

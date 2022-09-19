@@ -3,23 +3,39 @@
     <string name="btnImportText">IMPORT CSV</string>
     <string name="import_data">Import Data from CSV</string>
     <string name="app_info">Information</string>
-    <string name="action_save">save</string>
-    <string name="action_cancel">cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_exportFIR">Export</string>
     <string name="action_editFIR">Edit FIR</string>
+    <string name="title_activity_atcctlist">ATCCTList</string>
+
+    <string name="action_add">Add</string>
+
+    <string name="action_new">New</string>
+
+    <string name="action_back">Back</string>
+    <string name="downloadcsv">Download Data</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_sign">Sign</string>
+    <string name="action_edit">Edit</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="backupDB">Backup Data</string>
+    <string name="exportChgList">Export Change List</string>
+    <string name="action_exportATCC">Export List</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="setting">Settings</string>
+    <string name="display_text">Visibility</string>
     <string-array name="bases">
         <item>SCBP</item>
         <item>SNBP</item>
         <item>NNBP</item>
     </string-array>
-
     <string-array name="availability">
         <item>AVAILABLE (A)</item>
         <item>DECLINED (D)</item>
         <item>NOT SUITABLE (N)</item>
         <item>TBD (T)</item>
     </string-array>
-
     <string-array name="pmtMethod">
         <item>-Payment Method-</item>
         <item>Pick-up</item>
@@ -32,18 +48,6 @@
         <item>Plant Site</item>
         <item>Bacolod Central Office (PNB)</item>
     </string-array>
-    <string name="title_activity_atcctlist">ATCCTList</string>
-    <string name="action_add">Add</string>
-    <string name="action_new">New</string>
-    <string name="action_back">Back</string>
-    <string name="downloadcsv">Download Data</string>
-    <string name="action_delete">Delete</string>
-    <string name="action_sign">Sign</string>
-    <string name="action_edit">Edit</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="backupDB">Backup Data</string>
-    <string name="exportChgList">Export Change List</string>
-    <string name="action_exportATCC">Export List</string>
 
     <string-array name="harvMeth">
         <item>- Harvest Method - </item>
@@ -70,5 +74,67 @@
         <item>Tire Tracks [TT]</item>
         <item>Slope/Steep (Bakilid) [SLP]</item>
         <item>Slightly Rolling [SR]</item>
+    </string-array>
+
+    <string-array name="harvStates">
+        <item>- Harvest State - </item>
+        <item>CROP</item>
+        <item>ONGO</item>
+        <item>RFR</item>
+        <item>RFRC</item>
+        <item>BURN</item>
+        <item>GDC</item>
+        <item>DETER</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string-array name="clusters">
+        <item>CDZ1</item>
+        <item>CDZ2</item>
+        <item>CDZ3</item>
+        <item>CDZ4</item>
+        <item>CDZ5</item>
+        <item>EBM1</item>
+        <item>EBM2</item>
+        <item>EBM3</item>
+        <item>ESC1</item>
+        <item>ESC2</item>
+        <item>HIM1</item>
+        <item>HIM2</item>
+        <item>HIN1</item>
+        <item>HIN2</item>
+        <item>ISA1</item>
+        <item>ISA2</item>
+        <item>ISA3</item>
+        <item>ISA4</item>
+        <item>ISA5</item>
+        <item>ISA6</item>
+        <item>LCC1</item>
+        <item>LCC2</item>
+        <item>LCC3</item>
+        <item>LCC4</item>
+        <item>LCC5</item>
+        <item>MAO1</item>
+        <item>MAO2</item>
+        <item>MAO3</item>
+        <item>MPS1</item>
+        <item>MPS2</item>
+        <item>MPS3</item>
+        <item>SAG1</item>
+        <item>SAG2</item>
+        <item>SAG3</item>
+        <item>SC1</item>
+        <item>SC2</item>
+        <item>SIL1</item>
+        <item>SIL2</item>
+        <item>SIL3</item>
+        <item>SIL4</item>
+        <item>SIL5</item>
+        <item>TAL1</item>
+        <item>TAL2</item>
+        <item>TAL3</item>
+        <item>TAL4</item>
+        <item>VIC1</item>
+        <item>VIC2</item>
+        <item>VIC3</item>
     </string-array>
 </resources>

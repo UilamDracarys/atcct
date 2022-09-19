@@ -7,19 +7,9 @@
     android:paddingBottom="8dp"
     tools:context="com.scbpfsdgis.atcct.OwnerDetails">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#69F0AE"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/my_toolbar"
         android:orientation="vertical"
         android:paddingRight="8dp"
         android:paddingLeft="8dp"
@@ -65,7 +55,6 @@
             android:ems="10"
             android:hint="Business Address"
             android:inputType="textPostalAddress" />
-
 
     </LinearLayout>
 

@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ATCCT.iml" filepath="$PROJECT_DIR$/ATCCT.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/libmultispinner/libmultispinner.iml" filepath="$PROJECT_DIR$/libmultispinner/libmultispinner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ATCCT.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ATCCT.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libmultispinner/ATCCT.libmultispinner.iml" filepath="$PROJECT_DIR$/.idea/modules/libmultispinner/ATCCT.libmultispinner.iml" />
     </modules>
   </component>
 </project>

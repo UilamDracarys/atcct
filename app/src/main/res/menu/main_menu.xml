@@ -6,12 +6,12 @@
         android:id="@+id/action_info"
         android:title="@string/import_data"
         app:showAsAction="always"
-        android:icon="@drawable/ic_info"/>
+        android:icon="@drawable/ic_information"/>
 
-    <item
+    <!--<item
         android:id="@+id/action_importdata"
         android:title="@string/import_data"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/action_downloadcsv"
@@ -26,6 +26,11 @@
     <item
         android:id="@+id/action_backupdb"
         android:title="@string/backupDB"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/setting"
         app:showAsAction="never" />
 
 </menu>

@@ -136,8 +136,6 @@ public class SearchableAdapter extends SimpleAdapter implements Filterable {
                                     (data == null ? "<unknown type>" : data.getClass()));
                         }
                     } else if (v instanceof TextView) {
-                        // Note: keep the instanceof TextView check at the bottom of these
-                        // ifs since a lot of views are TextViews (e.g. CheckBoxes).
                         setViewText((TextView) v, text);
                     } else if (v instanceof ImageView) {
                         if (data instanceof Integer) {
@@ -187,12 +185,22 @@ public class SearchableAdapter extends SimpleAdapter implements Filterable {
                             list.get(i).get("planter").toLowerCase().contains(filterString)) {
                         nlist.add(hashMap);
                     }
-                } else if (list.get(0).containsKey("farmNameFIR")){
+                } else if (list.get(0).containsKey("farmNameFIR")) {
                     HashMap<String, String> hashMap = new HashMap<>();
                     hashMap.put("ID", list.get(i).get("ID"));
                     hashMap.put("farmNameFIR", list.get(i).get("farmNameFIR"));
                     hashMap.put("IDFldNo", list.get(i).get("IDFldNo"));
                     if (list.get(i).get("farmNameFIR").toLowerCase().contains(filterString)) {
+                        nlist.add(hashMap);
+                    }
+                } else if (list.get(0).containsKey(("OwnerName"))) {
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    hashMap.put("ATCCNo", list.get(i).get("ATCCNo"));
+                    hashMap.put("OwnerID", list.get(i).get("OwnerID"));
+                    hashMap.put("OwnerName", list.get(i).get("OwnerName"));
+                    hashMap.put("ATCCTDetails", list.get(i).get("ATCCTDetails"));
+                    hashMap.put("DateSigned", list.get(i).get("DateSigned"));
+                    if (list.get(i).get("OwnerName").toLowerCase().contains(filterString)) {
                         nlist.add(hashMap);
                     }
                 } else {

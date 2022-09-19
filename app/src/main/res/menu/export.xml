@@ -12,12 +12,12 @@
         android:id="@+id/action_exportFIR"
         android:title="@string/action_exportFIR"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_export_to_pdf"/>
+        android:icon="@drawable/ic_pdf"/>
 
     <item
         android:id="@+id/action_deleteFIR"
         android:title="@string/action_delete"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_delete"/>
+        android:icon="@drawable/ic_del"/>
 
 </menu>

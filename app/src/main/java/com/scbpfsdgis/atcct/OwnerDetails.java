@@ -22,9 +22,6 @@ public class OwnerDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_owner_details);
 
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-
         Intent intent = getIntent();
         ownerID = intent.getStringExtra("ownerID");
         action = intent.getStringExtra("action");

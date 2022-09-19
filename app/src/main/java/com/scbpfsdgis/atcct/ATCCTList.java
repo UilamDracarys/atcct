@@ -13,8 +13,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scbpfsdgis.atcct.Utils.CSVWriter;
+import com.scbpfsdgis.atcct.Utils.SearchableAdapter;
 import com.scbpfsdgis.atcct.Utils.Utils;
 import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.DBHelper;
@@ -63,13 +66,13 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
     String atccNo, fileName;
     Button button;
     FloatingActionButton newItem;
+    SearchableAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_atcct_list);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         mLayout = findViewById(R.id.atcct_list_layout);
 
         button = new Button(this);
@@ -113,6 +116,25 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
         // Inflate the save_cancel; this adds items to the action bar if it is present.
         this.menu = menu;
         getMenuInflater().inflate(R.menu.new_back, menu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (adapter != null) {
+                    adapter.getFilter().filter(newText);
+                } else {
+                    Toast.makeText(getApplicationContext(), "ATCCT list is empty.", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        });
         return true;
     }
 
@@ -163,7 +185,7 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
 
         ListView lv = findViewById(R.id.lstATCCT);
         lv.setFastScrollEnabled(true);
-        ListAdapter adapter;
+
         if (atccList.size() != 0) {
             lv = findViewById(R.id.lstATCCT);
             lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -171,12 +193,14 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+
                     Intent intent = getIntent();
                     Bundle b = intent.getExtras();
 
                     if (b != null) {
                         tvAtccNo = view.findViewById(R.id.atccNo);
                         atccNo = tvAtccNo.getText().toString();
+                        System.out.println("Filter ATCCT: " + atccNo);
                         ATCC atcc = repo.getATCCByNo(atccNo);
 
                         //createATCCTPDF();
@@ -193,7 +217,6 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                                     Toast.makeText(getApplicationContext(), "File " + fileName + " not found. It may have been moved or deleted.", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
-
                                 Uri apkURI = FileProvider.getUriForFile(
                                         ATCCTList.this,
                                         getApplicationContext()
@@ -329,8 +352,7 @@ public class ATCCTList extends AppCompatActivity implements ActivityCompat.OnReq
                     return true;
                 }
             });
-            adapter = new SimpleAdapter(ATCCTList.this, atccList, R.layout.atcct_list_item, new String[]{"ATCCNo", "OwnerID", "OwnerName", "ATCCTDetails", "DateSigned"}, new int[]{R.id.atccNo, R.id.ownerID, R.id.ownerName, R.id.atcctDetails, R.id.isSigned});
-
+            adapter = new SearchableAdapter(ATCCTList.this, atccList, R.layout.atcct_list_item, new String[]{"ATCCNo", "OwnerID", "OwnerName", "ATCCTDetails", "DateSigned"}, new int[]{R.id.atccNo, R.id.ownerID, R.id.ownerName, R.id.atcctDetails, R.id.isSigned});
             lv.setAdapter(adapter);
         } else {
             adapter = null;

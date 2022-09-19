@@ -84,8 +84,6 @@ public class FIRPreview extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_firpreview);
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
         mLayout = findViewById(R.id.linearLayout);
 
         Intent intent = getIntent();
@@ -158,7 +156,7 @@ public class FIRPreview extends AppCompatActivity {
 
     private void loadAttachments() {
         RelativeLayout root = findViewById(R.id.firPreview);
-        ScrollView scrollView = (ScrollView) root.getChildAt(1);
+        ScrollView scrollView = (ScrollView) root.getChildAt(0);
         LinearLayout linearLayout = (LinearLayout) scrollView.getChildAt(0);
         if (attList.size() > 0) {
             for (int i = 0; i < attList.size(); i++) {
@@ -259,6 +257,9 @@ public class FIRPreview extends AppCompatActivity {
                 break;
             case "C":
                 harvmeth = "Combination";
+                break;
+            case "M":
+                harvmeth = "Mechanical";
                 break;
         }
         return harvmeth;
@@ -396,7 +397,6 @@ public class FIRPreview extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission is already available
             try {
-
                 if (mapPath.equalsIgnoreCase("")) {
                     Toast.makeText(this, "Could not generate FIR PDF without map screenshot. Please edit the FIR first and try again.", Toast.LENGTH_LONG).show();
                     return;

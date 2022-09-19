@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/smsUpdate">
+
+    <TextView
+        android:id="@+id/tvFarmCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <EditText
+        android:id="@+id/etFarmName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Choose farm..."
+        android:inputType="textPersonName|textCapWords" />
+
+    <EditText
+        android:id="@+id/etFieldNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Field Name/No."/>
+
+    <EditText
+        android:id="@+id/etTotalArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Total Area"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/etRemarks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Remarks"
+        android:inputType="numberDecimal" />
+
+</LinearLayout>

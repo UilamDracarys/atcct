@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -18,13 +19,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -33,10 +36,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scbpfsdgis.atcct.Utils.CSVWriter;
 import com.scbpfsdgis.atcct.Utils.DownloadTask;
+import com.scbpfsdgis.atcct.Utils.UpdateHelper;
 import com.scbpfsdgis.atcct.Utils.Utils;
 import com.scbpfsdgis.atcct.data.CustomAdapter;
 import com.scbpfsdgis.atcct.data.DatabaseManager;
@@ -58,8 +63,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, UpdateHelper.OnUpdateCheckListener, View.OnClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final int PERMISSION_REQUEST_WRITESTORAGE = 0;
+    public static final int PERMISSION_SEND_SMS = 0;
     public static final int requestcode = 1;
     private String action = "";
     SQLiteDatabase db;
@@ -72,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     String scbpDataURL = "https://drive.google.com/uc?authuser=0&id=1L8JoYCRAmKAaf2SFjvLXPk-Zfu6LhfHN&export=download";
     String snbpDataURL = "https://drive.google.com/uc?authuser=0&id=11ux9AxUsZTaPpcO2XGWCUK5APPcOTVKJ&export=download";
     //String nnbpDataURL = "https://drive.google.com//uc?authuser=0&id=1PxedAjqHh6QEsdSC5Y8x_3xpm-Jx47m4&export=download";
-
+    FloatingActionButton fabAdd, fabSMS, fabFIR;
+    Boolean isFabOpen;
+    TextView mFCName;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -82,12 +90,98 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         dbHelper = new DBHelper();
         db = dbHelper.getReadableDatabase();
         mLayout = findViewById(R.id.main_layout);
+        isFabOpen = false;
+
         initMenus();
 
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_PHONE_STATE
+        };
+
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+/*
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        setSupportActionBar(myToolbar);*/
+
+        getSupportActionBar();
+
+        /*TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(this);
+
+        String imeiSIM1 = telephonyInfo.getImsiSIM1();
+        String imeiSIM2 = telephonyInfo.getImsiSIM2();
+
+        boolean isSIM1Ready = telephonyInfo.isSIM1Ready();
+        boolean isSIM2Ready = telephonyInfo.isSIM2Ready();
+
+        boolean isDualSIM = telephonyInfo.isDualSIM();
+
+        System.out.println(" IME1 : " + imeiSIM1 + "\n" +
+                " IME2 : " + imeiSIM2 + "\n" +
+                " IS DUAL SIM : " + isDualSIM + "\n" +
+                " IS SIM1 READY : " + isSIM1Ready + "\n" +
+                " IS SIM2 READY : " + isSIM2Ready + "\n");*/
+
 
         delSigCache();
+        setupSharedPreferences();
+    }
+
+    private void setupSharedPreferences() {
+        System.out.println("Setup Shared Preferences");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals("fc_name")) {
+            loadFCNameFromPreference(sharedPreferences);
+        }
+    }
+
+    private void changeFCName(String fcName) {
+        mFCName.setText("Welcome, " + fcName);
+        System.out.println("Change");
+    }
+
+    private void loadFCNameFromPreference(SharedPreferences sharedPreferences) {
+        changeFCName(sharedPreferences.getString("fc_name","Field Coordinator"));
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    @Override
+    public void onUpdateCheckListener(final String urlApp) {
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setTitle("New Version Available")
+                .setMessage("A new version of this app is available.")
+                .setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "Install " + urlApp, Toast.LENGTH_LONG).show();
+                    }
+                }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).create();
+        alertDialog.show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -310,19 +404,19 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             case R.id.action_info:
                 showAppInfoDlg();
                 return true;
-            case R.id.action_importdata:
+            /*case R.id.action_importdata:
                 Toast.makeText(getApplicationContext(), "This function is no longer supported. Please go online and download the data. Thank you.", Toast.LENGTH_LONG).show();
-                /*if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                *//*if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED) {
-                  *//*  importFromCSV();*//*
+                  *//**//*  importFromCSV();*//**//*
                     return true;
                 } else {
                     Toast.makeText(getApplicationContext(), "This function is no longer supported. Please go online and download the data. Thank you.", Toast.LENGTH_LONG).show();
-                    *//*action = "importcsv";
-                    requestStoragePermission();*//*
+                    *//**//*action = "importcsv";
+                    requestStoragePermission();*//**//*
                     return true;
-                }*/
-                return true;
+                }*//*
+                return true;*/
             case R.id.action_downloadcsv:
                 if (isConnectingToInternet()) {
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -359,6 +453,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     requestStoragePermission();
                     return true;
                 }
+
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -418,6 +517,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void initMenus() {
+        mFCName = findViewById(R.id.txtFCName);
+        fabAdd = findViewById(R.id.fabAdd);
+        fabSMS = findViewById(R.id.fabNewSMS);
+        fabFIR = findViewById(R.id.fabNewFIR);
+        fabAdd.setOnClickListener(this);
+        fabSMS.setOnClickListener(this);
+        fabFIR.setOnClickListener(this);
         ListView menus = findViewById(R.id.menuList);
         String[] textString = {"Farms List", "Planters List", "ATCCTs", "Field Inspection Reports"};
         String[] menuPreviews = {getFarmsSubtitle(), getOwnersSubtitle(), getATCCTSubtitle(), getFIRSubtitle()};
@@ -456,6 +562,25 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         });
     }
+
+
+
+    private void SendSMS(String message) {
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS)
+                == PackageManager.PERMISSION_GRANTED) {
+            try {
+                SmsManager sms = SmsManager.getDefault(); // using android SmsManager
+                sms.sendTextMessage("09154810688", null, message, null, null); // adding number and text
+            } catch (Exception e) {
+                Toast.makeText(this, "Sms not Send", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        } else {
+            requestSendSMSPerm();
+        }
+    }
+
 
     private String getFarmsSubtitle() {
         FarmsRepo repo = new FarmsRepo();
@@ -645,6 +770,66 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
+
+    @Override
+    public void onClick(View v) {
+        if (v == findViewById(R.id.fabAdd)) {
+            if(!isFabOpen) {
+                showFabMenu();
+            } else {
+                closeFabMenu();
+            }
+        } else if (v == findViewById(R.id.fabNewSMS)) {
+            Intent athleteList = new Intent(MainActivity.this, SendUpdate.class);
+            athleteList.putExtra("title", "Send Update");
+            startActivity(athleteList);
+            closeFabMenu();
+        } else if (v == findViewById(R.id.fabNewFIR)) {
+            closeFabMenu();
+        }
+    }
+
+
+    private void showFabMenu() {
+        isFabOpen = true;
+        fabSMS.animate().translationY(-160);
+        fabFIR.animate().translationY(-315);
+        //fabAddSport.animate().translationY(-470);
+    }
+
+    private void closeFabMenu() {
+        isFabOpen = false;
+        fabSMS.animate().translationY(0);
+        fabFIR.animate().translationY(0);
+        //fabAddSport.animate().translationY(-470);
+    }
+
+
+    private void requestSendSMSPerm() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.SEND_SMS)) {
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // Display a SnackBar with a button to request the missing permission.
+            Snackbar.make(mLayout, "Permission to send SMS is required.",
+                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Request the permission
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.SEND_SMS},
+                            PERMISSION_SEND_SMS);
+                }
+            }).show();
+        } else {
+            Snackbar.make(mLayout,
+                    "Permission is not available. Requesting send SMS permission.",
+                    Snackbar.LENGTH_SHORT).show();
+            // Request the permission. The result will be received in onRequestPermissionResult().
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS},
+                    PERMISSION_SEND_SMS);
+        }
+    }
 
 }
 

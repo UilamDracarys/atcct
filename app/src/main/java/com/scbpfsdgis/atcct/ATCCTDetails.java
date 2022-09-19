@@ -58,9 +58,7 @@ public class ATCCTDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_atcct_details);
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         mLayout = findViewById(R.id.atcct_detail_layout);
-        setSupportActionBar(myToolbar);
 
         tvOwner = findViewById(R.id.tvOwnerName);
         tvOwnerDetails = findViewById(R.id.tvOwnerDetails);

@@ -51,8 +51,6 @@ public class FIRList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fir_list);
         mLayout = findViewById(R.id.fir_list_layout);
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
 
         loadFarms();
         init();
@@ -86,8 +84,7 @@ public class FIRList extends AppCompatActivity {
 
     private void loadFarms() {
         final FarmsRepo repo = new FarmsRepo();
-        ArrayList<String> list = repo.getFarmsForSpinner();
-        farmsList = list;
+        farmsList = repo.getFarmsForSpinner();
     }
 
     private void newFIR(String farmCode) {

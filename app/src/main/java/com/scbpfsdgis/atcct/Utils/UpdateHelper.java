@@ -2,12 +2,12 @@ package com.scbpfsdgis.atcct.Utils;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-/*
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;*/
+import android.text.TextUtils;
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 public class UpdateHelper {
 
-    public static String KEY_UPDATE_ENABLE = "is_update";
+    public static String KEY_UPDATE_ENABLE = "isUpdate";
     public static String KEY_UPDATE_VERSION = "version";
     public static String KEY_UPDATE_URL = "update_url";
 
@@ -29,16 +29,16 @@ public class UpdateHelper {
 
 
     public void check() {
-        /*FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.getInstance();
         if(remoteConfig.getBoolean(KEY_UPDATE_ENABLE)) {
             String currentVersion = remoteConfig.getString(KEY_UPDATE_VERSION);
-            String appVerson  = getAppVersion(context);
+            String appVersion  = getAppVersion(context);
             String updateURL = remoteConfig.getString(KEY_UPDATE_URL);
 
-            if(!TextUtils.equals(currentVersion,appVerson) && onUpdateCheckListener != null)
+            if(!TextUtils.equals(currentVersion,appVersion) && onUpdateCheckListener != null)
                 onUpdateCheckListener.onUpdateCheckListener(updateURL);
 
-        }*/
+        }
     }
 
     private String getAppVersion(Context context) {

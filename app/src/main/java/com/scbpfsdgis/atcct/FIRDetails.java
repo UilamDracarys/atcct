@@ -96,11 +96,6 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
 
         mLayout = findViewById(R.id.fir_detail_layout);
 
-
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-
-
         Intent intent = getIntent();
         fab = findViewById(R.id.fabAddAtt);
         farmCode = intent.getStringExtra("farmCode");

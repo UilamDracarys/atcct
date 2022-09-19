@@ -10,20 +10,68 @@
     tools:context="com.scbpfsdgis.atcct.MainActivity">
 
 
-    <android.support.v7.widget.Toolbar
+    <!--<android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="#69F0AE"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
 
-    <ListView
-        android:id="@+id/menuList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:elevation="2dp" />
+    <TextView
+        android:id="@+id/txtFCName"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/menuList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:elevation="2dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:layout_gravity="center"
+            android:text="© Wilyam 2019"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabNewFIR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_fir_24"
+            android:theme="@style/ThemeOverlay.AppCompat" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabNewSMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_sms_24"
+            android:theme="@style/ThemeOverlay.AppCompat" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add"
+            android:backgroundTint="@color/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat" />
+
+    </FrameLayout>
 
 </LinearLayout>

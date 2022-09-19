@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,8 +33,8 @@ public class OwnersList extends AppCompatActivity {
         setContentView(R.layout.activity_owners_list);
         mLayout = findViewById(R.id.owners_list_layout);
 
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
+        /*Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);*/
 
         newItem = findViewById(R.id.fab);
         newItem.setOnClickListener(new View.OnClickListener() {
@@ -45,7 +44,7 @@ public class OwnersList extends AppCompatActivity {
                 newOwner();
             }
         });
-        //getSupportActionBar().setTitle("Owner Details");
+        /*getSupportActionBar().setTitle("Owner Details");*/
 
         loadOwners();
     }
@@ -73,6 +72,8 @@ public class OwnersList extends AppCompatActivity {
 
                     Intent intent = getIntent();
                     Bundle b = intent.getExtras();
+
+                    System.out.println("intent.getExtras(): " + intent.getExtras());
 
                     if (b != null) {
                         tvOwnerID = view.findViewById(R.id.ownerID);

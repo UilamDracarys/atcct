@@ -70,10 +70,11 @@ public class ATCCTPreview extends AppCompatActivity {
     CheckBox chkConform, chkSignatory;
     TableRow rPickupPt, rAccName, rAccNo, rBank, rRemarks;
     String[] notes = {
-            "1. For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.\n\n",
-            "2. Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).\n\n",
-            "3. Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.\n\n",
-            "4. If unclaimed at TLS, Check/Cheque may be claimed at SCBP plant site, San Carlos Ecozone, Brgy. Palampas, San Carlos City."
+            "1. Payment per 1 full wagon load at Php 625 fixed rate.\n\n",
+            "2. For changes in payee information as declared above, a letter of authorization should be provided duly signed by the owner with valid ID’S attached.\n\n",
+            "3. Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).\n\n",
+            "4. Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.\n\n",
+            "5. If unclaimed at TLS, Check/Cheque may be claimed at Bacolod office 6th Floor, PNB Building, 10th Lacson St., Bacolod City, Neg. Occ. 6100."
     };
     String[] tnc = {
             "1. Preference for cane trash collection shall be given to fields with entire canes rows harvested.\n\n",
@@ -450,10 +451,11 @@ public class ATCCTPreview extends AppCompatActivity {
         cell = new PdfPCell();
         List noteList = new List(List.ORDERED);
         noteList.setFirst(1);
-        noteList.add(new ListItem("For changes in payee information as declared above, a letter of authorization/SPA or any relevant legal document should be provided with valid ID’S attached.", smallFont));
+        noteList.add(new ListItem("Payment per 1 full wagon load at Php 625 fixed rate.", smallFont));
+        noteList.add(new ListItem("For changes in payee information as declared above, a letter of authorization should be provided duly signed by the owner with valid ID’S attached.", smallFont));
         noteList.add(new ListItem("Payment Processing – maximum 7 business days after the weekly collection cut-off (Monday-Sunday).", smallFont));
         noteList.add(new ListItem("Regular schedule for releasing of checks at the transloading site offices will be nominated by Biopower.", smallFont));
-        noteList.add(new ListItem("If unclaimed at TLS, Check/Cheque may be claimed at SCBP plant site, San Carlos Ecozone, Brgy. Palampas, San Carlos City.", smallFont));
+        noteList.add(new ListItem("If unclaimed at TLS, Check/Cheque may be claimed at Bacolod office 6th Floor, PNB Building, 10th Lacson St., Bacolod City, Neg. Occ. 6100.", smallFont));
         cell.addElement(noteList);
         notes.addCell(cell);
 

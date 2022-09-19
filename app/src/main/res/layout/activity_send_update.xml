@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SendUpdate">
+<!--
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#69F0AE"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+
+        <LinearLayout
+            android:id="@+id/preview"
+            android:layout_below="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#b9f6ca"
+                android:padding="4dp"
+                android:text="PREVIEW"
+                android:textAlignment="textStart"
+                android:textSize="14sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_margin="10dp"
+                android:background="#f1f8e9"
+                android:id="@+id/etSMSPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:padding="10dp"
+                android:fontFamily="monospace"/>
+
+            <TextView
+                android:id="@+id/txtCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Character Count: "
+                android:textStyle="italic"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:layout_marginTop="8dp"
+                android:padding="4dp"
+                android:text="DETAILS"
+                android:textAlignment="textStart"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    <ScrollView
+        android:layout_below="@id/preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+
+            <EditText
+                android:id="@+id/etFarmName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Farm Name"
+                android:inputType="none"/>
+
+            <EditText
+                android:id="@+id/etFieldNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Field Name/No."
+                android:inputType="text"/>
+
+            <EditText
+                android:id="@+id/etTotalArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Total Area"
+                android:inputType="numberDecimal" />
+
+            <Spinner
+                android:id="@+id/spnHarvState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="9dp"
+                android:paddingBottom="9dp"
+                android:entries="@array/harvStates"
+                />
+
+            <EditText
+                android:id="@+id/etArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Area"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etHarvDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Set Harvest Date..."
+                android:inputType="none"
+                android:visibility="gone"/>
+
+            <EditText
+                android:id="@+id/etRemarks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Remarks"
+                android:inputType="text" />
+
+            <CheckBox
+                android:id="@+id/chkErratum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Erratum?"
+                android:ems="10"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnReplace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="Replace"/>
+
+                <Button
+                    android:id="@+id/btnAppend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="Append"/>
+
+                <Button
+                    android:id="@+id/btnClear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="Clear All"/>
+            </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fabSendSMS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:layout_margin="16dp"
+                    android:src="@drawable/ic_baseline_send_24"
+                    android:theme="@style/ThemeOverlay.AppCompat" />
+
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
