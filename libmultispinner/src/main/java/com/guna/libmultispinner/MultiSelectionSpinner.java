@@ -54,7 +54,7 @@ public class MultiSelectionSpinner extends Spinner implements
             mSelection[which] = isChecked;
             simple_adapter.clear();
             simple_adapter.add(buildSelectedItemString());
-            System.out.println("Selected String: " + buildSelectedItemString().length());
+            System.out.println("Selected String: " + buildSelectedItemString());
 
         } else {
             throw new IllegalArgumentException(
@@ -130,7 +130,8 @@ public class MultiSelectionSpinner extends Spinner implements
         }
         for (String cell : selection) {
             for (int j = 0; j < _items.length; ++j) {
-                if (_items[j].equals(cell)) {
+                String item = _items[j].substring(_items[j].indexOf("[")+1, _items[j].indexOf("]"));
+                if (item.equals(cell)) {
                     mSelection[j] = true;
                     mSelectionAtStart[j] = true;
                 }

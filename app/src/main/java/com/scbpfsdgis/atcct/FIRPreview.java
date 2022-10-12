@@ -77,7 +77,7 @@ public class FIRPreview extends AppCompatActivity {
             tvFldNo, tvArea, tvObst, tvHarvMeth, tvFlags, tvStart, tvEnd, tvNotes, tvCoor, tvDayOp, tvRFRAvail, tvPostHarv;
     SimpleDateFormat timeFmt = new SimpleDateFormat("h:mm aa", Locale.getDefault());
     SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault());
-    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy hh:mm aa", Locale.getDefault());
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
     SimpleDateFormat longDateFormat = new SimpleDateFormat("EEEE, MMM d, yyyy hh:mm aa", Locale.getDefault());
     ArrayList<HashMap<String, String>> attList;
 
@@ -527,7 +527,7 @@ public class FIRPreview extends AppCompatActivity {
         lgnd.scaleAbsolute(200, 500);
 
         //writer.getDirectContent().addImage(image, true);
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase("Rev. No. 003", hdrFootNote), longSize.getWidth() - 50, longSize.getHeight() - 50, 0);
+        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase("Rev. No. 004", hdrFootNote), longSize.getWidth() - 50, longSize.getHeight() - 50, 0);
         //ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase(Constants.GLOBAL_HOST + " pour réussir votre prochain concours."), 400, 800, 0);
 
         //REV NO.
@@ -612,7 +612,7 @@ public class FIRPreview extends AppCompatActivity {
         firAddlDetails.setWidthPercentage(100);
         firAddlDetails.setWidths(new int[]{1, 4});
 
-        Date rfrAvail = new SimpleDateFormat("yyyy-MM-dd").parse(fir.getFirRFRAvail());
+        Date rfrAvail = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(fir.getFirRFRAvail());
 
 
         cell = new PdfPCell(new Phrase("III. ADDITIONAL DETAILS", bold));
