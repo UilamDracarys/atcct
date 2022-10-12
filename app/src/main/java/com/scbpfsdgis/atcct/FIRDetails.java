@@ -1,6 +1,7 @@
 package com.scbpfsdgis.atcct;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -9,7 +10,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,6 +27,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -49,6 +54,7 @@ import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
 
 import java.io.File;
+import java.text.ParseException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,18 +74,20 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
     Farms farm;
     Owners owner;
     ArrayList<String> ownersList = new ArrayList<>();
-    private int mHour, mMinute;
-    Time timeStart, timeEnd;
-    SimpleDateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private int mHour, mMinute, mDay, mMonth, mYear;
+    Time timeStart, timeEnd, timeRFRAvail;
+    Date rfrAvail;
+    SimpleDateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     SimpleDateFormat dispFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
     FloatingActionButton fab;
 
     //Declare fields
     TextView farmNameCode, attHeader;
-    EditText fldNo, rfrArea, flags, start, end, notes, coor, etContNum;
-    Spinner harvMeth;
+    EditText fldNo, rfrArea, flags, start, end, notes, coor, etContNum, etRFRAvail, etRFRAvailTime;
+    Spinner harvMeth, postHarv;
     MultiSelectionSpinner spnObstructions;
-    Button btnSelStart, btnSelEnd, btnSelImg, btnAddAtt, btnCheckAtt;
+    Button btnSelStart, btnSelEnd, btnSelImg, btnCheckAtt, btnSelRFRAvail, btnSelRFRAvailTime;
+    CheckBox chkDayOp;
     ImageView imgMap;
     String mapPath = "";
     int attCount = 0;
@@ -132,6 +140,8 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             title = "Edit FIR";
             FIRRepo firRepo = new FIRRepo();
             FIR fir = firRepo.getFIRByID(firID);
+
+            System.out.println("Obstructions: " + fir.getFirObst());
             fldNo.setText(fir.getFirFldNo());
             rfrArea.setText(String.valueOf(fir.getFirRFRArea()));
             flags.setText(String.valueOf(fir.getFirFlags()));
@@ -142,13 +152,27 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             timeEnd = Time.valueOf(fir.getFirEnd());
             end.setText(timeFmt.format(Time.valueOf(fir.getFirEnd())));
             mapPath = fir.getFirMap();
+            chkDayOp.setChecked(fir.getFirDayOp() != 0);
+            System.out.println("RFRAvailUntilDate:\t" + fir.getFirRFRAvail());
+            if (fir.getFirRFRAvail() != null) {
+                try {
+                    rfrAvail = sqlFormat.parse(fir.getFirRFRAvail());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            etRFRAvail.setText(fir.getFirRFRAvail());
             /*timeStart = Time.valueOf(start.getText().toString());
             System.out.println("Edit Start: " + timeStart);
             timeEnd = Time.valueOf(end.getText().toString());
             System.out.println("Edit End: " + timeEnd);
             */
             harvMeth.setSelection(fir.getIdxByCode(getResources().getStringArray(R.array.harvMeth), fir.getFirHarvMeth()));
-            String[] obst = fir.getFirObst().split(",");
+            String[] obst = fir.getFirObst().split(", ");
+            for (int i = 0; i < obst.length; i++) {
+                System.out.println("Obstruction " + i + ": " + obst[i]);
+            }
+            postHarv.setSelection(fir.getIdxByCode(getResources().getStringArray(R.array.postHarvPlan), fir.getFirPostHarv()));
             if (obst.length != 0 && !obst[0].equals("-")) {
                 spnObstructions.setSelection(fir.getIndexArray(obst, getResources().getStringArray(R.array.obstructions)));
             }
@@ -215,6 +239,18 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
         etContName = findViewById(R.id.etContName);
         etContNum = findViewById(R.id.etContNum);
 
+        chkDayOp = findViewById(R.id.chkDayOp);
+        etRFRAvail = findViewById(R.id.etRFRAvail);
+        etRFRAvail.setEnabled(false);
+        etRFRAvailTime = findViewById(R.id.etRFRAvailTime);
+        etRFRAvailTime.setEnabled(false);
+        btnSelRFRAvail = findViewById(R.id.btnSelRFRAvail);
+        btnSelRFRAvail.setOnClickListener(this);
+        btnSelRFRAvailTime = findViewById(R.id.btnSelRFRAvailTime);
+        btnSelRFRAvailTime.setEnabled(false);
+        btnSelRFRAvailTime.setOnClickListener(this);
+        postHarv = findViewById(R.id.spnPostHarv);
+
         attCaptions = new ArrayList<>();
         attachments = new ArrayList<>();
 
@@ -275,6 +311,7 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             fir.setFirRFRArea(Double.parseDouble(rfrArea.getText().toString()));
 
             String obst = spnObstructions.getSelectedItemsAsString();
+            System.out.println("ObstructionSave: " + obst);
             if (obst.equalsIgnoreCase("")) {
                 fir.setFirObst("-");
             } else {
@@ -292,6 +329,12 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
             fir.setFirEnd(timeEnd.toString());
             fir.setFirNotes(notes.getText().toString());
             fir.setFirCoorName(coor.getText().toString());
+            System.out.println("Day Operation? : " + (chkDayOp.isChecked() ? 1 : 0));
+            fir.setFirDayOp(chkDayOp.isChecked() ? 1 : 0);
+            System.out.println("Save:\t" + sqlFormat.format(rfrAvail));
+            fir.setFirRFRAvail(sqlFormat.format(rfrAvail));
+            fir.setFirPostHarv(getAttCode(postHarv.getSelectedItem().toString()));
+
             updateCoor(fir.getFirCoorName());
             fir.setFirMap(mapPath);
 
@@ -342,9 +385,10 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onClick(final View v) {
-        if (v == btnSelStart || v == btnSelEnd) {
+        if (v == btnSelStart || v == btnSelEnd || v == btnSelRFRAvailTime) {
             final Calendar c = Calendar.getInstance();
             mHour = c.get(Calendar.HOUR_OF_DAY);
             mMinute = c.get(Calendar.MINUTE);
@@ -372,10 +416,10 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                                             return;
                                         }
                                     }
-                                }
+                                }   
                                 start.setText(timeFmt.format(timeStart));
                                 btnSelEnd.setEnabled(true);
-                            } else {
+                            } else if (v == btnSelEnd){
                                 timeEnd = new Time(hourOfDay, minute, 0);
 
                                 if (timeEnd.before(timeStart)) {
@@ -384,14 +428,56 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
                                 }
 
                                 end.setText(timeFmt.format(timeEnd));
+                            } else if (v == btnSelRFRAvailTime) {
+                                timeRFRAvail = new Time(hourOfDay, minute, 0);
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTime(rfrAvail);
+                                cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                cal.set(Calendar.MINUTE, minute);
+                                System.out.println("RFRAvailDateTime:\t" + new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(cal.getTime()));
+                                etRFRAvailTime.setText(timeFmt.format(timeRFRAvail));
                             }
                         }
                     }, mHour, mMinute, false);
             timePickerDialog.show();
         } else if (v == btnCheckAtt) {
             saveAttachments();
-        } else {
+        } else if (v == btnSelRFRAvail) {
+            Calendar c = Calendar.getInstance();
+            c.setTime(new Date());
+            mDay = c.get(Calendar.DAY_OF_MONTH);
+            mMonth = c.get(Calendar.MONTH);
+            mYear = c.get(Calendar.YEAR);
 
+            System.out.println("Month: " + mMonth + ", Day: " + mDay + ", Year: " + mYear);
+
+
+            final DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                    new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.set(Calendar.YEAR, year);
+                            cal.set(Calendar.MONTH, month);
+                            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+                            
+                            Date today = new Date();
+
+                            rfrAvail = cal.getTime();
+
+                            if (rfrAvail.before(today)) {
+                                Toast.makeText(getApplicationContext(), "Date should not be before today.", Toast.LENGTH_SHORT).show();
+                                etRFRAvail.setText("");
+                                return;
+                            }
+                            System.out.println("RFR Avail: " + rfrAvail);
+                            etRFRAvail.setText(dispFormat.format(rfrAvail));
+                            etRFRAvailTime.setText("");
+                            btnSelRFRAvailTime.setEnabled(true);
+                        }
+                    }, mYear, mMonth, mDay);
+            datePickerDialog.show();
         }
     }
 
@@ -630,6 +716,24 @@ public class FIRDetails extends AppCompatActivity implements MultiSelectionSpinn
         if (mapPath.equalsIgnoreCase("")) {
             Snackbar.make(mLayout, "Please upload QField map screenshot.", Snackbar.LENGTH_SHORT).show();
             btnSelImg.requestFocus();
+            return false;
+        }
+
+        if (etRFRAvail.getText().toString().equalsIgnoreCase("")) {
+            Snackbar.make(mLayout, "Please set the availability of RFR.", Snackbar.LENGTH_SHORT).show();
+            btnSelRFRAvail.requestFocus();
+            return false;
+        }
+
+        if (etRFRAvailTime.getText().toString().equalsIgnoreCase("")) {
+            Snackbar.make(mLayout, "Please set the time of RFR Availability.", Snackbar.LENGTH_SHORT).show();
+            btnSelRFRAvailTime.requestFocus();
+            return false;
+        }
+
+        if (postHarv.getSelectedItemPosition() == 0) {
+            Snackbar.make(mLayout, "Please select the post harvest plan.", Snackbar.LENGTH_SHORT).show();
+            postHarv.requestFocus();
             return false;
         }
 

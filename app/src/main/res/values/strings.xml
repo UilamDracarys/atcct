@@ -57,6 +57,12 @@
         <item>Mechanical (M)</item>
     </string-array>
 
+    <string-array name="postHarvPlan">
+        <item>- Post Harvest Plan - </item>
+        <item>Ratoon (R)</item>
+        <item>New Plant (NP)</item>
+    </string-array>
+
     <string-array name="obstructions">
         <item>Ditches (Pangpang) [DT]</item>
         <item>Canals/Creek [CN]</item>
@@ -74,6 +80,8 @@
         <item>Tire Tracks [TT]</item>
         <item>Slope/Steep (Bakilid) [SLP]</item>
         <item>Slightly Rolling [SR]</item>
+        <item>Stubbles [ST]</item>
+        <item>Ridge [RDG]</item>
     </string-array>
 
     <string-array name="harvStates">

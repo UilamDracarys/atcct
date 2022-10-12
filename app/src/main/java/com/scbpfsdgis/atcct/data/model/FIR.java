@@ -20,10 +20,13 @@ public class FIR {
     public static final String COL_COORNAME = "FIR_COORNAME";
     public static final String COL_FIRPATH = "FIR_PATH";
 
+    public static final String COL_DAY_OP = "FIR_DAY_OP";
+    public static final String COL_RFR_AVAIL = "FIR_RFR_AVAIL";
+    public static final String COL_POST_HARV = "FIR_POST_HARV";
+
     public static final String COL_FIR_ID = COL_ID;
     public static final String COL_FIR_ATT_PATH = "ATT_PATH";
     public static final String COL_FIR_ATT_CAP = "ATT_CAPTION";
-
 
 
     private String firID;
@@ -40,6 +43,34 @@ public class FIR {
     private String firMap;
     private String firCoorName;
     private String firPath;
+    private int firDayOp;
+
+    public int getFirDayOp() {
+        return firDayOp;
+    }
+
+    public void setFirDayOp(int firDayOp) {
+        this.firDayOp = firDayOp;
+    }
+
+    public String getFirRFRAvail() {
+        return firRFRAvail;
+    }
+
+    public void setFirRFRAvail(String firRFRAvail) {
+        this.firRFRAvail = firRFRAvail;
+    }
+
+    public String getFirPostHarv() {
+        return firPostHarv;
+    }
+
+    public void setFirPostHarv(String firPostHarv) {
+        this.firPostHarv = firPostHarv;
+    }
+
+    private String firRFRAvail;
+    private String firPostHarv;
 
     public String getFirPath() {
         return firPath;

@@ -16,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.kernel.pdf.action.PdfTargetDictionary;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -69,14 +67,18 @@ import static com.scbpfsdgis.atcct.app.App.getContext;
 public class FIRPreview extends AppCompatActivity {
 
     String firID;
+    String[] postHarvArr;
     String obstructions = "";
     String fileName;
     String mapPath;
     private View mLayout;
     ImageView imgMap;
     TextView tvFarmCode, tvFarmName, tvOwnerName, tvContPerson, tvContNum,
-            tvFldNo, tvArea, tvObst, tvHarvMeth, tvFlags, tvStart, tvEnd, tvNotes, tvCoor;
+            tvFldNo, tvArea, tvObst, tvHarvMeth, tvFlags, tvStart, tvEnd, tvNotes, tvCoor, tvDayOp, tvRFRAvail, tvPostHarv;
     SimpleDateFormat timeFmt = new SimpleDateFormat("h:mm aa", Locale.getDefault());
+    SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault());
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy hh:mm aa", Locale.getDefault());
+    SimpleDateFormat longDateFormat = new SimpleDateFormat("EEEE, MMM d, yyyy hh:mm aa", Locale.getDefault());
     ArrayList<HashMap<String, String>> attList;
 
 
@@ -86,6 +88,7 @@ public class FIRPreview extends AppCompatActivity {
         setContentView(R.layout.activity_firpreview);
         mLayout = findViewById(R.id.linearLayout);
 
+        postHarvArr = getResources().getStringArray(R.array.postHarvPlan);
         Intent intent = getIntent();
         firID = intent.getStringExtra("firID");
 
@@ -112,6 +115,18 @@ public class FIRPreview extends AppCompatActivity {
         tvContNum.setText(contact.getContNum());
         tvFldNo.setText(fir.getFirFldNo());
         tvArea.setText(fir.getFirRFRArea() + " has.");
+        System.out.println("Day Op " + fir.getFirDayOp());
+        tvDayOp.setText(fir.getFirDayOp() == 0 ? "-" : "YES");
+        String rfrAvail = fir.getFirRFRAvail();
+        if(rfrAvail.length() == 10) {
+            rfrAvail.concat(" 00:00");
+        }
+        try {
+            tvRFRAvail.setText(longDateFormat.format(new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(fir.getFirRFRAvail())));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        tvPostHarv.setText(getPostHarv(fir.getFirPostHarv()));
         String[] obstArr;
 
 
@@ -241,9 +256,26 @@ public class FIRPreview extends AppCompatActivity {
             case "SR":
                 obstruction = "Slightly Rolling";
                 break;
+            case "ST":
+                obstruction = "Stubbles";
+                break;
+            case "RDG":
+                obstruction = "Ridge";
+                break;
         }
         System.out.println("obs " + obstruction);
         return obstruction;
+    }
+
+    private String getPostHarv(String code) {
+        String postHarv = "";
+        for (String s : postHarvArr) {
+            System.out.println("HarvMeth " + s);
+            if (s.contains("(" + code + ")")) {
+                postHarv = s.replace("(" + code + ")","").trim();
+            }
+        }
+        return postHarv;
     }
 
     private String getHarvMeth(String code) {
@@ -281,6 +313,9 @@ public class FIRPreview extends AppCompatActivity {
         tvNotes = findViewById(R.id.tvNotes);
         tvCoor = findViewById(R.id.tvCoor);
         imgMap = findViewById(R.id.imgMap);
+        tvDayOp = findViewById(R.id.tvDayOp);
+        tvRFRAvail = findViewById(R.id.tvRFRAvail);
+        tvPostHarv = findViewById(R.id.tvPostHarv);
     }
 
     @Override
@@ -423,8 +458,7 @@ public class FIRPreview extends AppCompatActivity {
         Owners owner = ownersRepo.getOwnerByID(farm.getFarmOwnerID(), "M");
         ContactRepo contactRepo = new ContactRepo();
         Contact contact = contactRepo.getContactByFarm(farm.getFarmCode());
-        SimpleDateFormat dateForFile = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+
         String farmFieldNo = farm.getFarmName() + "_FldNo-" + fir.getFirFldNo();
         Rectangle longSize = new Rectangle((float) (8.5 * 72), 13 * 72);
 
@@ -497,7 +531,7 @@ public class FIRPreview extends AppCompatActivity {
         //ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase(Constants.GLOBAL_HOST + " pour réussir votre prochain concours."), 400, 800, 0);
 
         //REV NO.
-        Paragraph revNo = new Paragraph("Rev No. 003", hdrFootNote);
+        Paragraph revNo = new Paragraph("Rev No. 004", hdrFootNote);
         revNo.setAlignment(Paragraph.ALIGN_RIGHT);
 
         //TITLE
@@ -573,7 +607,26 @@ public class FIRPreview extends AppCompatActivity {
             imgMap = null;
         }
 
-        cell = new PdfPCell(new Phrase("III. MAP", bold));
+        //Table 2: Field Inspection Details
+        PdfPTable firAddlDetails = new PdfPTable(2);
+        firAddlDetails.setWidthPercentage(100);
+        firAddlDetails.setWidths(new int[]{1, 4});
+
+        Date rfrAvail = new SimpleDateFormat("yyyy-MM-dd").parse(fir.getFirRFRAvail());
+
+
+        cell = new PdfPCell(new Phrase("III. ADDITIONAL DETAILS", bold));
+        cell.setColspan(2);
+        cell.setBackgroundColor(headerFill);
+        firAddlDetails.addCell(cell);
+        firAddlDetails.addCell(new Phrase("Day Operation", fldNameFont));
+        firAddlDetails.addCell(new Phrase(fir.getFirDayOp() == 1 ? "YES" : "-", boldBlue11));
+        firAddlDetails.addCell(new Phrase("RFR Available Until", fldNameFont));
+        firAddlDetails.addCell(new Phrase(longDateFormat.format(rfrAvail), boldBlue11));
+        firAddlDetails.addCell(new Phrase("Post Harvest Plan", fldNameFont));
+        firAddlDetails.addCell(new Phrase(getPostHarv(fir.getFirPostHarv()), boldBlue11));
+
+        cell = new PdfPCell(new Phrase("IV. MAP", bold));
         cell.setBackgroundColor(headerFill);
         mapHdr.addCell(cell);
 
@@ -581,6 +634,7 @@ public class FIRPreview extends AppCompatActivity {
         document.add(title);
         document.add(farmInfo);
         document.add(firDetails);
+        document.add(firAddlDetails);
         document.add(mapHdr);
 
         PdfPTable map = new PdfPTable(2);
@@ -613,7 +667,7 @@ public class FIRPreview extends AppCompatActivity {
             PdfPTable attHdr = new PdfPTable(1);
             attHdr.setWidthPercentage(100);
 
-            cell = new PdfPCell(new Phrase("IV. ATTACHMENTS for " + firID, bold));
+            cell = new PdfPCell(new Phrase("V. ATTACHMENTS for " + firID, bold));
             cell.setBackgroundColor(headerFill);
 
             attHdr.addCell(cell);

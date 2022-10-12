@@ -517,13 +517,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     private void initMenus() {
-        mFCName = findViewById(R.id.txtFCName);
-        fabAdd = findViewById(R.id.fabAdd);
-        fabSMS = findViewById(R.id.fabNewSMS);
-        fabFIR = findViewById(R.id.fabNewFIR);
-        fabAdd.setOnClickListener(this);
-        fabSMS.setOnClickListener(this);
-        fabFIR.setOnClickListener(this);
+//        mFCName = findViewById(R.id.txtFCName);
+//        fabAdd = findViewById(R.id.fabAdd);
+//        fabSMS = findViewById(R.id.fabNewSMS);
+//        fabFIR = findViewById(R.id.fabNewFIR);
+//        fabAdd.setOnClickListener(this);
+//        fabSMS.setOnClickListener(this);
+//        fabFIR.setOnClickListener(this);
         ListView menus = findViewById(R.id.menuList);
         String[] textString = {"Farms List", "Planters List", "ATCCTs", "Field Inspection Reports"};
         String[] menuPreviews = {getFarmsSubtitle(), getOwnersSubtitle(), getATCCTSubtitle(), getFIRSubtitle()};
@@ -773,20 +773,20 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     @Override
     public void onClick(View v) {
-        if (v == findViewById(R.id.fabAdd)) {
-            if(!isFabOpen) {
-                showFabMenu();
-            } else {
-                closeFabMenu();
-            }
-        } else if (v == findViewById(R.id.fabNewSMS)) {
-            Intent athleteList = new Intent(MainActivity.this, SendUpdate.class);
-            athleteList.putExtra("title", "Send Update");
-            startActivity(athleteList);
-            closeFabMenu();
-        } else if (v == findViewById(R.id.fabNewFIR)) {
-            closeFabMenu();
-        }
+//        if (v == findViewById(R.id.fabAdd)) {
+//            if(!isFabOpen) {
+//                showFabMenu();
+//            } else {
+//                closeFabMenu();
+//            }
+//        } else if (v == findViewById(R.id.fabNewSMS)) {
+//            Intent athleteList = new Intent(MainActivity.this, SendUpdate.class);
+//            athleteList.putExtra("title", "Send Update");
+//            startActivity(athleteList);
+//            closeFabMenu();
+//        } else if (v == findViewById(R.id.fabNewFIR)) {
+//            closeFabMenu();
+//        }
     }
 
 

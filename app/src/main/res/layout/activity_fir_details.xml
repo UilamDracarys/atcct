@@ -151,6 +151,83 @@
                 android:background="#b9f6ca"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
+                android:text="ADDITIONAL DETAILS"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/chkDayOp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Day Operation Only?"
+                android:padding="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E0E0E0"
+                android:text="RFR Available Until"
+                android:textColor="#424242"
+                android:textStyle="italic" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etRFRAvail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ems="10"
+                    android:hint="Date"
+                    android:inputType="text" />
+
+                <Button
+                    android:id="@+id/btnSelRFRAvail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etRFRAvailTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ems="10"
+                    android:hint="Time"
+                    android:inputType="text" />
+
+                <Button
+                    android:id="@+id/btnSelRFRAvailTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select" />
+
+            </LinearLayout>
+
+            <Spinner
+                android:id="@+id/spnPostHarv"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:ems="10"
+                android:entries="@array/postHarvPlan" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="CONTACT PERSON"
                 android:textAlignment="center"
                 android:textSize="14sp"
@@ -237,6 +314,7 @@
 
         </LinearLayout>
     </ScrollView>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

@@ -240,7 +240,64 @@
                 android:background="#b9f6ca"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:text="III. MAP"
+                android:text="III. ADDITIONAL DETAILS"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Day Operation?" />
+
+                    <TextView
+                        android:id="@+id/tvDayOp"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="RFR Available Until" />
+
+                    <TextView
+                        android:id="@+id/tvRFRAvail"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:padding="4dp"
+                        android:text="Post Harvest Plan" />
+
+                    <TextView
+                        android:id="@+id/tvPostHarv"
+                        android:padding="4dp"
+                        android:textColor="#003d00"
+                        android:textStyle="bold" />
+                </TableRow>
+
+
+            </TableLayout>
+
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#b9f6ca"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="IV. MAP"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -259,7 +316,7 @@
                 android:background="#b9f6ca"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:text="IV. ATTACHMENTS"
+                android:text="V. ATTACHMENTS"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

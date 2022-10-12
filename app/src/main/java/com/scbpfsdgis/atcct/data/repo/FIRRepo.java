@@ -37,6 +37,9 @@ public class FIRRepo {
                 FIR.COL_END + " TEXT, " +
                 FIR.COL_NOTES + " TEXT, " +
                 FIR.COL_COORNAME + " TEXT, " +
+                FIR.COL_RFR_AVAIL + " TEXT, " +
+                FIR.COL_DAY_OP + " INTEGER, " +
+                FIR.COL_POST_HARV + " TEXT, " +
                 FIR.COL_MAP + " TEXT, " +
                 FIR.COL_FIRPATH + " TEXT)";
         System.out.println("Creating FIR Table: " + query);
@@ -82,6 +85,9 @@ public class FIRRepo {
         values.put(FIR.COL_END, fir.getFirEnd());
         values.put(FIR.COL_NOTES, fir.getFirNotes());
         values.put(FIR.COL_COORNAME, fir.getFirCoorName());
+        values.put(FIR.COL_DAY_OP, fir.getFirDayOp());
+        values.put(FIR.COL_RFR_AVAIL, fir.getFirRFRAvail());
+        values.put(FIR.COL_POST_HARV, fir.getFirPostHarv());
         values.put(FIR.COL_MAP, fir.getFirMap());
 
         // Inserting Row
@@ -130,6 +136,9 @@ public class FIRRepo {
         values.put(FIR.COL_END, fir.getFirEnd());
         values.put(FIR.COL_NOTES, fir.getFirNotes());
         values.put(FIR.COL_COORNAME, fir.getFirCoorName());
+        values.put(FIR.COL_DAY_OP, fir.getFirDayOp());
+        values.put(FIR.COL_RFR_AVAIL, fir.getFirRFRAvail());
+        values.put(FIR.COL_POST_HARV, fir.getFirPostHarv());
         values.put(FIR.COL_MAP, fir.getFirMap());
 
         db.update(FIR.TABLE_FIR, values, FIR.COL_ID + "= ? ", new String[]{fir.getFirID()});
@@ -233,6 +242,9 @@ public class FIRRepo {
                 FIR.COL_NOTES + " as Notes, " +
                 FIR.COL_COORNAME + " as CoorName,  " +
                 FIR.COL_MAP + " as Map, " +
+                FIR.COL_DAY_OP + " as DayOp, " +
+                FIR.COL_RFR_AVAIL + " as RFRAvail, " +
+                FIR.COL_POST_HARV + " as PostHarv, " +
                 FIR.COL_FIRPATH + " as FIRPath " +
                 "FROM " + FIR.TABLE_FIR + " " +
                 "WHERE " + FIR.COL_ID + " =?";
@@ -255,9 +267,11 @@ public class FIRRepo {
                 fir.setFirNotes(cursor.getString(cursor.getColumnIndex("Notes")));
                 fir.setFirCoorName(cursor.getString(cursor.getColumnIndex("CoorName")));
                 fir.setFirMap(cursor.getString(cursor.getColumnIndex("Map")));
+                fir.setFirDayOp(cursor.getInt(cursor.getColumnIndex("DayOp")));
+                System.out.println("RFRAvailDate:\t" + cursor.getString(cursor.getColumnIndex("RFRAvail")));
+                fir.setFirRFRAvail(cursor.getString(cursor.getColumnIndex("RFRAvail")));
+                fir.setFirPostHarv(cursor.getString(cursor.getColumnIndex("PostHarv")));
                 fir.setFirPath(cursor.getString(cursor.getColumnIndex("FIRPath")));
-
-
             } while (cursor.moveToNext());
         }
 

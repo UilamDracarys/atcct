@@ -10,7 +10,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,15 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scbpfsdgis.atcct.Utils.SearchableAdapter;
-import com.scbpfsdgis.atcct.data.model.ATCC;
 import com.scbpfsdgis.atcct.data.model.FIR;
 import com.scbpfsdgis.atcct.data.repo.FIRRepo;
 import com.scbpfsdgis.atcct.data.repo.FarmsRepo;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import in.galaxyofandroid.spinerdialog.OnSpinerItemClick;
