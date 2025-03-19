@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ATCCT.iml" filepath="$PROJECT_DIR$/ATCCT.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/ATCCT.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/ATCCT.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libmultispinner/ATCCT.libmultispinner.iml" filepath="$PROJECT_DIR$/.idea/modules/libmultispinner/ATCCT.libmultispinner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ATCCTFIR.iml" filepath="$PROJECT_DIR$/.idea/ATCCTFIR.iml" />
     </modules>
   </component>
 </project>
