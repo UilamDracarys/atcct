@@ -52,6 +52,8 @@ import com.scbpfsdgis.atcct.data.model.Owners;
 import com.scbpfsdgis.atcct.data.repo.ATCCRepo;
 import com.scbpfsdgis.atcct.data.repo.AuthRepRepo;
 import com.scbpfsdgis.atcct.data.repo.OwnersRepo;
+import com.scbpfsdgis.atcct.R;
+
 
 import java.io.File;
 import java.io.FileOutputStream;

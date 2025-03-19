@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+//apply plugin: 'io.fabric'
 
 ext.versionMajor = 1
 ext.versionMinor = 2
@@ -8,13 +8,14 @@ ext.versionClassifier = null
 ext.minimumSdkVersion = 19
 
 android {
+    namespace "com.scbpfsdgis.atcct"
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.scbpfsdgis.atcct"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode generateVersionCode()
-        versionName generateVersionName()
+//        versionCode generateVersionCode()
+//        versionName generateVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,16 +26,16 @@ android {
     }
 }
 
-private Integer generateVersionCode() {
-    int versionCode = ext.minimumSdkVersion * 10000000 + ext.versionMajor * 10000 + ext.versionMinor * 100 + ext.versionPatch
-    return versionCode
-
-}
-
-private String generateVersionName() {
-    String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
-    return versionName
-}
+//private Integer generateVersionCode() {
+//    int versionCode = ext.minimumSdkVersion * 10000000 + ext.versionMajor * 10000 + ext.versionMinor * 100 + ext.versionPatch
+//    return versionCode
+//
+//}
+//
+//private String generateVersionName() {
+//    String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
+//    return versionName
+//}
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -57,7 +58,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-config:11.6.2'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.9'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    compile 'com.github.ghost1372:Mzip-Android:0.4.0'
+    implementation 'com.github.ghost1372:Mzip-Android:0.4.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'
